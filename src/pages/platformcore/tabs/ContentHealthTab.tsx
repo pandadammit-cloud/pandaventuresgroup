@@ -6,8 +6,6 @@ interface Guide {
   status: 'stub' | 'draft' | 'published';
   score: number | null;
   stale: boolean;
-  schemaVersion: number | null;
-  v4QaStatus?: 'pending' | 'approved' | null;
   portAreaActivityDepth?: string | null;
   majorExperienceTransferTime?: string | null;
   impactAction?: string | null;
@@ -54,9 +52,6 @@ export default function ContentHealthTab() {
     return g.portAreaActivityDepth && g.majorExperienceTransferTime && g.impactAction
       && sec.transport?.taxiPricingMethod && sec.food?.tapWaterGuidance;
   }).length;
-  const v4Pending  = guides.filter(g => g.v4QaStatus === 'pending').length;
-  const v4Approved = guides.filter(g => g.v4QaStatus === 'approved').length;
-  const v4None     = guides.filter(g => !g.v4QaStatus).length;
 
   const avgScore = guides
     .filter(g => g.score != null)
@@ -67,32 +62,11 @@ export default function ContentHealthTab() {
       <h2 className="content-health__title">Content Health — Dock Guides</h2>
 
       <div className="stat-grid">
-        <StatCard label="Total guides"    value={total} />
-        <StatCard label="Published"       value={`${published} (${pct(published, total)}%)`} />
-        <StatCard label="Stale"           value={stale} sub="exceeded freshness policy" />
-        <StatCard label="Avg score"       value={avgScore > 0 ? avgScore.toFixed(1) : '—'} sub="published only" />
+        <StatCard label="Total guides"        value={total} />
+        <StatCard label="Published"           value={`${published} (${pct(published, total)}%)`} />
+        <StatCard label="Stale"               value={stale} sub="exceeded freshness policy" />
+        <StatCard label="Avg score"           value={avgScore > 0 ? avgScore.toFixed(1) : '—'} sub="published only" />
         <StatCard label="V4 fields populated" value={`${v4Full} (${pct(v4Full, total)}%)`} sub="all 5 key V4 fields present" />
-        <StatCard label="V4 QA pending"   value={v4Pending} />
-        <StatCard label="V4 QA approved"  value={v4Approved} sub="promoted to prod" />
-        <StatCard label="V4 not started"  value={v4None} />
-      </div>
-
-      <div className="content-health__schema">
-        <h3>Schema versions</h3>
-        <div className="schema-bars">
-          {[null, 3, 4].map(v => {
-            const count = guides.filter(g => g.schemaVersion === v).length;
-            return (
-              <div key={String(v)} className="schema-bar-row">
-                <span className="schema-bar-label">{v == null ? 'pre-V3' : `V${v}`}</span>
-                <div className="schema-bar-track">
-                  <div className="schema-bar-fill" style={{ width: `${pct(count, total)}%` }} />
-                </div>
-                <span className="schema-bar-count">{count}</span>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

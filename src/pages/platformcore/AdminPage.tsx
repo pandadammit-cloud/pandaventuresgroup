@@ -1,22 +1,18 @@
 import { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
-import V4ReviewTab from './tabs/V4ReviewTab';
-import GuideQueueTab from './tabs/GuideQueueTab';
 import ContentHealthTab from './tabs/ContentHealthTab';
 import PortGuidesTab from './tabs/PortGuidesTab';
 
-type Tab = 'v4-review' | 'guide-queue' | 'content-health' | 'port-guides';
+type Tab = 'content-health' | 'port-guides';
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'v4-review',      label: 'V4 Review' },
-  { id: 'guide-queue',    label: 'Guide Queue' },
   { id: 'content-health', label: 'Content Health' },
   { id: 'port-guides',    label: 'Port Guides' },
 ];
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('v4-review');
+  const [activeTab, setActiveTab] = useState<Tab>('content-health');
 
   return (
     <div className="admin">
@@ -41,8 +37,6 @@ export default function AdminPage() {
       </nav>
 
       <main className="admin__content">
-        {activeTab === 'v4-review'      && <V4ReviewTab />}
-        {activeTab === 'guide-queue'    && <GuideQueueTab />}
         {activeTab === 'content-health' && <ContentHealthTab />}
         {activeTab === 'port-guides'    && <PortGuidesTab />}
       </main>

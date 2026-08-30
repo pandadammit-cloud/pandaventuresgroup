@@ -362,6 +362,191 @@ button { cursor: pointer; font-family: var(--sans); }
 .status-badge--published { background: var(--color-success-background); color: var(--color-success); }
 .table-link { font-size: 0.8rem; color: var(--color-brand); font-weight: 500; }
 
+/* ── Port Guides ─────────────────────────────────────────────────────────────── */
+.port-guides__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.port-guides__title { font-size: 1.1rem; }
+.port-guides__search {
+  flex: 1;
+  max-width: 280px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+.port-guides__search:focus { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+
+.detail-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  color: var(--color-brand);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.detail-btn:hover { background: var(--color-brand-light); }
+
+/* ── Guide Detail ─────────────────────────────────────────────────────────────── */
+.guide-detail { max-width: 860px; }
+.guide-detail__back {
+  background: none;
+  border: none;
+  color: var(--color-brand);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.guide-detail__back:hover { text-decoration: underline; }
+
+.guide-detail__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.guide-detail__port {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  display: block;
+  margin-bottom: 4px;
+}
+.guide-detail__name { font-size: 1.3rem; margin-bottom: 4px; }
+.guide-detail__id { font-size: 0.75rem; color: var(--color-text-secondary); font-family: var(--mono); }
+.guide-detail__badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+
+.stale-badge {
+  font-size: 0.75rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-danger-background); color: var(--color-danger);
+}
+.schema-badge {
+  font-size: 0.75rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-info-background); color: var(--color-info);
+}
+
+.guide-detail__meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.meta-pill {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+.meta-pill span { color: var(--color-text-secondary); margin-bottom: 2px; }
+.meta-pill strong { color: var(--color-text-primary); font-weight: 600; }
+
+.guide-detail__v4 {
+  background: var(--color-brand-light);
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.v4-row-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-brand); margin-bottom: 8px; }
+.v4-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.v4-pill {
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.v4-impact { font-size: 0.875rem; color: var(--color-text-primary); margin-bottom: 8px; font-style: italic; }
+.v4-deps { margin: 0; padding-left: 18px; font-size: 0.8rem; color: var(--color-text-secondary); }
+.v4-deps li { margin-bottom: 2px; }
+
+.guide-detail__sections-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+}
+.guide-detail__sections { margin-bottom: 24px; }
+.guide-detail__sections .tab-empty { text-align: left; padding: 12px 0; }
+
+.section-block {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.section-block__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-surface);
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.section-block__toggle:hover { background: var(--color-surface-secondary); }
+.section-block__name { font-weight: 600; flex: 1; font-family: var(--mono); font-size: 0.8rem; }
+.section-block__count { font-size: 0.75rem; color: var(--color-text-secondary); }
+.section-block__chevron { font-size: 0.7rem; color: var(--color-text-secondary); }
+.section-block__body { border-top: 1px solid var(--color-border); background: var(--color-surface-secondary); padding: 12px; }
+
+.section-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.section-table th {
+  text-align: left; width: 200px; padding: 4px 8px;
+  color: var(--color-text-secondary); font-weight: 500; vertical-align: top;
+  font-family: var(--mono); font-size: 0.75rem;
+}
+.section-table td { padding: 4px 8px; white-space: pre-wrap; word-break: break-word; }
+.section-table tr:not(:last-child) td, .section-table tr:not(:last-child) th {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.guide-detail__raw { margin-top: 8px; }
+.raw-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.raw-toggle:hover { background: var(--color-surface-secondary); }
+.raw-json {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-size: 0.75rem;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--color-text-primary);
+}
+
 /* ── Content Health ──────────────────────────────────────────────────────────── */
 .content-health__title { font-size: 1.1rem; margin-bottom: 20px; }
 

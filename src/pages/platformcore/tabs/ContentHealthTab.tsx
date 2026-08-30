@@ -71,9 +71,9 @@ export default function ContentHealthTab() {
         <StatCard label="Published"       value={`${published} (${pct(published, total)}%)`} />
         <StatCard label="Stale"           value={stale} sub="exceeded freshness policy" />
         <StatCard label="Avg score"       value={avgScore > 0 ? avgScore.toFixed(1) : '—'} sub="published only" />
-        <StatCard label="V4 complete"     value={`${v4Full} (${pct(v4Full, total)}%)`} />
-        <StatCard label="V4 pending QA"   value={v4Pending} />
-        <StatCard label="V4 approved"     value={v4Approved} />
+        <StatCard label="V4 fields populated" value={`${v4Full} (${pct(v4Full, total)}%)`} sub="all 5 key V4 fields present" />
+        <StatCard label="V4 QA pending"   value={v4Pending} />
+        <StatCard label="V4 QA approved"  value={v4Approved} sub="promoted to prod" />
         <StatCard label="V4 not started"  value={v4None} />
       </div>
 

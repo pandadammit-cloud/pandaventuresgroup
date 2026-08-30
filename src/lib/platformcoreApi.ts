@@ -20,5 +20,5 @@ export async function listDockGuides(status?: string) {
 }
 
 export async function getGuide(guideTypeId: string, entityId: string) {
-  return apiFetch(`/guides/${guideTypeId}/${entityId}`);
+  return apiFetch(`/guides/${encodeURIComponent(guideTypeId)}/${encodeURIComponent(entityId)}`);
 }

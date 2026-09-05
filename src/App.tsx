@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ComingSoonPage from './pages/ComingSoonPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/platformcore/AdminPage';
+import BacklogPage from './pages/BacklogPage';
 import AuthGuard from './components/AuthGuard';
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
         <Route path="/"                   element={<ComingSoonPage />} />
         <Route path="/login"              element={<LoginPage />} />
         <Route path="/platformcore/admin" element={<AuthGuard><AdminPage /></AuthGuard>} />
+        <Route path="/backlog"            element={<AuthGuard><BacklogPage /></AuthGuard>} />
         {/* future public product pages — stubs for now */}
         <Route path="/platformcore"       element={<ComingSoonPage />} />
         <Route path="/dockbound"          element={<ComingSoonPage />} />

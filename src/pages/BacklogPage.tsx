@@ -138,13 +138,18 @@ export default function BacklogPage() {
 
   useEffect(() => { load(); }, []);
 
-  const open       = items.filter(i => i.status === 'open').length;
-  const inProgress = items.filter(i => i.status === 'in-progress').length;
-  const done       = items.filter(i => i.status === 'done').length;
-  const blocked    = items.filter(i => i.blockedReason).length;
-  const mvp        = items.filter(i => i.userCategory === 'MVP' && i.status !== 'done').length;
-  const dbOpen     = items.filter(i => i.product === 'dockbound'    && i.status !== 'done').length;
-  const fjOpen     = items.filter(i => i.product === 'forumjourney' && i.status !== 'done').length;
+  function kpi(subset: BacklogItem[]) {
+    return {
+      open:       subset.filter(i => i.status === 'open').length,
+      inProgress: subset.filter(i => i.status === 'in-progress').length,
+      done:       subset.filter(i => i.status === 'done').length,
+      blocked:    subset.filter(i => !!i.blockedReason).length,
+      mvp:        subset.filter(i => i.userCategory === 'MVP' && i.status !== 'done').length,
+    };
+  }
+  const allKpi = kpi(items);
+  const dbKpi  = kpi(items.filter(i => i.product === 'dockbound'));
+  const fjKpi  = kpi(items.filter(i => i.product === 'forumjourney'));
 
   const allCategories = Array.from(new Set(items.map(i => i.userCategory))).sort();
 
@@ -203,24 +208,38 @@ export default function BacklogPage() {
       )}
 
       {!loading && !error && items.length > 0 && (
-        <div className="backlog-summary">
-          <span className="backlog-summary__stat backlog-summary__stat--open">{open + inProgress} open</span>
-          <span className="backlog-summary__dot">·</span>
-          <span className="backlog-summary__stat backlog-summary__stat--progress">{inProgress} in progress</span>
-          <span className="backlog-summary__dot">·</span>
-          <span className="backlog-summary__stat backlog-summary__stat--done">{done} done</span>
-          {blocked > 0 && <>
-            <span className="backlog-summary__dot">·</span>
-            <span className="backlog-summary__stat backlog-summary__stat--blocked">{blocked} blocked</span>
-          </>}
-          <span className="backlog-summary__divider" />
-          <span className="backlog-summary__stat">{mvp} MVP remaining</span>
-          <span className="backlog-summary__dot">·</span>
-          <img src="/logo-dockbound.png"    alt="DockBound"    className="backlog-summary__logo" />
-          <span className="backlog-summary__stat">{dbOpen}</span>
-          <span className="backlog-summary__dot">·</span>
-          <img src="/logo-forumjourney.png" alt="ForumJourney" className="backlog-summary__logo" />
-          <span className="backlog-summary__stat">{fjOpen}</span>
+        <div className="backlog-kpi">
+          <table className="backlog-kpi__table">
+            <thead>
+              <tr>
+                <th className="backlog-kpi__th backlog-kpi__th--label" />
+                <th className="backlog-kpi__th">Open</th>
+                <th className="backlog-kpi__th">In Progress</th>
+                <th className="backlog-kpi__th">Done</th>
+                <th className="backlog-kpi__th">Blocked</th>
+                <th className="backlog-kpi__th">MVP Left</th>
+              </tr>
+            </thead>
+            <tbody>
+              {([
+                { label: 'Overall',      logo: null,                    k: allKpi },
+                { label: 'DockBound',    logo: '/logo-dockbound.png',   k: dbKpi  },
+                { label: 'ForumJourney', logo: '/logo-forumjourney.png',k: fjKpi  },
+              ] as const).map(({ label, logo, k }) => (
+                <tr key={label} className="backlog-kpi__row">
+                  <td className="backlog-kpi__td backlog-kpi__td--label">
+                    {logo && <img src={logo} alt={label} className="backlog-kpi__logo" />}
+                    {!logo && <span className="backlog-kpi__overall">All</span>}
+                  </td>
+                  <td className="backlog-kpi__td backlog-kpi__td--open">{k.open}</td>
+                  <td className="backlog-kpi__td backlog-kpi__td--progress">{k.inProgress}</td>
+                  <td className="backlog-kpi__td backlog-kpi__td--done">{k.done}</td>
+                  <td className={`backlog-kpi__td${k.blocked > 0 ? ' backlog-kpi__td--blocked' : ''}`}>{k.blocked}</td>
+                  <td className="backlog-kpi__td">{k.mvp}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

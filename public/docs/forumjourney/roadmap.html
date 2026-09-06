@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForumJourney — Project Roadmap</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 56px;
+  }
+
+  /* Cover */
+  .cover {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 3px solid #1e40af;
+    margin-bottom: 48px;
+  }
+  .cover .logo { font-size: 13pt; font-weight: 700; color: #1e40af; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+  .cover .subtitle { font-size: 13pt; color: #555; }
+  .cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; display: flex; justify-content: center; gap: 2em; flex-wrap: wrap; }
+
+  /* TOC */
+  .toc { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+  .toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #1e40af; }
+  .toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+  .toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+  .toc a { color: #1e40af; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Headings */
+  h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #1e40af; padding-bottom: 6px; margin-top: 48px; }
+  h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #1e40af; padding-left: 10px; }
+  h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+  /* Callouts */
+  .callout {
+    background: #eff6ff; border-left: 4px solid #1e40af;
+    padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt;
+  }
+  .callout.warning { background: #fff8ed; border-color: #f59e0b; }
+  .callout.danger  { background: #fef2f2; border-color: #ef4444; }
+  .callout.info    { background: #f0fdf4; border-color: #22c55e; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 16px 0; }
+  th { background: #1e40af; color: #fff; padding: 7px 10px; text-align: left; font-weight: 600; font-size: 9.5pt; text-transform: uppercase; letter-spacing: 0.04em; }
+  td { padding: 6px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fafb; }
+
+  /* Status badges */
+  .s { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8.5pt; font-weight: 700; white-space: nowrap; }
+  .s-done     { background: #dcfce7; color: #15803d; }
+  .s-wip      { background: #dbeafe; color: #1d4ed8; }
+  .s-next     { background: #fef9c3; color: #854d0e; }
+  .s-backlog  { background: #f1f5f9; color: #475569; }
+  .s-blocked  { background: #fee2e2; color: #b91c1c; }
+  .s-decision { background: #fdf4ff; color: #7e22ce; }
+  .s-hold     { background: #f1f5f9; color: #94a3b8; }
+
+  /* Size badges */
+  .sz { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 8.5pt; font-weight: 700; background: #f1f5f9; color: #475569; white-space: nowrap; font-family: 'Courier New', monospace; }
+
+  /* Summary health grid */
+  .health-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin: 20px 0; }
+  .health-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px 16px; }
+  .health-card .hc-label { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #6b7280; margin-bottom: 4px; }
+  .health-card .hc-value { font-size: 22pt; font-weight: 800; color: #111; line-height: 1; }
+  .health-card .hc-sub { font-size: 8.5pt; color: #9ca3af; margin-top: 2px; }
+  .health-card.good { border-color: #bbf7d0; }
+  .health-card.good .hc-value { color: #15803d; }
+  .health-card.warn { border-color: #fde68a; }
+  .health-card.warn .hc-value { color: #b45309; }
+  .health-card.bad  { border-color: #fca5a5; }
+  .health-card.bad  .hc-value { color: #b91c1c; }
+
+  /* Section header with progress bar */
+  .stream-header { display: flex; align-items: baseline; gap: 12px; margin-top: 36px; margin-bottom: 4px; }
+  .stream-header h2 { margin: 0; border-left: 4px solid #1e40af; padding-left: 10px; font-size: 14pt; flex: 1; }
+  .stream-pct { font-size: 9pt; color: #6b7280; white-space: nowrap; }
+  .progress { height: 5px; background: #e5e7eb; border-radius: 3px; margin-bottom: 16px; }
+  .progress-fill { height: 5px; background: #1e40af; border-radius: 3px; }
+
+  code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 14px 0; font-size: 9.5pt; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  /* Footer */
+  .footer { text-align: center; font-size: 8.5pt; color: #aaa; margin-top: 56px; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+
+  @media print {
+    body { font-size: 9pt; padding: 24px 32px; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .s, .sz, .health-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h1 { page-break-before: always; }
+    tr { page-break-inside: avoid; }
+  }
+
+  tr.row-done { display: none; }
+  tr.row-done.show { display: table-row; }
+  .done-toggle-btn {
+    display: inline-block; margin-top: 16px; padding: 6px 14px;
+    background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px;
+    font-size: 9.5pt; color: #475569; cursor: pointer; user-select: none;
+  }
+  .done-toggle-btn:hover { background: #e2e8f0; }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var doneRows = [];
+    document.querySelectorAll('tr').forEach(function(row) {
+      var cells = row.querySelectorAll('td');
+      if (cells.length === 0) return;
+      var firstCell = cells[0];
+      if (firstCell.getAttribute('colspan')) return;
+      if (row.querySelector('.s-done')) {
+        row.classList.add('row-done');
+        doneRows.push(row);
+      }
+    });
+    if (doneRows.length === 0) return;
+    var showing = false;
+    var btn = document.createElement('div');
+    btn.className = 'done-toggle-btn';
+    btn.textContent = 'Show ' + doneRows.length + ' completed items ✓';
+    btn.addEventListener('click', function() {
+      showing = !showing;
+      doneRows.forEach(function(row) { row.classList.toggle('show', showing); });
+      btn.textContent = showing ? 'Hide completed items ✓' : 'Show ' + doneRows.length + ' completed items ✓';
+    });
+    var healthGrid = document.querySelector('.health-grid');
+    if (healthGrid) { healthGrid.parentNode.insertBefore(btn, healthGrid.nextSibling); }
+  });
+</script>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">ForumJourney</div>
+  <h1>Project Roadmap</h1>
+  <div class="subtitle">Living plan — all work streams, all status</div>
+  <div class="meta">
+    <span>Last updated: 2026-09-05</span>
+    <span>Pilot: DisruptHR Pittsburgh &nbsp;·&nbsp; October 21, 2026</span>
+    <span>Maintained by <code>/pm</code> + human review</span>
+    <span>Internal use only</span>
+  </div>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#how">How to Read This Document</a></li>
+    <li><a href="#health">Project Health at a Glance</a></li>
+    <li><a href="#blockers">Pilot Blockers</a></li>
+    <li><a href="#decisions">Open Decisions</a></li>
+    <li><a href="#core-api">Core API</a></li>
+    <li><a href="#plan-intel">Plan Intelligence &amp; Content</a></li>
+    <li><a href="#partner">Partner Integration</a></li>
+    <li><a href="#operator">Operator Dashboard</a></li>
+    <li><a href="#attendee">Attendee Experience (Frontend)</a></li>
+    <li><a href="#infra">Platform &amp; Infrastructure</a></li>
+    <li><a href="#pilot">Pilot Operations</a></li>
+    <li><a href="#marketing-site">Marketing Site (forumjourney.app)</a></li>
+    <li><a href="#auth-identity">Auth &amp; Identity — Multi-Role</a></li>
+    <li><a href="#organizer-portal">Organizer Portal</a></li>
+    <li><a href="#attendee-portal">Attendee Portal (Authenticated)</a></li>
+    <li><a href="#speaker-portal">Speaker Portal</a></li>
+    <li><a href="#venue-portal">Venue Portal</a></li>
+    <li><a href="#post-pilot">Post-Pilot</a></li>
+    <li><a href="#data-collection">Data Collection Framework</a></li>
+  </ol>
+</div>
+
+<!-- HOW TO READ -->
+<h1 id="how">1. How to Read This Document</h1>
+
+<p>This is the single source of truth for ForumJourney product work — completed, in-progress, and planned. Architecture details and API contracts are in the separate spec docs (<code>docs/product-spec.html</code>, <code>docs/architecture.html</code>). This document tracks work items only.</p>
+
+<h3>Status key</h3>
+<div class="legend">
+  <div class="legend-item"><span class="s s-done">Done</span> Shipped and working</div>
+  <div class="legend-item"><span class="s s-wip">In Progress</span> Actively being coded this sprint</div>
+  <div class="legend-item"><span class="s s-next">Next</span> Ready to start — no blockers, requirements clear</div>
+  <div class="legend-item"><span class="s s-backlog">Backlog</span> Planned but not yet sequenced</div>
+  <div class="legend-item"><span class="s s-blocked">Blocked</span> Cannot start — external dependency</div>
+  <div class="legend-item"><span class="s s-decision">Decision</span> Needs a call before work can be scoped</div>
+  <div class="legend-item"><span class="s s-hold">Hold</span> Intentionally deferred — revisit after pilot</div>
+</div>
+
+<h3>Size guide</h3>
+<div class="legend">
+  <div class="legend-item"><span class="sz">XS</span> &lt;2 hours</div>
+  <div class="legend-item"><span class="sz">S</span> ~half day</div>
+  <div class="legend-item"><span class="sz">M</span> 1–2 days</div>
+  <div class="legend-item"><span class="sz">L</span> 3–5 days</div>
+  <div class="legend-item"><span class="sz">XL</span> 1–2 weeks</div>
+  <div class="legend-item"><span class="sz">Epic</span> Multi-week / significant architecture</div>
+</div>
+
+<p style="font-size:9.5pt;color:#6b7280;margin-top:8px;">Sizes assume 1 developer with Claude. <strong>Sprint = 2 weeks of sessions.</strong> The /pm agent checks this doc weekly and flags In Progress items with no matching commits as potentially stale.</p>
+
+<!-- PROJECT HEALTH -->
+<h1 id="health">2. Project Health at a Glance</h1>
+<p style="font-size:9.5pt;color:#6b7280;">Updated 2026-09-05. Counts reflect items in this document. <strong>46 days to pilot (Oct 21).</strong></p>
+
+<div class="health-grid">
+  <div class="health-card good">
+    <div class="hc-label">Items Done</div>
+    <div class="hc-value">118</div>
+    <div class="hc-sub">across all streams</div>
+  </div>
+  <div class="health-card warn">
+    <div class="hc-label">In Progress</div>
+    <div class="hc-value">1</div>
+    <div class="hc-sub">active this sprint</div>
+  </div>
+  <div class="health-card warn">
+    <div class="hc-label">Next Up</div>
+    <div class="hc-value">7</div>
+    <div class="hc-sub">ready to start</div>
+  </div>
+  <div class="health-card">
+    <div class="hc-label">Backlog</div>
+    <div class="hc-value">29</div>
+    <div class="hc-sub">planned, not sequenced</div>
+  </div>
+  <div class="health-card good">
+    <div class="hc-label">Pilot Blockers</div>
+    <div class="hc-value">0</div>
+    <div class="hc-sub">all resolved ✓</div>
+  </div>
+  <div class="health-card warn">
+    <div class="hc-label">Decisions</div>
+    <div class="hc-value">2</div>
+    <div class="hc-sub">open, shaping work</div>
+  </div>
+</div>
+
+<!-- PILOT BLOCKERS -->
+<h1 id="blockers">3. Pilot Blockers</h1>
+<div class="callout info"><strong>All pilot blockers resolved as of 2026-08-30.</strong> Production is live on forumjourney.app. DisruptHR data is seeded. See Stream 11 for remaining pilot-prep work.</div>
+
+<table>
+  <thead><tr><th>Blocker</th><th>Resolution</th><th>Who</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="s s-done">Done</span> Custom domain</td>
+      <td>Resolved 2026-08-30. DNS propagated. forumjourney.app live on Firebase Hosting (eventbound-prod). CORS updated for forumjourney.app + www origins.</td>
+      <td>Amy</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> Production deployment</td>
+      <td>Resolved 2026-08-30. Functions and hosting deployed to eventbound-prod. Secrets (PLATFORMCORE_API_KEY, ANTHROPIC_API_KEY, OPENWEATHERMAP_API_KEY) verified in prod Secret Manager.</td>
+      <td>Amy</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> DisruptHR partner setup</td>
+      <td>Resolved 2026-08-30. Partner record created, API key issued, Rivers Casino venue seeded, DisruptHR event + occurrence seeded (Oct 21, 5–10 PM ET). Plan URL live on forumjourney.app.</td>
+      <td>Amy</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- OPEN DECISIONS -->
+<h1 id="decisions">4. Open Decisions</h1>
+<div class="callout info"><strong>3 of 5 original decisions resolved 2026-09-05</strong> (OD-18, OD-19, partner self-serve). 2 remain open: OD-13 (email delivery) and Phase 1 collection checklist.</div>
+
+<table>
+  <thead><tr><th>Decision</th><th>Options</th><th>Downstream impact</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="s s-decision">Decision</span> Email / notification delivery ownership (OD-13)</td>
+      <td>(A) Partner owns last-mile delivery entirely — ForumJourney fires webhook, partner emails attendees. <strong>Current v1 approach.</strong> (B) ForumJourney sends email directly via SendGrid/Postmark when partner preference is set. (C) ForumJourney sends push only for direct attendee app.</td>
+      <td>Option B/C requires email infrastructure (domain, ESP, templates). For pilot, Option A is sufficient if partner implements webhook handler. Resolve before second partner onboarding.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> Partner self-serve onboarding</td>
+      <td><strong>Resolved 2026-09-05.</strong> Admin-only, period. Amy provisions partners manually via Firestore console + <code>scripts/set-claims.js</code>. No self-serve UI will be built. Partner creation operator UI and API key issuance UI moved to Hold.</td>
+      <td>Sufficient for current and near-term partner count. Revisit only if partner volume makes manual provisioning untenable.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-14: Organizer seat limits</td>
+      <td><strong>Resolved 2026-08-30.</strong> Organizer seats: 99 (configurable). Attendee invites per event: 300 (configurable). Initial organizers provisioned manually by Amy via Firebase Admin SDK; self-serve onboarding is a post-pilot decision.</td>
+      <td>Stream 14 seat limit enforcement can now be built. DisruptHR pilot: organizer account = <code>peteandamy@pandaventuresgroup.com</code>, set up manually before pilot.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-15: Venue user confirmation</td>
+      <td><strong>Resolved 2026-08-30.</strong> Organizer invites venue contacts (Option B). Venue invite limit: 5 per event (configurable). Same invitation flow as org-member invites.</td>
+      <td>Stream 18 venue auth can now be scoped. Seat limit = 5 per event, enforced on invite creation alongside organizer seat count.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-16: Attendee auth method</td>
+      <td><strong>Resolved 2026-08-30.</strong> Join-code model: organizer sets an attendee code and a separate venue code per occurrence. Attendees/venue users go to <code>/join</code>, enter email + name + code, create account, and are associated to the event with the matching role. No per-person invitations needed for attendees or venue.</td>
+      <td>Replaces email-invitation flow for attendees and venue. Email invitations remain for organizer org-member provisioning only. Speaker is not a code — organizer promotes an attendee to speaker from the dashboard.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-17: Ticketing app attendee confirmation</td>
+      <td><strong>Resolved 2026-08-30.</strong> No ticketing integration needed for pilot. Attendees self-register at <code>/join</code> using the attendee join code set by the organizer. Organizer distributes the code however they like (email, QR, badge). Limit: 300 registrations per code (configurable).</td>
+      <td>Ticketing webhook integration deferred post-pilot. Join code is sufficient for DisruptHR pilot and future events.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-18: Real-time happenings data model</td>
+      <td><strong>Resolved 2026-09-05.</strong> PlatformCore is retired — the original integration question is moot. Happenings is a data category, not an architectural decision. Real-time venue/city data flows through the Data Collection Framework (Phase 8 category expansion) via a happenings adapter. No direct PlatformCore connection needed.</td>
+      <td>Organizer happenings feed is now a Surface layer item in Stream 19 (Data Collection Framework), gated on the happenings adapter in Phase 8.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Resolved</span> OD-19: Speaker presentation storage</td>
+      <td><strong>Resolved 2026-09-05.</strong> URL-only (Option B). Presentation URL submission is already shipped and working. Firebase Storage bucket is not wired into the project (no storage section in firebase.json, no rules file). File upload is a scoped future task if genuinely needed — not a blocking decision.</td>
+      <td>Speaker presentation upload file drop zone UI remains non-functional; that feature is Hold until file upload is explicitly scoped. URL link path works today.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- STREAM: CORE API -->
+<div class="stream-header">
+  <h2 id="core-api">5. Core API</h2>
+  <span class="stream-pct">~100% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:100%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Express app scaffold + correlation middleware</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/api/app.ts</code></td></tr>
+    <tr><td>Auth middleware — API key (SHA-256 hashed)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/middleware/auth.ts</code></td></tr>
+    <tr><td>Operator auth middleware — Firebase ID token + role claim</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/middleware/operatorAuth.ts</code></td></tr>
+    <tr><td>Cities, venues CRUD routes</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Events, occurrences CRUD routes</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Plans route — generate + list + get</td><td><span class="s s-done">Done</span></td><td></td><td>Deterministic doc ID pattern</td></tr>
+    <tr><td>Inbound webhook handler (<code>POST /v1/webhooks/partner-events</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>HMAC-SHA256 on raw bytes, ±5 min timestamp, idempotency key</td></tr>
+    <tr><td>Outbound webhook delivery with retry (3 → dead_letter)</td><td><span class="s s-done">Done</span></td><td></td><td>Firestore trigger <code>onChangeCreated</code></td></tr>
+    <tr><td>Feedback, overrides, source registry routes</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Changes list route</td><td><span class="s s-done">Done</span></td><td></td><td>Audit trail endpoint</td></tr>
+    <tr><td>Partners admin route</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Lookup route (external ID → ForumJourney ID)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Public plan route (<code>GET /public/plan/:occurrenceId</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Unauthenticated; generates plan on first access</td></tr>
+    <tr><td>Operator routes (occurrences, attendees, health)</td><td><span class="s s-done">Done</span></td><td></td><td><code>GET /operator/health</code> added Aug 23</td></tr>
+    <tr><td>OpenAPI 3.1.0 specification</td><td><span class="s s-done">Done</span></td><td></td><td><code>openapi.yaml</code> at repo root</td></tr>
+    <tr><td>Per-partner configurable stage thresholds</td><td><span class="s s-done">Done</span></td><td></td><td>Partners store <code>stageThresholds: { plan, prepare }</code> in Firestore</td></tr>
+    <tr><td>Dead-letter manual retry UI</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. Operator health tab lists dead_letter changes with per-row Retry button. Resets attempts + re-runs delivery. Row disappears on success.</td></tr>
+    <tr><td>API key issuance UI / self-serve partner onboarding</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Decision resolved 2026-09-05: admin-only provisioning. No self-serve UI. Revisit if partner volume grows.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: PLAN INTELLIGENCE -->
+<div class="stream-header">
+  <h2 id="plan-intel">6. Plan Intelligence &amp; Content</h2>
+  <span class="stream-pct">~90% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:90%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Stage-aware plan generation (registration → plan → prepare → attend)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/domain/plan/generator.ts</code> + <code>content.ts</code></td></tr>
+    <tr><td>Leave-by time calculation</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/domain/plan/leave-by.ts</code> — static estimates by transport mode</td></tr>
+    <tr><td>Change detection (field whitelist diff)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/domain/changes/detector.ts</code> — PII excluded from diff</td></tr>
+    <tr><td>Factual notification content (rule-based)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/domain/notifications/factual.ts</code></td></tr>
+    <tr><td>Conversational notification content (Claude <code>claude-haiku-4-5</code>)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/domain/notifications/conversational.ts</code>; falls back to factual on failure</td></tr>
+    <tr><td>PlatformCore venue + city guide overlay</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/lib/platformcore.ts</code>; null-safe, status filter (draft/published only)</td></tr>
+    <tr><td>Firestore city guide fallback (11 cities seeded)</td><td><span class="s s-done">Done</span></td><td></td><td>Pittsburgh seeded Aug 23; other cities in <code>structures/data/</code></td></tr>
+    <tr><td>Weather sourcing — OpenWeatherMap + NWS alerts</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/lib/weather.ts</code>; stage-aware cache (30 min attend, 4 h prepare)</td></tr>
+    <tr><td>Sourcing pipeline (OpenStreetMap, Google Places adapters)</td><td><span class="s s-done">Done</span></td><td></td><td><code>src/sourcing/pipeline.ts</code>; cache policies per source. Upgraded 2026-09-05 to new adapter contract — adapters look up by <code>adapter_id</code>, pass <code>AdapterFetchParams</code> (geography + credentialRef). See stream 19.</td></tr>
+    <tr><td>PlatformCore guide migration for all 11 seeded cities</td><td><span class="s s-done">Done</span></td><td></td><td>All 11 cities migrated to PlatformCore. Firestore city guide fallback remains as safety net.</td></tr>
+    <tr><td>Transit / last-mile directions (real-time)</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">L</span></td><td>Static estimates sufficient for v1. Revisit post-pilot with actual attendee requests.</td></tr>
+    <tr><td>Live traffic integration for leave-by calculation</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">L</span></td><td>Deferred — static estimates labeled as estimates in plan output.</td></tr>
+    <tr><td><code>leave-by.ts</code> unit tests</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-31. 11 tests: all transport modes, doors-vs-start basis, unknown mode fallback, midnight wrap. <code>src/domain/plan/leave-by.test.ts</code>.</td></tr>
+    <tr><td>Complete <code>weather.test.ts</code> stub</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-31. Restructured with <code>vi.hoisted</code>. Added cache hit (fetch skipped), attend current-weather endpoint, prepare forecast endpoint, NWS severity mapping (Extreme→critical, Severe→action_required, other→advisory), OWM failure → null. Total suite now 100 tests.</td></tr>
+    <tr><td>Dynamic nearby-events lookup at plan generation</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>At plan generation time, perform a broad city-wide search for events on the occurrence date that could affect driving, parking, or transit — not just stadium sports (Acrisure Stadium, PNC Park) but any major event: concerts, conventions, circuses, festivals. Use Claude with web search tools or a general events API; a sports-only API is insufficient. Result populates a <code>gameDayWarning</code> in the plan: "Steelers home game at 1pm — North Shore parking severely constrained. Use T." or "No major events found nearby — normal Friday traffic expected." Mirrors the weather sourcing pattern: fetch → cache by occurrence+date → include in plan content.
+        <br><br><strong>Data layering rules (established 2026-08-30):</strong>
+        <ul style="margin:6px 0 0 0;padding-left:18px;">
+          <li><strong>CityBound (PlatformCore) = stable base layer.</strong> City transit options, neighborhoods, general parking patterns, local tips — true regardless of the event date. ForumJourney reads this data; it never writes to or overwrites it.</li>
+          <li><strong>ForumJourney dynamic layer = date-specific overlay.</strong> Events happening that day, weather, game-day warnings — fetched per occurrence at plan generation time and rendered on top of the CityBound base. Where there is a conflict (e.g. CityBound says "parking is straightforward" but the dynamic lookup finds a game and a circus), ForumJourney's date-aware advisory takes precedence in the plan output.</li>
+          <li><strong>Venue guide data must never reference a specific event date.</strong> Guide docs are reused across all events at that venue. Any date-specific advisory belongs in the dynamic lookup, not baked into the venue record.</li>
+          <li><strong>Search scope must be city-wide, not venue-adjacent.</strong> Pittsburgh (and cities like it) have traffic systems where an event anywhere downtown can ripple to the North Shore. The lookup question is: "what's happening in this city on this date that could affect driving and parking?" — not just "is there a game at the nearby stadium?"</li>
+        </ul></td></tr>
+    <tr><td>Social intelligence sourcing for event format + logistics</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Community sources (Reddit, event review sites, partner website) can usefully inform event session structure, format details, and logistics — things the partner hasn't explicitly provided. <strong>Rule established 2026-08-30:</strong> (1) factual format data (session count, format type, agenda flow) can be ingested and stored on the event record; (2) editorial opinion (speaker quality complaints, crowd mix grievances) must never surface in attendee-facing plan content — ForumJourney is a partner platform, not a review site; (3) sourced data should be flagged with its origin so operators can verify before it affects production plans. At scale: operator reviews AI-proposed session structure from web research before it is committed to the event record.</td></tr>
+    <tr><td>Plan auto-purge on occurrence mutation</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">S</span></td><td>When occurrence date, venue, or time is changed via any operator or admin path (not just the inbound webhook), existing plan docs for that occurrence should be deleted so the next page load generates fresh content. Currently plans are only marked stale via the webhook change-detection flow — direct Firestore or script edits leave stale plans in place with baked-in old values (e.g. wrong date in AI-generated travel advice). Fix: call <code>markPlansStaleForOccurrence</code> (or delete docs outright) on any occurrence update path.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: PARTNER INTEGRATION -->
+<div class="stream-header">
+  <h2 id="partner">7. Partner Integration</h2>
+  <span class="stream-pct">~75% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:75%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Partner API key auth (SHA-256 hashed, never stored raw)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Inbound webhook security (HMAC, timestamp, idempotency)</td><td><span class="s s-done">Done</span></td><td></td><td>Header: <code>X-ForumJourney-Signature</code></td></tr>
+    <tr><td>Outbound webhook payload (<code>forumjourney.plan.changed</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Signed HMAC-SHA256 with <code>outboundWebhookSecret</code></td></tr>
+    <tr><td>API documentation (OpenAPI 3.1.0)</td><td><span class="s s-done">Done</span></td><td></td><td><code>openapi.yaml</code>; no hosted UI yet</td></tr>
+    <tr><td>DisruptHR partner record creation + API key issuance</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. Done via Firestore console + Admin SDK script once production deployed.</td></tr>
+    <tr><td>Partner onboarding guide / integration runbook</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>Brief Markdown doc covering: API key setup, inbound webhook configuration, reading outbound payloads. For DisruptHR handoff.</td></tr>
+    <tr><td>Hosted OpenAPI UI (Swagger or Redoc)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">S</span></td><td>Nice-to-have for future partners. Not needed for DisruptHR handoff.</td></tr>
+    <tr><td>Partner creation operator UI</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Decision resolved 2026-09-05: admin-only provisioning. No UI needed.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: OPERATOR DASHBOARD -->
+<div class="stream-header">
+  <h2 id="operator">8. Operator Dashboard</h2>
+  <span class="stream-pct">~80% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:80%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Firebase Auth login (email/password)</td><td><span class="s s-done">Done</span></td><td></td><td>Role claim required: <code>operator</code> | <code>apiadmin</code></td></tr>
+    <tr><td>Occurrences tab — list + attendee expand</td><td><span class="s s-done">Done</span></td><td></td><td>Non-cancelled, sorted by date</td></tr>
+    <tr><td>Add attendee modal (email → plan URL)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Notification preference toggle per attendee</td><td><span class="s s-done">Done</span></td><td></td><td>off / factual / conversational</td></tr>
+    <tr><td>Health tab (webhook counts, stale plans, missing data)</td><td><span class="s s-done">Done</span></td><td></td><td><code>GET /operator/health</code> added Aug 23</td></tr>
+    <tr><td>Role assignment UI (set custom claim)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">S</span></td><td><code>scripts/set-claims.js</code> handles provisioning via CLI — sufficient for pilot scale. UI remains Backlog.</td></tr>
+    <tr><td>Dead-letter webhook retry button</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. Implemented as part of dead-letter retry UI above.</td></tr>
+    <tr><td>Plan staleness drill-down (which attendees, which fields)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Health tab shows counts but not specifics. Add table view post-pilot if needed.</td></tr>
+    <tr><td>Operator: create event + occurrence from dashboard</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Dashboard UI to create a new event (name, type, partner) and attach an occurrence (date, time, venue, city — selected from existing Firestore records). Replaces the seed script for every new event. Backend: <code>POST /operator/events</code> and <code>POST /operator/occurrences</code> scoped by partner. See also: Data Collection Framework stream, Manage layer.</td></tr>
+    <tr><td>Operator: request city/venue data generation (with confirmation)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>When creating an occurrence, if the desired city or venue doesn't exist, operator can request it be generated. System proposes a record from the sourcing pipeline; operator confirms before write. Prevents silent creation of bad data. See also: Data Collection Framework stream, Manage layer.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: ATTENDEE EXPERIENCE -->
+<div class="stream-header">
+  <h2 id="attendee">9. Attendee Experience (Frontend)</h2>
+  <span class="stream-pct">~75% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:75%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Public plan page (<code>/plan/:occurrenceId</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>No login; stage-aware content; PlatformCore venue + city guide sections</td></tr>
+    <tr><td>ForumJourney branding (logo, typography)</td><td><span class="s s-done">Done</span></td><td></td><td><code>frontend/public/forumjourney-logo.png</code></td></tr>
+    <tr><td>PlatformCore fallback to Firestore city guide</td><td><span class="s s-done">Done</span></td><td></td><td>Seamless; no UI difference</td></tr>
+    <tr><td>Weather section in prepare + attend stages</td><td><span class="s s-done">Done</span></td><td></td><td>Rendered in plan view when weather data is present</td></tr>
+    <tr><td>Custom domain — plan URLs on <code>forumjourney.app</code></td><td><span class="s s-done">Done</span></td><td></td><td>Live 2026-08-30. DNS propagated; forumjourney.app resolves and serves the app.</td></tr>
+    <tr><td>Mobile-optimized plan layout</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. Light mode CSS vars scoped to <code>.pv-root</code>. Safe area insets for notched phones. Small-screen font + padding breakpoints. Hardcoded colors replaced with vars.</td></tr>
+    <tr><td>PWA — web app manifest + install prompt</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. <code>vite-plugin-pwa</code> generates <code>manifest.webmanifest</code>. Apple touch icon + mobile-web-app meta tags in <code>index.html</code>. Theme color #4f46e5.</td></tr>
+    <tr><td>PWA — offline support (service worker)</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. Workbox service worker via <code>vite-plugin-pwa</code>. Precaches all static assets. NetworkFirst runtime cache for <code>/public/plan/*</code> API with 5s timeout + 24h expiry.</td></tr>
+    <tr><td>App Store registration (Apple + Google Play)</td><td><span class="s s-next">Next</span></td><td><span class="sz">XS</span></td><td>Human action. Apple Developer Program ($99/yr, takes 2–7 days to approve) at developer.apple.com. Google Play Console ($25 one-time) at play.google.com/console. Start Apple today — slowest to approve.</td></tr>
+    <tr><td>Native app wrapper (Capacitor)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Wrap existing React app in Capacitor for App Store submission. Minimal code changes. Do after PWA is solid and App Store accounts are approved. Not needed for pilot.</td></tr>
+    <tr><td>Attendee feedback submission (plan rating)</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-31. Star rating widget at bottom of plan page. Optional reason field. Submits to <code>POST /public/plan/:occurrenceId/feedback</code> (no auth required). Stored state in localStorage prevents duplicate submissions.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: PLATFORM & INFRA -->
+<div class="stream-header">
+  <h2 id="infra">10. Platform &amp; Infrastructure</h2>
+  <span class="stream-pct">~80% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:80%"></div></div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Firebase Functions Gen 2 (Node 22)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Firestore rules (all 13 collections stubbed)</td><td><span class="s s-done">Done</span></td><td></td><td>All <code>allow read, write: if false</code> — Admin SDK only</td></tr>
+    <tr><td>PLATFORMCORE_API_KEY + ANTHROPIC_API_KEY secrets</td><td><span class="s s-done">Done</span></td><td></td><td>Firebase Secret Manager</td></tr>
+    <tr><td>OPENWEATHERMAP_API_KEY secret</td><td><span class="s s-done">Done</span></td><td></td><td>Added with weather sourcing (Aug 23)</td></tr>
+    <tr><td>CORS scoped to known origins (ALLOWED_ORIGINS)</td><td><span class="s s-done">Done</span></td><td></td><td>6 Firebase Hosting origins + localhost</td></tr>
+    <tr><td>Raw-body HMAC verification on inbound webhooks</td><td><span class="s s-done">Done</span></td><td></td><td>Prevents JSON re-serialization drift</td></tr>
+    <tr><td>Production deploy to <code>eventbound-prod</code></td><td><span class="s s-done">Done</span></td><td></td><td>Deployed 2026-08-30. Both functions live. Secrets set. Hosting + Firestore rules deployed.</td></tr>
+    <tr><td>Production data setup</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. Seeded via <code>scripts/seed-disrupthr-prod.js</code>: DisruptHR partner + API key, Rivers Casino Pittsburgh venue, DisruptHR Pittsburgh 2026 event, Oct 21 occurrence (5 PM–10 PM ET). Admin superuser provisioned. Plan URL live on forumjourney.app.</td></tr>
+    <tr><td>Dependency upgrade session</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. typescript 5→7, uuid 11→14, @types/node 22→26, vitest 3→4. All 83 tests passing post-upgrade.</td></tr>
+    <tr><td>Prod secrets verification</td><td><span class="s s-done">Done</span></td><td></td><td>Verified 2026-08-30. PLATFORMCORE_API_KEY, ANTHROPIC_API_KEY, OPENWEATHERMAP_API_KEY all confirmed present in eventbound-prod Secret Manager.</td></tr>
+    <tr><td>processedWebhooks TTL / cleanup policy</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-03. <code>markProcessed()</code> now writes <code>expiresAt = now + 30 days</code>. Firestore TTL policy on <code>processedWebhooks.expiresAt</code> enabled in eventbound-prod via <code>gcloud firestore fields ttls update</code>. Old docs accumulate no further; Firestore auto-purges expired entries.</td></tr>
+    <tr><td>weatherCache TTL policy (Firestore TTL field)</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Done 2026-09-03. <code>writeCache()</code> now accepts <code>ttlSeconds</code> and writes <code>expiresAt</code> (attend = now+30 min, prepare = now+4 h). Firestore TTL policy on <code>weatherCache.expiresAt</code> enabled in eventbound-prod (ACTIVE). Stale cache docs auto-purged by Firestore.</td></tr>
+    <tr><td>Interaction audit log — <code>logs</code> collection</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-09-03. <code>functions/src/db/logs.ts</code>: <code>writeLog()</code> with categories (attendee, agenda, venue, speaker, lead, admin, webhook, plan, system), 7-year TTL via <code>expiresAt</code>, never throws. Wired to 11 mutation points: attendee add/pref-change, join code regen, agenda add/edit/delete (organizer portal); venue guide edit + conference note (venue portal); presentation save + special request (speaker portal); demo form submit + lead status update (operator). Log viewer in operator dashboard is next sprint.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: PILOT OPERATIONS -->
+<div class="stream-header">
+  <h2 id="pilot">11. Pilot Operations — DisruptHR Pittsburgh, Oct 21</h2>
+  <span class="stream-pct">~55% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:55%"></div></div>
+
+<div class="callout warning"><strong>46 days to pilot (Oct 21).</strong> 7 of 11 items done. 2 Next items remain — see below.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Production environment verified (secrets + deploy)</td><td><span class="s s-done">Done</span></td><td></td><td>Deployed 2026-08-30. Secrets set in prod Secret Manager.</td></tr>
+    <tr><td>Admin superuser account provisioned</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. <code>pandadammit@gmail.com</code> set as <code>apiadmin</code> on both dev + prod. <code>scripts/set-claims.js</code> is the provisioning tool for all future operator accounts.</td></tr>
+    <tr><td>Custom domain live on <code>forumjourney.app</code></td><td><span class="s s-done">Done</span></td><td></td><td>Live 2026-08-30. DNS propagated. Landing page + plan pages live. Operator dashboard at /operator.</td></tr>
+    <tr><td>DisruptHR partner record + API key issued</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. API key generated and stored (hash in Firestore). <code>scripts/seed-disrupthr-prod.js</code>.</td></tr>
+    <tr><td>Rivers Casino Pittsburgh venue record seeded</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30. Venue copied from dev to prod (<code>rivers-casino-pittsburgh</code>). Coordinates, parking, accessibility, transit info all present.</td></tr>
+    <tr><td>DisruptHR event + occurrence seeded</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30 (corrected 2026-08-30). <code>disrupthr_disrupthr-pittsburgh-2026_2026-10-21</code>. Rivers Casino, Oct 21, 5:00 PM – 10:00 PM ET, doors 4:30 PM. Session structure: vendor expo, 10×5-min talks, Mind Churn Panel, networking reception. Source: <a href="https://disrupthr.co/city/pittsburgh/">disrupthr.co</a> + community research.</td></tr>
+    <tr><td>End-to-end smoke test (plan URL → attendee view)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Shipped 2026-09-02. 23 Playwright tests in <code>e2e/smoke/</code> covering: API health + plan structure + leads + join validation, landing page, organizer portal (login, dashboard, attendees, join codes), attendee portal (login, greeting, agenda, notes). All 23 passing against prod. Run: <code>cd e2e &amp;&amp; npm run smoke</code>. Credentials in gitignored <code>e2e/.env.e2e</code>.</td></tr>
+    <tr><td>Attendee bulk import for DisruptHR (~300 attendees)</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>Partner adds attendees via <code>POST /v1/attendees</code> or operator adds via dashboard. Plan URLs generated per attendee.</td></tr>
+    <tr><td>Pilot runbook / incident response plan</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>1-page doc: how to check health, how to manually re-queue failed webhooks, emergency contacts, what to do if plan URL is broken day-of.</td></tr>
+    <tr><td>Create DisruptHR organizer account</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-31. <code>set-claims.js</code> run against production for DisruptHR organizer (<code>peteandamy@pandaventuresgroup.com</code>). Role: operator, partner: disrupthr.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: MARKETING SITE -->
+<div class="stream-header">
+  <h2 id="marketing-site">12. Marketing Site — forumjourney.app</h2>
+  <span class="stream-pct">~50% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:50%"></div></div>
+
+<div class="callout">Goal: generate qualified demo requests from event organizers. Full spec in <code>ForumJourney_Landing_Page_Development_Requirements.docx</code>.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Landing page scaffold — all 10 sections, design tokens, responsive layout</td><td><span class="s s-done">Done</span></td><td></td><td>Built 2026-08-30. <code>frontend/src/pages/LandingPage.tsx</code> + <code>landing.css</code>. Routes <code>/</code> to landing page. Playfair Display + Inter fonts. All approved baseline copy from spec Appendix A.</td></tr>
+    <tr><td>Landing page deployed to <code>forumjourney.app</code></td><td><span class="s s-done">Done</span></td><td></td><td>Live 2026-08-30. Deployed to both eventbound-dev (custom domain host) and eventbound-prod. index.html served with no-cache header to prevent stale routing.</td></tr>
+    <tr><td>Landing page content rebuild — DockBound narrative structure</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-31. Rebuilt <code>LandingPage.tsx</code> + <code>landing.css</code> using the DockBound layout spec structure: problem → comparison table → how-it-works steps → features → audience routing with per-audience CTAs → dynamic value → organizer role (navy dark section). Added Sign In link to header and footer. Deployed to forumjourney.app.</td></tr>
+    <tr><td>Open decisions (D001–D010) resolved</td><td><span class="s s-blocked">Blocked</span></td><td><span class="sz">S</span></td><td>Human action. Must resolve: final domain/route (D001), brand fonts + licensed imagery (D002), video + captions (D003), demo form fields approved (D004), privacy policy + legal links (D006), analytics platform (D007). See spec section 20. <strong>D005 resolved 2026-08-31</strong> — lead destination is Firestore <code>leads</code> collection; sysadmin page to list submissions.</td></tr>
+    <tr><td>Demo form connected to lead destination</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Shipped 2026-09-02. <code>POST /public/leads</code> writes to Firestore <code>leads</code> collection. Operator leads CRM at <code>/operator</code> (Leads tab): filterable list, paginated (20/page), expandable rows, status/notes editing. LandingPage form wired with full error handling. D005 resolved.</td></tr>
+    <tr><td>Licensed hero imagery</td><td><span class="s s-blocked">Blocked</span></td><td><span class="sz">S</span></td><td>Blocked on D002. Current build uses CSS placeholder. Replace with approved commercial-use event photography.</td></tr>
+    <tr><td>Product overview video + captions</td><td><span class="s s-blocked">Blocked</span></td><td><span class="sz">M</span></td><td>Blocked on D003. Video module is built with fallback state ("Request a personal walkthrough"). Wire in real video + poster + captions when ready.</td></tr>
+    <tr><td>Analytics events wired up</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>Resolve D007 (analytics platform + consent model) first. Spec defines 9 required events: landing_view, cta_click, section_view, video_start, video_progress, demo_form_start, demo_form_error, demo_form_submit, external_link_click.</td></tr>
+    <tr><td>SEO + social metadata finalized</td><td><span class="s s-wip">In Progress</span></td><td><span class="sz">XS</span></td><td>Title, description, canonical URL, and Open Graph tags set in <code>index.html</code>. Needs marketing copy approval (D010) and final canonical URL confirmation (D001).</td></tr>
+    <tr><td>Accessibility QA — WCAG 2.2 Level AA</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>Spec target: WCAG 2.2 AA. Run automated scan (axe or Lighthouse) + manual keyboard + screen reader check. Focus management and form error behavior need validation.</td></tr>
+    <tr><td>Performance audit — Core Web Vitals</td><td><span class="s s-next">Next</span></td><td><span class="sz">S</span></td><td>Target: LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1. Run Lighthouse against prod build. Optimize fonts, hero imagery loading, video deferral.</td></tr>
+    <tr><td>Legal pages — Terms of Service + Privacy Policy</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-03. <code>/privacy</code> (PrivacyPolicy.tsx) and <code>/terms</code> (TermsOfService.tsx) live. Both include full Twilio A2P 10DLC-required SMS disclosures: opt-in method (forumjourney.app/join checkbox, never pre-selected), message types (pre-event reminders, leave-by alerts, event updates), frequency (1–3 per event), message/data rates notice, STOP/HELP instructions, mobile number non-sharing statement. Footer links on landing page already wired. Unblocks Twilio SMS feature registration.</td></tr>
+    <tr><td>About, Contact, FAQ, Disclaimers pages + site footer</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-03. Four public pages: <code>/about</code>, <code>/contact</code>, <code>/faq</code>, <code>/disclaimers</code>. Shared <code>LegalLayout</code> component provides consistent header + 3-column footer (Company nav, Legal nav, LinkedIn social link) across all 6 info/legal pages. FAQ has category filter tabs (All / Attendees / Organizers / General) with 16 Q&amp;As and accordion. Contact includes email + LinkedIn card. Disclaimers covers event data accuracy, AI-generated content, leave-by estimates, and early-access caveats.</td></tr>
+    <tr><td>PandA Ventures, LLC legal entity branding</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Done 2026-09-03. PandA Ventures logo (<code>public/panda-ventures-logo.png</code>) added to: landing page footer copyright, all info/legal page footers (via LegalLayout), and About page built-by section. Copyright reads "ForumJourney by PandA Ventures, LLC" on all pages. Required for Twilio A2P 10DLC campaign registration — legal entity must be visibly identified on the website.</td></tr>
+    <tr><td>Launch QA + stakeholder sign-off</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Spec defines 14 launch acceptance criteria (LA001–LA014). All content, responsive, browser, accessibility, performance, SEO, security, and analytics checks required before go-live.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: AUTH & IDENTITY -->
+<div class="stream-header">
+  <h2 id="auth-identity">14. Auth &amp; Identity — Multi-Role</h2>
+  <span class="stream-pct">~80% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:80%"></div></div>
+
+<div class="callout">OD-14, OD-15, OD-16, OD-17 resolved. Shipped 2026-08-31–09-02: join code backend + frontend, multi-role routing, venue/speaker roles, live join code management + regeneration. Remaining open: OD-18 (real-time happenings), OD-19 (presentation file storage), speaker promotion UI.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Role system design: organizer, speaker, attendee (auth), venue</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>All roles added to <code>UserRole</code> and <code>ROLE_RANK</code>. Ranks: apiadmin=100, eventbound_operator=60, operator=40, organizer=20, speaker=15, venue=12, attendee=10. Shipped 2026-08-31.</td></tr>
+    <tr><td>Join code system — backend</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td><code>POST /public/join</code> validates code against <code>occurrence.attendeeCode</code> or <code>occurrence.venueCode</code>, enforces seat limits, creates Firebase Auth user, sets claims, upserts attendee record, returns custom token. Shipped 2026-08-31.</td></tr>
+    <tr><td>Join page — <code>/join</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>5-state flow: form → link-existing / already-registered / full / invalid-code → success. Calls <code>POST /public/join</code>, signs in with custom token, redirects to role portal. Shipped 2026-08-31.</td></tr>
+    <tr><td>Email invitation system — backend (organizer org-members only)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Post-pilot. <code>InviteAccept.tsx</code> shell is live at <code>/invite/:token</code>; backend endpoint <code>POST /public/invite/accept</code> not yet built. Requires email delivery (OD-13).</td></tr>
+    <tr><td>Invitation acceptance page — <code>/invite/:token</code> (organizer only)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Shell live at <code>/invite/:token</code>. Shows invite context card, create-account form. Backend accept endpoint post-pilot. Shipped 2026-08-31.</td></tr>
+    <tr><td>Organizer sets join codes — <code>/organizer/settings</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Shipped 2026-09-02. SettingsSection loads live codes from occurrence document via <code>listOccurrences()</code>. Copy + Regenerate buttons wired to <code>POST /operator/occurrences/:id/regenerate-code</code>. Codes seeded on occurrence: HRPGH26 (attendee), VENUEHR26 (venue). OD-16 resolved.</td></tr>
+    <tr><td>Speaker promotion by organizer</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td>Not yet built. For pilot, speaker accounts provisioned via <code>scripts/set-claims.js</code>. Future: toggle in organizer attendee list.</td></tr>
+    <tr><td>Venue user provisioning</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Venue contacts use venue join code (VENUEHR26) at <code>/join</code>. <code>POST /public/join</code> detects venueCode match → sets role=venue + venueId claim + seat limit 5. Shipped 2026-08-31.</td></tr>
+    <tr><td>Organizer seat limit enforcement</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Join endpoint enforces attendeeSeatLimit and venueSeatLimit from occurrence document. Returns EVENT_FULL error code when limit reached. Shipped 2026-08-31.</td></tr>
+    <tr><td>Multi-role login routing</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Login reads role + occurrenceId from token claims after sign-in: apiadmin/eventbound_operator → /operator, operator/organizer → /organizer, attendee → /attendee/:id, venue → /venue/:id, speaker → /speaker/:id. Shipped 2026-08-31.</td></tr>
+    <tr><td>Firebase Auth custom claims expansion (venue + speaker roles)</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Added <code>venue</code> and <code>speaker</code> to <code>UserRole</code> in <code>AuthContext.tsx</code>; added venue:12 and speaker:15 to <code>ROLE_RANK</code> in <code>ProtectedRoute.tsx</code>. AuthContext also exposes occurrenceId, firstName, partnerId claims. Shipped 2026-08-31.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: ORGANIZER PORTAL -->
+<div class="stream-header">
+  <h2 id="organizer-portal">15. Organizer Portal</h2>
+  <span class="stream-pct">~60% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:60%"></div></div>
+
+<div class="callout">Event organizers manage their event, attendees, agenda, and day-of happenings. Distinct from the internal Operator Dashboard (stream 8), which is ForumJourney-staff only. Shipped: dashboard, attendee list, join codes, venue map, full agenda editing (2026-09-03), speaker requests inbox. OD-14 resolved (seat limits). OD-18 resolved — happenings feed is now a Data Collection Framework item (Stream 19, Layer 2).</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Organizer dashboard home — <code>/organizer</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>DashboardSection: stat cards (event name, date, days to go, attendee count), quick-nav. Protected by <code>organizer</code> role claim (rank 20; operator rank 40 also passes). Shipped Aug 2026.</td></tr>
+    <tr><td>Attendee list — <code>/organizer/attendees</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>AttendeesSection: real email list from <code>listAttendees()</code>, addedAt timestamp, invite form (calls existing <code>addAttendee()</code>). Status badges and speaker flag are post-pilot — not in attendee model yet. Shipped Aug 2026.</td></tr>
+    <tr><td>Invite org members (email)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">S</span></td><td>InviteAccept.tsx shell shipped; backend POST /public/invite/accept is post-pilot. Organizer accounts provisioned manually via set-claims.js for DisruptHR pilot.</td></tr>
+    <tr><td>View + manage join codes — <code>/organizer/settings</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Shipped 2026-09-02. SettingsSection displays live attendeeCode + venueCode from occurrence. Regenerate button calls <code>POST /operator/occurrences/:id/regenerate-code</code>; new code displayed immediately. Copy-to-clipboard on both codes. OD-16 resolved.</td></tr>
+    <tr><td>Venue map — <code>/organizer/map</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>VenueMapSection shipped with static Rivers Casino info: rooms, entrances, parking, accessibility. Sourced from Firestore (PlatformCore retired Aug 2026). Interactive map embed is post-pilot. Shipped Aug 2026.</td></tr>
+    <tr><td>Agenda view + full edit — <code>/organizer/agenda</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">L</span></td><td>Shipped 2026-09-03. Static sessions removed. <code>agendaItems</code> Firestore collection. Backend: <code>GET/POST /operator/occurrences/:id/agenda</code>, <code>PATCH/DELETE /operator/agenda/:itemId</code>. Frontend: live fetch, Add/Edit modal (name, type, start/end time, location, description), delete with confirm. Session count on dashboard stat card is now live.</td></tr>
+    <tr><td>Real-time happenings feed — <code>/organizer/happenings</code></td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>HappeningsSection shipped with empty state. OD-18 resolved 2026-09-05 — happenings is a data category sourced via the Data Collection Framework (Stream 19, Layer 2). Depends on: <code>GET /facts</code> endpoint + happenings adapter (Phase 8 category expansion).</td></tr>
+    <tr><td>Speaker requests inbox — <code>/organizer/requests</code></td><td><span class="s s-done">Done</span></td><td></td><td>RequestsSection shipped with read UI; <code>speakerRequests</code> Firestore collection and backend <code>GET</code> route ready. Shipped Aug 2026.</td></tr>
+    <tr><td>Speaker request status updates — <code>/organizer/requests</code></td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td><code>PATCH /organizer/requests/:id</code> endpoint to approve/decline/flag speaker requests. Frontend status toggle in RequestsSection. Backend route not yet built.</td></tr>
+    <tr><td>(Future) Real-time day-of traffic</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Deferred — static leave-by estimates sufficient for pilot.</td></tr>
+    <tr><td>(Future) QR games setup</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">XL</span></td><td>Add-on feature. Requires full product design before scoping.</td></tr>
+    <tr><td>(Future) Org-internal messaging</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">XL</span></td><td>Real-time messaging between organizer team members. Requires WebSocket or Firebase Realtime Database. Full design needed.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: ATTENDEE PORTAL (AUTHENTICATED) -->
+<div class="stream-header">
+  <h2 id="attendee-portal">16. Attendee Portal (Authenticated)</h2>
+  <span class="stream-pct">~65% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:65%"></div></div>
+
+<div class="callout">Authenticated attendee experience — extends the existing public plan page (stream 9) with login, persistence, favorites, notes, and venue info. Core portal shipped Aug 2026: join flow, home with leave-by card, agenda with favorites, per-session notes, and venue map. Favorites and notes are localStorage for pilot; backend persistence is post-pilot.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Attendee registration via join code</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>JoinPage.tsx shipped: email + name + attendee code form, 5-state flow (form / link-existing / already-registered / full / invalid-code). POST /public/join creates Firebase Auth user, sets <code>attendee</code> role claim, signs in via custom token. Shipped Aug 2026.</td></tr>
+    <tr><td>Personalized home — <code>/attendee/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>HomeSection: firstName greeting from claim, event name from public plan endpoint, leave-by card (driving estimate from ported calculateLeaveBy()), favorited sessions quick view, nav shortcuts. Shipped Aug 2026.</td></tr>
+    <tr><td>Agenda with favorites — <code>/attendee/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>AgendaSection: star toggle, highlighted favorited rows. Favorites persisted to localStorage (key: <code>fj_favorites_{occId}</code>) for pilot; Firestore backend persistence is post-pilot. Note: agenda currently uses hardcoded DisruptHR sessions — wiring to live <code>agendaItems</code> collection (shipped 2026-09-03) is a backlog item.</td></tr>
+    <tr><td>Venue map — <code>/attendee/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>MapSection: static Rivers Casino info — entrance, parking, rooms, accessibility. Sourced from Firestore (PlatformCore retired Aug 2026). Interactive embed is post-pilot. Shipped Aug 2026.</td></tr>
+    <tr><td>Session notes — <code>/attendee/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>NotesSection: per-session textarea for each agenda item, private to attendee. Stored in localStorage (key: <code>fj_note_{occId}_{sid}</code>) for pilot. Firestore backend persistence is post-pilot. Shipped Aug 2026.</td></tr>
+    <tr><td>Wire live agenda data to attendee portal</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td>AgendaSection currently uses hardcoded DisruptHR sessions. Replace with live fetch from <code>GET /operator/occurrences/:id/agenda</code> (same endpoint organizer uses). <code>agendaItems</code> collection shipped 2026-09-03.</td></tr>
+    <tr><td>Reminder notifications</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Pre-event reminder (24h before, day-of leave-by time alert). Requires notification platform decision (OD-13). Web push via Firebase Cloud Messaging or email via ESP.</td></tr>
+    <tr><td>Venue + city guide info in attendee view</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Venue guide data (rooms, parking, entrance, accessibility) surfaces in MapSection from Firestore <code>venues.guide</code> field. PlatformCore retired — reads Firestore directly. City guide overlay is post-pilot. Shipped Aug 2026.</td></tr>
+    <tr><td>(Future) Notes on other attendees</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Private CRM-style notes on people met at the event. Requires attendee directory and privacy/visibility design.</td></tr>
+    <tr><td>(Future) Attendee directory</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">L</span></td><td>Opt-in attendee listing. Privacy design and consent model required before scoping.</td></tr>
+    <tr><td>(Future) Printable / emailed end-of-event summary</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Session recap, notes, and favorites compiled into a PDF or email after the event. Requires email infrastructure and attendee consent.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: SPEAKER PORTAL -->
+<div class="stream-header">
+  <h2 id="speaker-portal">17. Speaker Portal</h2>
+  <span class="stream-pct">~55% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:55%"></div></div>
+
+<div class="callout">Speakers are attendees with an elevated role, provisioned via set-claims.js for the pilot. They get all attendee features plus: their session details, optional presentation URL, and a direct line to the organizer for special requests. Session detail, presentation URL submission, and special requests shipped Aug 2026. OD-19 resolved 2026-09-05 — URL-only; file upload is Hold (Firebase Storage not wired). Speaker promotion UI is backlog (pilot uses set-claims.js).</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Speaker flag — organizer marks attendee as speaker</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td>No UI yet — provisioned via set-claims.js for DisruptHR pilot. Toggle in the organizer attendee list is post-pilot. <code>speaker</code> role claim (rank 15) and <code>/speaker/:occurrenceId</code> route are in place.</td></tr>
+    <tr><td>Speaker marker in agenda and attendee views</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td>Badge or label on speaker names in the agenda and (future) attendee directory. Deferred until speaker promotion UI ships.</td></tr>
+    <tr><td>Speaker session detail panel — hardcoded placeholder</td><td><span class="s s-done">Done</span></td><td></td><td>SessionDetail section in SpeakerPortal.tsx shipped Aug 2026 with hardcoded placeholder. Static for pilot.</td></tr>
+    <tr><td>Wire live agenda data to speaker session detail</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td><code>agendaItems</code> Firestore collection shipped 2026-09-03. Replace hardcoded placeholder in SpeakerPortal SessionDetail with live fetch from <code>GET /operator/occurrences/:id/agenda</code>, filtered to the speaker's own session by name or id.</td></tr>
+    <tr><td>Presentation URL submission — <code>/speaker/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td></td><td>URL link input works. <code>PUT /speaker/presentation/:occurrenceId</code> stores url + visibleToAttendees. PresentationSection shipped Aug 2026.</td></tr>
+    <tr><td>Presentation file upload — <code>/speaker/:occurrenceId</code></td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>OD-19 resolved 2026-09-05 as URL-only. File drop zone UI is present in PresentationSection but non-functional. Firebase Storage not wired (no storage section in firebase.json, no rules file). Scoped future task if file upload becomes a genuine need post-pilot.</td></tr>
+    <tr><td>Special requests to organizer — <code>/speaker/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>SpecialRequestsSection shipped: submit form + request list with status badges. Full backend: POST /speaker/requests/:occurrenceId creates <code>speakerRequests</code> doc; GET returns speaker's own requests. Organizer read endpoint ready. Shipped Aug 2026.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: VENUE PORTAL -->
+<div class="stream-header">
+  <h2 id="venue-portal">18. Venue Portal</h2>
+  <span class="stream-pct">~75% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:75%"></div></div>
+
+<div class="callout">Venue contacts join via venue code (OD-15 resolved). Venue invite limit = 5 per event (configurable, enforced in POST /public/join). VenueBound data editing now writes directly to Firestore (PlatformCore retired Aug 2026) — no external API write-path concern. Dashboard, venue data edit, and conference notes shipped Aug 2026.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Venue user auth + seat limits</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>POST /public/join detects venue code vs attendee code on the occurrence document. Sets <code>venue</code> role claim (rank 12) scoped to user's venueId. Seat limit (venueSeatLimit, default 5) enforced on join. Shipped Aug 2026.</td></tr>
+    <tr><td>Venue dashboard — <code>/venue/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>VenueDashboard: upcoming events at this venue with event name, rooms, status badge. Quick links to Venue Data and Conference Notes. Protected by <code>venue</code> role claim via portalAuthMiddleware + venueId claim. Shipped Aug 2026.</td></tr>
+    <tr><td>Venue data view + edit — <code>/venue/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">L</span></td><td>VenueDataSection: editable fields (rooms, entrances, parking, AV, accessibility). PATCH /venue/data/:venueId writes directly to <code>venues/{id}.guide.*</code> in Firestore. PlatformCore retired — no staging or external write-path needed. Shipped Aug 2026.</td></tr>
+    <tr><td>Conference notes — <code>/venue/:occurrenceId</code></td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>ConferenceNotesSection: timestamped notes private to venue staff. GET /venue/notes/:occurrenceId + POST /venue/notes/:occurrenceId. Stored in <code>venueNotes</code> Firestore collection. Not visible to organizers or attendees. Shipped Aug 2026.</td></tr>
+    <tr><td>End-of-event summary email to venue</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>After event ends: compiled summary of conference notes + venue data edits. Emailed to all venue users for that event. Requires email infrastructure (OD-13).</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: POST-PILOT -->
+<div class="stream-header">
+  <h2 id="post-pilot">13. Post-Pilot</h2>
+  <span class="stream-pct">—</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:0%"></div></div>
+
+<p style="font-size:9.5pt;color:#6b7280;">Items in this stream are intentionally deferred until after October 21. Sequencing will depend on pilot learnings.</p>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Second partner onboarding</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Depends on sales pipeline. Provisioning is admin-only (decision resolved 2026-09-05). Amy creates partner record + API key manually via Firestore console + <code>set-claims.js</code>.</td></tr>
+    <tr><td>Twilio SMS — attendee text notifications</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Pre-event text reminders (24h before + leave-by time alert) via Twilio. Remaining blockers: Twilio A2P 10DLC registration complete, phone number field added to attendee join flow. Legal pages (ToS + Privacy Policy) are live as of 2026-09-03. Post-pilot.</td></tr>
+    <tr><td>Email delivery for ForumJourney-direct notifications</td><td><span class="s s-decision">Decision</span></td><td><span class="sz">XL</span></td><td>OD-13. V1 is partner-owned. If second partner doesn't have notification infrastructure, ForumJourney may need to own this.</td></tr>
+    <tr><td>Attendee feedback analytics dashboard</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Backend + frontend. Plan ratings will accumulate during pilot — build after data exists.</td></tr>
+    <tr><td>Pilot retrospective and roadmap revision</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">S</span></td><td>After Oct 16: revise this document based on what attendees actually asked for and what the partner struggled with.</td></tr>
+  </tbody>
+</table>
+
+<!-- STREAM: DATA COLLECTION FRAMEWORK -->
+<div class="stream-header">
+  <h2 id="data-collection">19. Data Collection Framework</h2>
+  <span class="stream-pct">~30% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:30%"></div></div>
+
+<div class="callout">Extensible framework for collecting location-specific factual data, normalizing it into typed fact models, and preserving source provenance. Spec: <code>ForumJourney_Data_Collection_Framework_Requirements_v0.1.docx</code>. Organized in three layers: <strong>Collect</strong> (adapters, normalizers, categories) → <strong>Surface</strong> (wire facts into plans and portals) → <strong>Manage</strong> (operator controls). Phases 2–6 shipped 2026-09-05. <strong>Critical gap:</strong> the Collect layer is functional but the Surface layer is entirely unbuilt — <code>normalizedFacts</code> are written to Firestore but nothing reads them. The <code>discoveries[]</code> field in PlanContent is defined but never populated. Parking (Phase 5) is the only category with a complete adapter + normalizer; 8 of 9 categories have no adapter yet.</div>
+
+<table>
+  <thead><tr><th style="width:40%">Item</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+  <tbody>
+
+    <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:9pt;color:#1e40af;padding:8px 10px;letter-spacing:0.05em;text-transform:uppercase;border-top:2px solid #bfdbfe;">Layer 1 — Collect: adapters, normalizers, categories</td></tr>
+
+    <tr>
+      <td>Phase 1 — Master collection checklist (per-category field definitions)</td>
+      <td><span class="s s-decision">Decision</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Product workstream. Define required/preferred/optional fields per category, default geographic rules, and freshness requirements before Phase 8 category schemas can be written. 10 categories: venue_accessibility, parking, transit, traffic_arrival, safety, emergency_services, weather, dining, activities, happenings. Output: structured checklist that feeds Phase 8 payload types. Gates Phase 8.</td>
+    </tr>
+    <tr>
+      <td>Phases 2–6 — Infrastructure + parking pilot</td>
+      <td><span class="s s-done">Done</span></td>
+      <td></td>
+      <td>Shipped 2026-09-05. Data models, geographic rules (8 variants), upgraded adapter contract, Secret Manager integration for dynamic API keys, parking end-to-end (<code>googlePlacesParking</code> adapter → <code>ParkingFactPayload</code> normalizer → <code>normalizedFacts</code> Firestore collection → job tracking), admin source management routes + UI. 1 of 10 categories fully implemented in the Collect layer.</td>
+    </tr>
+    <tr>
+      <td>Phase 7 — AI source discovery + admin review workflow</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td><code>POST /operator/sources/discover</code>: takes event location + categories, calls Claude to propose candidate sources. All proposals land in sourceRegistry with <code>status: 'proposed'</code> and <code>discovered_by: 'ai'</code>. Admin reviews via Phase 6 queue. On approval, status flips to <code>active</code> and a <code>SourceValidation</code> record is written. AI-proposed sources never become authoritative without human approval.</td>
+    </tr>
+    <tr>
+      <td>Phase 8 — Expand to all 10 categories</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">XL</span></td>
+      <td>Add adapters + normalized payload schemas for remaining categories using parking pilot as template. Priority order: transit (GTFS), weather (migrate existing <code>weather.ts</code> into fact model), emergency_services (nearest-N + Google Places), dining (Google Places), traffic_arrival (construction/closure feeds), happenings (city events + venue alerts — replaces OD-18), activities, venue_accessibility. Each category requires: adapter, normalizer, payload type, default geographic rule. Gated on Phase 1 checklist.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:9pt;color:#1e40af;padding:8px 10px;letter-spacing:0.05em;text-transform:uppercase;border-top:2px solid #bfdbfe;">Layer 2 — Surface: wire collected facts into plans &amp; portals</td></tr>
+
+    <tr>
+      <td>Wire parking normalized facts into plan content</td>
+      <td><span class="s s-done">Done</span></td>
+      <td></td>
+      <td>Shipped 2026-09-05. <code>listNormalizedFacts(occurrenceId, 'parking', limit 10)</code> fetched in parallel with weather in <code>generator.ts</code>. <code>buildParkingDiscoveries()</code> in <code>content.ts</code> maps each fact to a <code>Discovery</code> (name, facility type, open status, rating, EV charging). <code>discoveries[]</code> included in plan/prepare/attend stages; absent when no facts exist. Falls back to <code>[]</code> on Firestore error — never blocks plan generation. 17/17 generator tests passing.</td>
+    </tr>
+    <tr>
+      <td><code>GET /v1/facts/:occurrenceId/:category</code> API endpoint</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Expose <code>normalizedFacts</code> to portals and partners via a partner-authed endpoint. Returns facts filtered by occurrence + category, sorted by reliability. Required before any portal can independently surface collected data. Partner-scoped.</td>
+    </tr>
+    <tr>
+      <td>Attendee portal: surface parking + transit facts</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Replace static <code>venue.guide</code> parking/transit data in the attendee portal MapSection with live normalized facts from <code>GET /facts</code>. Depends on: <code>GET /facts</code> endpoint + transit adapter (Phase 8).</td>
+    </tr>
+    <tr>
+      <td>Organizer happenings feed — data category model</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>OD-18 closed — happenings is a data category, not an integration architecture question. Build a happenings adapter in Phase 8 (city events, venue alerts), then surface live facts in the organizer HappeningsSection (currently empty state). Depends on: <code>GET /facts</code> endpoint + happenings category in Phase 8.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#f8fafc;font-weight:700;font-size:9pt;color:#1e40af;padding:8px 10px;letter-spacing:0.05em;text-transform:uppercase;border-top:2px solid #bfdbfe;">Layer 3 — Manage: operator controls for the pipeline</td></tr>
+
+    <tr>
+      <td>Phase 6 — Admin source management UI + operator routes</td>
+      <td><span class="s s-done">Done</span></td>
+      <td></td>
+      <td>Shipped 2026-09-05. Source list/filter/approve/reject, enable/disable toggle, failed job retry, manual collection run trigger. Frontend Sources tab in OperatorDashboard.</td>
+    </tr>
+    <tr>
+      <td>Operator: create event + occurrence from dashboard</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Dashboard UI to create a new event (name, type, partner) and attach an occurrence (date, time, venue, city — selected from existing Firestore records). Replaces the seed script for every new event. Backend: <code>POST /operator/events</code> and <code>POST /operator/occurrences</code> scoped by partner. Also listed in Operator Dashboard stream.</td>
+    </tr>
+    <tr>
+      <td>Operator: request city/venue data generation (with confirmation)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>When creating an occurrence, if desired city or venue doesn't exist in Firestore, operator can request it be generated. System proposes a record from the sourcing pipeline; operator confirms before write. Prevents silent creation of bad data. Also listed in Operator Dashboard stream.</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+
+</body>
+</html>

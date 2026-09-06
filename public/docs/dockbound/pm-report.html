@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — PM Report Run #11</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 56px;
+  }
+
+  /* Cover */
+  .cover {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 3px solid #0f766e;
+    margin-bottom: 48px;
+  }
+  .cover .logo { font-size: 13pt; font-weight: 700; color: #0f766e; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+  .cover .subtitle { font-size: 13pt; color: #555; }
+  .cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; }
+
+  /* TOC */
+  .toc { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+  .toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #0f766e; }
+  .toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+  .toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+  .toc a { color: #0f766e; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Headings */
+  h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #0f766e; padding-bottom: 6px; margin-top: 48px; }
+  h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #0f766e; padding-left: 10px; }
+  h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+  /* Callout boxes */
+  .callout {
+    background: #f0fdf4;
+    border-left: 4px solid #0f766e;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10.5pt;
+  }
+  .callout.warning { background: #fff8ed; border-color: #f59e0b; }
+  .callout.danger  { background: #fef2f2; border-color: #ef4444; }
+  .callout.info    { background: #eff6ff; border-color: #3b82f6; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+  th { background: #0f766e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fafb; }
+
+  /* Code / monospace */
+  code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+
+  /* Stat cards */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin: 20px 0; }
+  .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 16px; text-align: center; }
+  .stat-card .stat-value { font-size: 22pt; font-weight: 700; color: #0f766e; }
+  .stat-card .stat-label { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-top: 4px; }
+
+  /* Status pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .pill { padding: 3px 10px; border-radius: 12px; font-size: 9.5pt; font-weight: 600; }
+  .pill.green  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #0f766e; }
+  .pill.amber  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+  .pill.red    { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+  .pill.gray   { background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; }
+
+  /* Review item list */
+  ul.review-list { margin: 12px 0; padding-left: 0; list-style: none; }
+  ul.review-list li { padding: 8px 12px 8px 36px; border-bottom: 1px solid #f1f5f9; position: relative; font-size: 10.5pt; }
+  ul.review-list li:last-child { border-bottom: none; }
+  ul.review-list li::before { content: '→'; position: absolute; left: 12px; color: #0f766e; font-weight: 700; }
+
+  /* Done / auto-fixed items */
+  ul.done-list { margin: 12px 0; padding-left: 0; list-style: none; }
+  ul.done-list li { padding: 8px 12px 8px 36px; border-bottom: 1px solid #f1f5f9; position: relative; font-size: 10.5pt; }
+  ul.done-list li:last-child { border-bottom: none; }
+  ul.done-list li::before { content: '✓'; position: absolute; left: 12px; color: #16a34a; font-weight: 700; }
+
+  /* Lesson blocks */
+  .lesson { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 18px; margin: 10px 0; font-size: 10.5pt; }
+  .lesson .lesson-num { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #0f766e; margin-bottom: 4px; }
+
+  /* Section divider */
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 40px 0; }
+
+  /* Footer */
+  .footer { text-align: center; font-size: 8.5pt; color: #aaa; margin-top: 56px; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <div class="logo">DockBound</div>
+  <h1>PM Report — Run #11</h1>
+  <div class="subtitle">Automated PM agent cycle — 2026-09-05</div>
+  <div class="meta">Generated 2026-09-05 &nbsp;·&nbsp; Internal use only</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#stats">Run Stats</a></li>
+    <li><a href="#auto-fixed">Auto-Fixed</a></li>
+    <li><a href="#tests">Test Results</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
+    <li><a href="#roadmap">Roadmap Currency</a></li>
+    <li><a href="#review">Needs Your Review</a></li>
+    <li><a href="#lessons">Lessons Learned</a></li>
+    <li><a href="#pending">Full Pending Items</a></li>
+  </ol>
+</div>
+
+<!-- ── Run Stats ──────────────────────────────────────────────────────────── -->
+<h1 id="stats">Run Stats</h1>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-value">11</div>
+    <div class="stat-label">Run number</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">47</div>
+    <div class="stat-label">Commits since last run</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">214</div>
+    <div class="stat-label">Tests passing</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">7</div>
+    <div class="stat-label">New stubs written</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">1</div>
+    <div class="stat-label">New lessons</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">0</div>
+    <div class="stat-label">Roadmap stale items</div>
+  </div>
+</div>
+
+<table>
+  <thead><tr><th>Item</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Last run date</td><td>2026-09-02</td></tr>
+    <tr><td>Run count</td><td>11</td></tr>
+    <tr><td>Commits since last run (2026-09-02)</td><td>47 — NWS alerts, host billing, audit log, admin P1 gaps, Stripe webhook, SendGrid, admin reorg, backlog scripts</td></tr>
+    <tr><td>CLAUDE.md staleness</td><td>10 commits + 7 new uncatalogued files — refreshed this run</td></tr>
+    <tr><td>New pages added since last run</td><td>5 (AdminAdvisorDetailPage, AdminHostContractsPage, AdminOrderLookupPage, AuditLogPage, PipelineHealthPage)</td></tr>
+    <tr><td>New services added since last run</td><td>2 (hostContractService, nwsService)</td></tr>
+    <tr><td>Test stubs written this run</td><td>7 (all new pages + services)</td></tr>
+    <tr><td>Test stubs fixed</td><td>1 (PipelineHealthPage — missing collection/getDocs in firestore mock)</td></tr>
+    <tr><td>Permission allowlist update</td><td>Skipped — run #11 not a multiple of 4</td></tr>
+    <tr><td>Cron re-registered</td><td>Yes — weekly PM, Monday 9:03am</td></tr>
+  </tbody>
+</table>
+
+<!-- ── Auto-Fixed ────────────────────────────────────────────────────────── -->
+<h1 id="auto-fixed">Auto-Fixed This Run</h1>
+
+<ul class="done-list">
+  <li><strong>CLAUDE.md refreshed</strong> — added 5 missing admin pages (<code>AuditLogPage /admin/audit-log</code>, <code>AdminAdvisorDetailPage /admin/advisors/:uid</code>, <code>AdminHostContractsPage /admin/host-contracts</code>, <code>AdminOrderLookupPage /admin/orders</code>, <code>PipelineHealthPage /admin/pipeline-health</code>); fixed 2 incorrect route paths (<code>/admin/agent-tools</code> → <code>/admin/agents</code>, <code>/admin/agency/:id</code> → <code>/admin/agencies/:agencyId</code>); added 3 new sections (Host Billing / Contracts, Audit Log, NWS Weather Alerts)</li>
+  <li><strong>7 test stubs written</strong> — <code>nwsService.test.ts</code>, <code>hostContractService.test.ts</code>, <code>AuditLogPage.test.tsx</code>, <code>PipelineHealthPage.test.tsx</code>, <code>AdminHostContractsPage.test.tsx</code>, <code>AdminAdvisorDetailPage.test.tsx</code>, <code>AdminOrderLookupPage.test.tsx</code></li>
+  <li><strong>PipelineHealthPage test fixed</strong> — added missing <code>collection</code> and <code>getDocs</code> exports to the firebase/firestore mock; 1 unhandled error → 0</li>
+  <li><strong>New lesson added</strong> — CJS/ESM compatibility: <code>.cjs</code> scripts in an ESM project must use <code>require()</code>, not <code>import</code> (triggered by <code>47ffa58</code>)</li>
+  <li><strong>Weekly cron re-registered</strong> — Monday 9:03am, durable</li>
+  <li><strong>pm-report.html refreshed</strong> — updated to Run #11</li>
+</ul>
+
+<!-- ── Test Results ───────────────────────────────────────────────────────── -->
+<h1 id="tests">Test Results</h1>
+
+<div class="pills">
+  <span class="pill green">214 passed</span>
+  <span class="pill gray">0 failed</span>
+  <span class="pill gray">0 unhandled errors (after fix)</span>
+  <span class="pill gray">36 test files · ~61s</span>
+</div>
+
+<table>
+  <thead><tr><th>Category</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Full suite</td><td>214 passed, 0 failed (36 test files, ~61s)</td></tr>
+    <tr><td>New stubs written this run</td><td>7 — nwsService, hostContractService, AuditLogPage, PipelineHealthPage, AdminHostContractsPage, AdminAdvisorDetailPage, AdminOrderLookupPage</td></tr>
+    <tr><td>Stubs fixed this run</td><td>1 — PipelineHealthPage (missing firebase/firestore collection export)</td></tr>
+    <tr><td>Stubs needing implementation (carry forward)</td><td>17 total (10 prior + 7 new) — see Full Pending Items</td></tr>
+  </tbody>
+</table>
+
+<h2>New Stubs Detail</h2>
+<table>
+  <thead><tr><th>File</th><th>Tests covered</th></tr></thead>
+  <tbody>
+    <tr><td><code>src/services/nwsService.test.ts</code></td><td>isNWSSignificant (Extreme/Severe/Moderate/Minor), formatNWSExpires (null + valid ISO), fetchNWSAlerts (network error path)</td></tr>
+    <tr><td><code>src/services/hostContractService.test.ts</code></td><td>getHostContract (null), getHostInvoices (empty), HOST_COMMERCIAL_MODEL_LABELS keys</td></tr>
+    <tr><td><code>src/pages/admin/AuditLogPage.test.tsx</code></td><td>Renders without crashing, empty log list</td></tr>
+    <tr><td><code>src/pages/admin/PipelineHealthPage.test.tsx</code></td><td>Renders without crashing</td></tr>
+    <tr><td><code>src/pages/admin/AdminHostContractsPage.test.tsx</code></td><td>Renders without crashing, no agencies</td></tr>
+    <tr><td><code>src/pages/admin/AdminAdvisorDetailPage.test.tsx</code></td><td>Renders with unknown agent (route param :uid)</td></tr>
+    <tr><td><code>src/pages/admin/AdminOrderLookupPage.test.tsx</code></td><td>Renders search input</td></tr>
+  </tbody>
+</table>
+
+<!-- ── Security ───────────────────────────────────────────────────────────── -->
+<h1 id="security">Security</h1>
+
+<div class="pills">
+  <span class="pill green">Security script: PASSED</span>
+  <span class="pill green">Secret scan (last 10 commits): clean</span>
+  <span class="pill gray">security-review skill: not present, skipped</span>
+</div>
+
+<p>All secrets confirmed via <code>defineSecret()</code> — 16 secrets declared. No hardcoded values detected in recent commits. Security script passed with no FAIL lines.</p>
+
+<div class="callout warning">
+  <strong>Carry-forward security items:</strong>
+  <ul style="margin-top: 8px; padding-left: 18px;">
+    <li><code>INVITE_EMAIL_TEST_OVERRIDE</code> — hardcoded personal email in production code behind dev-only guard; email is in git history</li>
+    <li><code>sendTravelerSms</code> — no per-agent rate limiting; must add before Twilio goes live</li>
+    <li><code>AdminUsagePage.loadEnrichments()</code> — fetches 5,000 full docs to count; consider aggregate Cloud Function as volume grows</li>
+  </ul>
+</div>
+
+<!-- ── Dependencies ───────────────────────────────────────────────────────── -->
+<h1 id="dependencies">Dependencies</h1>
+
+<h2>Fixable via <code>npm audit fix</code> (recommend running)</h2>
+<table>
+  <thead><tr><th>Package</th><th>Severity</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><code>validator</code> chain</td><td>High</td><td>URL validation bypass in express-validator; fix available without breaking changes</td></tr>
+    <tr><td><code>form-data</code> 4.0.0–4.0.5</td><td>High</td><td>CRLF injection; fix available</td></tr>
+    <tr><td><code>ip-address</code> ≤10.3.0</td><td>High</td><td>XSS + SSRF in express-rate-limit chain; fix available</td></tr>
+    <tr><td><code>js-yaml</code></td><td>High</td><td>Quadratic CPU DoS (dev chain); fix available</td></tr>
+    <tr><td><code>qs</code> ≤6.15.3</td><td>Moderate</td><td>Multiple DoS vectors; fix available</td></tr>
+    <tr><td><code>brace-expansion</code></td><td>Moderate</td><td>DoS (dev chain); fix available</td></tr>
+    <tr><td>functions/ (7 moderate)</td><td>Moderate</td><td>Run <code>npm --prefix functions audit fix</code></td></tr>
+  </tbody>
+</table>
+
+<p><strong>Root total: 18 vulnerabilities</strong> (1 critical, 12 high, 3 moderate, 2 low) — all fixable without breaking changes via <code>npm audit fix</code>.</p>
+
+<h2>Accepted Risks (carry forward)</h2>
+<table>
+  <thead><tr><th>Package</th><th>Severity</th><th>Reason accepted</th></tr></thead>
+  <tbody>
+    <tr><td><code>react-router</code> 7.12+</td><td>High</td><td>CSRF bypass in RSC mode — DockBound does not use RSC mode</td></tr>
+    <tr><td><code>uuid</code> &lt; 11.1.1</td><td>Moderate</td><td>Buffer bounds — fix requires firebase-admin downgrade; not safe to apply</td></tr>
+    <tr><td><code>@tootallnate/once</code></td><td>Low</td><td>firebase-admin transitive chain; no non-breaking fix available</td></tr>
+  </tbody>
+</table>
+
+<!-- ── Roadmap Currency ───────────────────────────────────────────────────── -->
+<h1 id="roadmap">Roadmap Currency</h1>
+
+<div class="pills">
+  <span class="pill green">0 stale In-Progress items</span>
+  <span class="pill green">All shipped work catalogued</span>
+  <span class="pill green">Done-toggle present</span>
+</div>
+
+<p>Roadmap is clean. 47 commits since last run — all are catalogued: NWS Weather Alerts, Host Billing, Audit Log, Admin P1 gaps (Advisor Detail, Order Lookup, Pipeline Health), Stripe webhook, SendGrid resolved, admin reorg, backlog scripts. No items stuck at "In Progress".</p>
+
+<!-- ── Needs Your Review ───────────────────────────────────────────────────── -->
+<h1 id="review">Needs Your Review</h1>
+
+<ul class="review-list">
+  <li><strong>Run <code>npm audit fix</code></strong> (root) and <strong><code>npm --prefix functions audit fix</code></strong> — both are safe patch-only upgrades, no breaking changes. 18 root vulns + 7 functions vulns, all resolvable.</li>
+  <li><strong>Stripe webhook registration</strong> — roadmap marks done (2026-09-05) but confirm <code>stripeWebhook</code> CF URL is actually registered in Stripe Dashboard for <code>charge.dispute.created</code> + <code>checkout.session.completed</code> events.</li>
+  <li><strong>Twilio deploy</strong> — register <code>twilioInboundWebhook</code> URL in Twilio Console once real secrets are set and functions deployed to dev + prod.</li>
+  <li><strong>UI color migration</strong> — <code>RemindersAdminPage.tsx</code> and <code>InviteCodesPage.tsx</code> use hardcoded colors in the main light-mode layout (not AdminLayout dark surface) — these are actual violations, not intentional dark-surface patterns.</li>
+  <li><strong>DOCK advisory delta calibration</strong> — Level 2 advisory adds C+0.5, producing only +0.125 avg delta (below the 0.5 AT-RISK threshold alone). Consider C+1.0 for Level 2 and C+1.5 for Level 3 — requires human judgment on calibration.</li>
+  <li><strong>7 new test stubs</strong> need TODO items completed before being relied on in CI.</li>
+  <li><strong>Stripe subscription gap</strong> — no <code>customer.subscription.updated</code> webhook handler for trial→active or lapse transitions.</li>
+</ul>
+
+<!-- ── Lessons Learned ────────────────────────────────────────────────────── -->
+<h1 id="lessons">Lessons Learned (new this run)</h1>
+
+<div class="lesson">
+  <div class="lesson-num">2026-09-05 — CJS/ESM compatibility for admin scripts</div>
+  <p><code>.cjs</code> scripts in an ESM project (<code>"type": "module"</code> in package.json) must use CommonJS <code>require()</code> / <code>module.exports</code>, never <code>import</code> / <code>export</code>. The <code>.cjs</code> extension forces CommonJS regardless of the project's default module type — but developers familiar with ESM will instinctively write import statements. <code>backlog-seed.cjs</code> and <code>backlog-update.cjs</code> both failed at runtime with "Cannot use import statement outside a module" and required an immediate fix commit (<code>47ffa58</code>). When generating new <code>.cjs</code> scripts, verify the extension first and use <code>require()</code> throughout. If ESM features (top-level await, etc.) are needed, use <code>.mjs</code> extension instead.</p>
+</div>
+
+<!-- ── Full Pending Items ──────────────────────────────────────────────────── -->
+<h1 id="pending">Full Pending Items</h1>
+
+<h2>Deploy Blockers</h2>
+<table>
+  <thead><tr><th>Item</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>Register <code>stripeWebhook</code> CF URL in Stripe Dashboard</td><td>Verify — roadmap says done; confirm actual registration</td></tr>
+    <tr><td><code>firebase deploy --only functions</code> after real Twilio secrets set</td><td>Open — Twilio resubmitted 2026-09-03, awaiting approval</td></tr>
+    <tr><td>Register <code>twilioInboundWebhook</code> URL in Twilio Console</td><td>Open — blocked by Twilio account approval</td></tr>
+  </tbody>
+</table>
+
+<h2>Vulnerabilities</h2>
+<table>
+  <thead><tr><th>Package</th><th>Severity</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>validator</code> chain (express-validator)</td><td>High</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>form-data</code></td><td>High</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>ip-address</code> chain</td><td>High</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>js-yaml</code></td><td>High</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>qs</code></td><td>Moderate</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>brace-expansion</code></td><td>Moderate</td><td><code>npm audit fix</code></td></tr>
+    <tr><td>functions/ 7 vulns</td><td>Moderate</td><td><code>npm --prefix functions audit fix</code></td></tr>
+    <tr><td><code>react-router</code> CSRF</td><td>High</td><td>Accepted — no RSC mode</td></tr>
+    <tr><td><code>uuid</code> buffer bounds</td><td>Moderate</td><td>Accepted — firebase-admin constraint</td></tr>
+  </tbody>
+</table>
+
+<h2>Security Carry-forwards</h2>
+<table>
+  <thead><tr><th>Item</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td><code>INVITE_EMAIL_TEST_OVERRIDE</code> personal email in git history</td><td>Dev guard present but email is committed; not urgently actionable</td></tr>
+    <tr><td><code>sendTravelerSms</code> no rate limiting</td><td>Add before Twilio goes live</td></tr>
+    <tr><td><code>AdminUsagePage</code> 5000-doc fetch</td><td>Scale risk; consider aggregate CF when usage grows</td></tr>
+  </tbody>
+</table>
+
+<h2>Firestore Rule Stubs (verify intended access)</h2>
+<table>
+  <thead><tr><th>Collection</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><code>coupons</code></td><td>Admin-read stub added; verify client access pattern</td></tr>
+    <tr><td><code>cruise_itinerary_changes</code></td><td>Admin-read stub added; verify client access pattern</td></tr>
+    <tr><td><code>cruise_pipeline_runs</code></td><td>Admin-read stub added; verify client access pattern</td></tr>
+    <tr><td><code>port_resolution_issues</code></td><td>Admin-read stub added; verify client access pattern</td></tr>
+  </tbody>
+</table>
+
+<h2>UI Color Migrations</h2>
+<table>
+  <thead><tr><th>File</th><th>Issue</th></tr></thead>
+  <tbody>
+    <tr><td><code>AgentRosterPage.tsx</code> L176/182</td><td><code>color: 'white'</code> on headings — verify on dark background</td></tr>
+    <tr><td><code>ContentHealthPage.tsx</code></td><td>Dark-surface rgba patterns without <code>.on-dark</code> class scoping</td></tr>
+    <tr><td><code>RemindersAdminPage.tsx</code></td><td>Hardcoded Slate/Indigo/Red hex colors — actual violations (light-mode layout)</td></tr>
+    <tr><td><code>InviteCodesPage.tsx</code></td><td><code>color: 'white'</code> + <code>rgba(0,0,0,...)</code> overlays — actual violations (light-mode layout)</td></tr>
+  </tbody>
+</table>
+
+<h2>DOCK Calibration</h2>
+<div class="callout info">
+  Level 2 advisory currently adds C+0.5, producing only +0.125 avg DOCK delta (below the 0.5 AT-RISK threshold on its own). Proposal: C+1.0 for Level 2, C+1.5 for Level 3. Requires human judgment — do not auto-adjust.
+</div>
+
+<h2>Code Review Items</h2>
+<table>
+  <thead><tr><th>File</th><th>Issue</th></tr></thead>
+  <tbody>
+    <tr><td><code>SearchResultsPage.tsx</code> L184</td><td><code>performSearch</code> missing from <code>useEffect</code> deps — stale closure risk on first render (pre-existing)</td></tr>
+  </tbody>
+</table>
+
+<h2>Stripe Subscription Gap</h2>
+<p>No <code>customer.subscription.updated</code> webhook handler exists for trial→active or lapse transitions. The <code>agents/{uid}.plan.status</code> field is not updated when Stripe fires this event.</p>
+
+<h2>Test Stubs Needing Implementation (17 total)</h2>
+<table>
+  <thead><tr><th>File</th><th>Run added</th></tr></thead>
+  <tbody>
+    <tr><td><code>src/services/communicationsService.test.ts</code></td><td>Prior</td></tr>
+    <tr><td><code>src/services/cruiseChangesService.test.ts</code></td><td>Prior</td></tr>
+    <tr><td><code>src/services/guideResolverService.test.ts</code></td><td>Prior</td></tr>
+    <tr><td><code>src/pages/agency/AdvisorDetailPage.test.tsx</code></td><td>Prior</td></tr>
+    <tr><td><code>src/services/attentionService.test.ts</code></td><td>Prior</td></tr>
+    <tr><td><code>src/services/portGuideIdbCache.test.ts</code></td><td>Prior</td></tr>
+    <tr><td><code>src/pages/admin/AdminAdvisorsPage.test.tsx</code></td><td>Prior</td></tr>
+    <tr><td><code>src/pages/ForAdvisorsPage.test.tsx</code></td><td>Prior</td></tr>
+    <tr><td><code>src/pages/ForAgenciesPage.test.tsx</code></td><td>Prior</td></tr>
+    <tr><td><code>src/pages/ForTravefyPage.test.tsx</code></td><td>Prior</td></tr>
+    <tr><td><code>src/services/nwsService.test.ts</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/services/hostContractService.test.ts</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/AuditLogPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/PipelineHealthPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/AdminHostContractsPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/AdminAdvisorDetailPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/AdminOrderLookupPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <p>DockBound PM Report — Run #11 &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Internal use only</p>
+</div>
+
+</body>
+</html>

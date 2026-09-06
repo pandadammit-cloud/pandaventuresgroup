@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync-docs": "powershell -ExecutionPolicy Bypass -File scripts/sync-docs.ps1"
   },
   "dependencies": {
     "firebase": "^12.18.0",

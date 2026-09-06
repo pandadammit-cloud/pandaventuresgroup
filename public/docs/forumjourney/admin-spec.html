@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForumJourney — Operator &amp; Admin Guide</title>
+<style>
+body {
+  font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 56px;
+}
+.cover {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 3px solid #1e40af;
+  margin-bottom: 48px;
+}
+.cover .logo { font-size: 13pt; font-weight: 700; color: #1e40af; letter-spacing: 0.08em; text-transform: uppercase; }
+.cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+.cover .subtitle { font-size: 13pt; color: #555; }
+.cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; }
+
+.toc { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+.toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #1e40af; }
+.toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+.toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+.toc a { color: #1e40af; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #1e40af; padding-bottom: 6px; margin-top: 48px; }
+h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #1e40af; padding-left: 10px; }
+h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+.callout { background: #eff6ff; border-left: 4px solid #1e40af; padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt; }
+.callout.warning { background: #fff8ed; border-color: #f59e0b; }
+.callout.danger  { background: #fef2f2; border-color: #ef4444; }
+.callout.info    { background: #f0fdf4; border-color: #22c55e; }
+
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+th { background: #1e40af; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+tr:hover td { background: #f9fafb; }
+
+code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+.cmd { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 9.5pt; padding: 14px 18px; border-radius: 6px; margin: 10px 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+
+.block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; }
+.block h4 { margin: 0 0 8px; font-size: 11pt; color: #1e40af; font-family: 'Courier New', monospace; font-style: normal; }
+.block p  { margin: 4px 0; font-size: 10.5pt; }
+.block ul { margin: 8px 0 0; padding-left: 18px; }
+.block li { margin: 3px 0; font-size: 10pt; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: 600; }
+.badge.green  { background: #dcfce7; color: #166534; }
+.badge.yellow { background: #fef9c3; color: #854d0e; }
+.badge.red    { background: #fee2e2; color: #991b1b; }
+.badge.blue   { background: #dbeafe; color: #1e40af; }
+.badge.gray   { background: #f3f4f6; color: #374151; }
+
+.journey { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 18px 22px; margin: 14px 0; }
+.journey h4 { margin: 0 0 12px; font-size: 11.5pt; color: #1e40af; }
+.journey ol { margin: 0; padding-left: 20px; }
+.journey li { margin: 6px 0; font-size: 10.5pt; }
+
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 9pt; color: #9ca3af; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">ForumJourney</div>
+  <h1>Operator &amp; Admin Guide</h1>
+  <div class="subtitle">Internal Reference — PandA Ventures Team</div>
+  <div class="meta">Generated: 2026-09-05</div>
+</div>
+
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#access">Access &amp; Roles</a></li>
+    <li><a href="#dashboard">Operator Dashboard</a></li>
+    <li><a href="#journeys">Operator Journeys</a></li>
+    <li><a href="#data">Data Management</a></li>
+    <li><a href="#security-ops">Security Operations</a></li>
+    <li><a href="#gaps">Gap Analysis</a></li>
+  </ol>
+</div>
+
+<h1 id="access">1. Access &amp; Roles</h1>
+
+<p>Firebase Auth controls all portal access. A custom <code>role</code> claim must be set on the user's Firebase account. Role ranks determine what pages are accessible (higher number = more access).</p>
+
+<table>
+  <tr><th>Role</th><th>Rank</th><th>Portal Access</th><th>Notes</th></tr>
+  <tr><td><code>apiadmin</code></td><td>100</td><td>Operator Dashboard (full)</td><td>PandA Ventures superuser; no <code>partnerId</code> required; cross-partner access</td></tr>
+  <tr><td><code>eventbound_operator</code></td><td>60</td><td>Operator Dashboard</td><td>Legacy alias — accepted for backward compatibility</td></tr>
+  <tr><td><code>operator</code></td><td>40</td><td>Operator Dashboard</td><td>Scoped to a single partner via <code>partnerId</code> claim</td></tr>
+  <tr><td><code>organizer</code></td><td>20</td><td>Organizer Dashboard</td><td>Event organizer; accesses agenda CRUD, attendees, requests</td></tr>
+  <tr><td><code>speaker</code></td><td>15</td><td>Speaker Portal</td><td>Presentation management, special requests</td></tr>
+  <tr><td><code>venue</code></td><td>12</td><td>Venue Portal</td><td>Guide data edits, conference notes (private)</td></tr>
+  <tr><td><code>attendee</code></td><td>10</td><td>Attendee Portal + EventsPicker</td><td>Plan, agenda, personal notes, favorites</td></tr>
+</table>
+
+<h2>How to Set a Role</h2>
+<p>Use the Admin SDK script from the repo root. Do not set roles directly in the Firebase console — always use this script so <code>occurrenceId</code> and other required claims are set correctly.</p>
+
+<div class="cmd">NODE_PATH=functions/node_modules node scripts/set-claims.js</div>
+
+<p>Or via the join flow: attendees and venue staff self-register using a join code. The <code>POST /public/join</code> endpoint creates the Firebase Auth account and sets claims automatically.</p>
+
+<div class="callout warning">
+  After setting custom claims, the user must sign out and sign back in for the new role to take effect. The ID token caches the old claims until it refreshes.
+</div>
+
+<h1 id="dashboard">2. Operator Dashboard</h1>
+
+<p><strong>URL:</strong> <code>/operator</code> (requires <code>operator</code> or <code>apiadmin</code> role)</p>
+
+<h2>Dashboard Tabs</h2>
+
+<table>
+  <tr><th>Tab</th><th>What Operators See / Do</th></tr>
+  <tr><td>Health</td><td>Webhook delivery counts (delivered / failed / dead_letter), stale plan count, top missing-data fields with frequency. Refreshes on load.</td></tr>
+  <tr><td>Occurrences</td><td>All non-cancelled occurrences sorted by date ascending. Expand any occurrence to see attendees; add attendees; update notification preference.</td></tr>
+  <tr><td>Dead-Letter Webhooks</td><td>List of changes with <code>webhookStatus: dead_letter</code>. Retry button triggers <code>POST /operator/changes/:changeId/retry</code>.</td></tr>
+  <tr><td>Leads</td><td>Landing page lead submissions — name, email, organization, use case, status (new → contacted → complete → archived). Capped at 200 records.</td></tr>
+  <tr><td>Sources (Admin)</td><td>View, propose, approve/reject, configure data sources in the <code>sourceRegistry</code>. Manage collection pipeline sources.</td></tr>
+</table>
+
+<h1 id="journeys">3. Operator Journeys</h1>
+
+<div class="journey">
+  <h4>Journey A — New Partner Setup</h4>
+  <ol>
+    <li>Create a partner document in Firestore (<code>partners</code> collection) with <code>name</code>, <code>active: true</code>, <code>webhookUrl</code></li>
+    <li>Generate an API key (random string) and compute its SHA-256 hash</li>
+    <li>Store <code>apiKeyHash</code> in the partner document — never store the raw key</li>
+    <li>Provide the partner with their raw API key and API documentation</li>
+    <li>Coordinate with partner to set <code>inboundWebhookSecret</code> — store this in the partner's Firestore doc</li>
+    <li>Set <code>outboundWebhookSecret</code> in the partner's Firestore doc (ForumJourney uses this to sign outbound webhooks)</li>
+    <li>Optionally set <code>stageThresholds: { plan: N, prepare: N }</code> to override global plan stage day defaults</li>
+  </ol>
+  <p style="margin-top:10px;font-size:10pt;color:#6b7280;">No UI for partner creation — done directly in Firestore console or via Admin SDK script. Admin-only by decision (OD closed).</p>
+</div>
+
+<div class="journey">
+  <h4>Journey B — Set Up an Occurrence for Attendees</h4>
+  <ol>
+    <li>Partner creates occurrence via <code>POST /v1/occurrences</code> with date, time, venue, city</li>
+    <li>Generate attendee join code and set <code>attendeeCode</code> on the occurrence in Firestore</li>
+    <li>Optionally set <code>venueCode</code> for venue staff access</li>
+    <li>Distribute join code to attendees; they self-register at <code>/join</code></li>
+    <li>Create organizer account via <code>scripts/set-claims.js</code> with <code>role: organizer</code> + <code>occurrenceId</code></li>
+  </ol>
+</div>
+
+<div class="journey">
+  <h4>Journey C — Generate a Plan</h4>
+  <p>Via API:</p>
+</div>
+
+<div class="cmd">POST /v1/plans
+{ "occurrenceId": "disrupthr-pittsburgh-2026-oct21" }</div>
+
+<p>Or navigate directly to the public plan URL: <code>[domain]/plan/{occurrenceId}</code> — ForumJourney generates the plan on first access if one doesn't exist.</p>
+
+<div class="journey">
+  <h4>Journey D — Handle an Event Change</h4>
+  <ol>
+    <li>Partner POSTs an event update to <code>POST /v1/webhooks/partner-events</code> with <code>X-ForumJourney-Signature</code> header</li>
+    <li>ForumJourney validates signature, timestamp (±5 min), and idempotency key</li>
+    <li>Material changes are auto-detected; affected plans marked stale; outbound webhook fired to partner</li>
+    <li>No manual operator action required unless webhook delivery fails</li>
+  </ol>
+</div>
+
+<div class="journey">
+  <h4>Journey E — Handle Dead-Letter Webhook Delivery</h4>
+  <ol>
+    <li>In Operator Dashboard → Dead-Letter tab, find the failed change</li>
+    <li>Inspect failure details (HTTP status, error message)</li>
+    <li>Investigate the partner's webhook endpoint for availability issues</li>
+    <li>Click "Retry" — calls <code>POST /operator/changes/:changeId/retry</code></li>
+    <li>Alternatively: update <code>webhookStatus</code> to <code>'pending'</code> directly in Firestore — the Firestore trigger will re-fire</li>
+  </ol>
+</div>
+
+<div class="journey">
+  <h4>Journey F — Seed a New City</h4>
+  <ol>
+    <li>Create a city document in Firestore (<code>cities</code> collection) with <code>name</code>, <code>timezone</code>, <code>guide</code> field</li>
+    <li>Or run from repo root: <code>node scripts/seed-new-cities.js</code> with the city data file</li>
+  </ol>
+</div>
+
+<div class="journey">
+  <h4>Journey G — Trigger Data Collection for an Occurrence</h4>
+  <ol>
+    <li>Via API: <code>POST /v1/collection/run</code> with <code>occurrenceId</code> and optional <code>categories</code> array</li>
+    <li>Monitor job status via <code>GET /v1/collection/jobs/list</code></li>
+    <li>Normalized facts flow automatically into the next plan generation for that occurrence</li>
+    <li>For new data sources: propose in Operator Dashboard → Sources tab; admin approves; source becomes active</li>
+  </ol>
+</div>
+
+<div class="journey">
+  <h4>Journey H — Manage Leads</h4>
+  <ol>
+    <li>In Operator Dashboard → Leads tab, review new submissions</li>
+    <li>Use the status dropdown to move leads through: new → contacted → complete / archived</li>
+    <li>Note: leads are capped at 200 in the API response (pilot scale)</li>
+  </ol>
+</div>
+
+<h3>Currently Seeded Cities</h3>
+<p>New York NY, Chicago IL, Tampa FL, Lutz FL, Bethany Beach DE, Imperial PA, Bentleyville PA, Jeannette PA, Canonsburg PA, Sunderland MD, Pittsburgh PA</p>
+
+<h1 id="data">4. Data Management</h1>
+
+<h2>Manual Overrides</h2>
+<p>Use overrides to correct event or venue field data without waiting for a partner update. Overrides include a full audit trail.</p>
+
+<div class="cmd">POST /v1/overrides
+{
+  "targetType": "event",
+  "targetId": "evt-001",
+  "field": "admission.bagPolicy",
+  "originalValue": "No bags",
+  "newValue": "Small bags under 14\" allowed",
+  "author": "ops@forumjourney.app",
+  "reason": "Venue updated policy day-before",
+  "urgency": "high"
+}</div>
+
+<h2>Venue Guide Editing</h2>
+<p>Venue staff can edit guide fields via their portal (<code>PATCH /venue/data/:venueId</code>). The guide lives at <code>venues/{id}.guide</code> in Firestore. Fields include getting-there options, in-the-know tips, arrival advice, accessibility notes. Changes take effect on the next plan fetch — no redeploy needed.</p>
+
+<h2>Source Registry</h2>
+<p>The <code>sourceRegistry</code> Firestore collection controls which external data sources are active and their configurations. Each document specifies adapter ID, category, credential ref, reliability, refresh profile. Managed via Operator Dashboard → Sources tab or directly in Firestore console.</p>
+
+<h2>Backlog Sync</h2>
+<p>The shared pandaventuresgroup backlog is seeded from <code>scripts/seed-backlog.js</code>. ForumJourney items use <code>fj-*</code> doc IDs. Run <code>node scripts/seed-backlog.js --dry-run</code> to preview changes before writing. Requires service account at <code>C:\Users\Amy\secrets\pandaventuresgroup-service-account.json</code>.</p>
+
+<h1 id="security-ops">5. Security Operations</h1>
+
+<h2>Rotate a Partner API Key</h2>
+<ol>
+  <li>Generate a new raw key (random secure string)</li>
+  <li>Compute its SHA-256 hash:<br><code>echo -n "RAWKEY" | sha256sum</code></li>
+  <li>Update <code>apiKeyHash</code> in the Firestore partner document</li>
+  <li>Provide the partner with the new raw key — the old key is immediately invalid</li>
+</ol>
+
+<h2>Rotate a Webhook Secret</h2>
+
+<div class="callout danger">
+  <strong>Hard break:</strong> Rotating the <code>inboundWebhookSecret</code> immediately invalidates all requests signed with the old secret. Coordinate timing with the partner — there is no transition window. (Safe pre-pilot; post-pilot requires a dual-header window.)
+</div>
+
+<ol>
+  <li>Agree on a rotation time with the partner</li>
+  <li>Update <code>inboundWebhookSecret</code> in the Firestore partner document at the agreed time</li>
+  <li>Partner updates their signing key at the same time</li>
+  <li>The same process applies to <code>outboundWebhookSecret</code></li>
+</ol>
+
+<h2>Replay Protection</h2>
+<p>Inbound webhooks are rejected if:</p>
+<ul>
+  <li>Timestamp in payload is more than 5 minutes old</li>
+  <li>Timestamp is more than 5 minutes in the future</li>
+  <li>Idempotency key already exists in the <code>processedWebhooks</code> collection</li>
+</ul>
+<p><code>processedWebhooks</code> records have a <code>expiresAt</code> TTL field set for Firestore automatic cleanup.</p>
+
+<h2>Secrets in Firebase Secret Manager</h2>
+
+<table>
+  <tr><th>Secret Name</th><th>Purpose</th><th>Who Rotates</th></tr>
+  <tr><td><code>PLATFORMCORE_API_KEY</code></td><td>Declared; PlatformCore retired 2026-08-31 — no active calls</td><td>N/A (legacy)</td></tr>
+  <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Claude haiku-4-5 for conversational notifications</td><td>PandA Ventures</td></tr>
+  <tr><td><code>OPENWEATHERMAP_API_KEY</code></td><td>Weather sourcing (current + forecast)</td><td>PandA Ventures</td></tr>
+</table>
+
+<p>Adapter API keys (e.g., Google Places) are stored in GCP Secret Manager and referenced by name in <code>sourceRegistry</code> documents. Resolved at runtime via <code>resolveCredential()</code>.</p>
+
+<h1 id="gaps">6. Gap Analysis</h1>
+
+<p>Known operational gaps as of 2026-09-05. Items marked <span class="badge green">Closed</span> were resolved this sprint.</p>
+
+<table>
+  <tr><th>Gap</th><th>Priority</th><th>Status</th><th>Notes</th></tr>
+  <tr>
+    <td>Custom domain</td>
+    <td><span class="badge green">P1</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td><code>forumjourney.app</code> added to <code>ALLOWED_ORIGINS</code>. DNS verified. Plan URLs work on production domain.</td>
+  </tr>
+  <tr>
+    <td>Dead-letter webhook retry UI</td>
+    <td><span class="badge green">P1</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td>Operator Dashboard → Dead-Letter tab with retry button. <code>POST /operator/changes/:changeId/retry</code>.</td>
+  </tr>
+  <tr>
+    <td>Partner creation UI</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Admin-only (by decision)</td>
+    <td>Partners created via Firestore console / Admin SDK. Self-serve UI deferred to future. This is a deliberate product decision, not a gap.</td>
+  </tr>
+  <tr>
+    <td>Role assignment UI</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Scripts + join flow</td>
+    <td>Operators use <code>scripts/set-claims.js</code>. Attendees/venue self-register via join code. Organizer/speaker accounts set via script. No in-product admin UI yet.</td>
+  </tr>
+  <tr>
+    <td>Speaker file upload (OD-19)</td>
+    <td><span class="badge gray">P3</span></td>
+    <td>Hold</td>
+    <td>URL-only presentation upload is live. File upload deferred — no Firebase Storage section in firebase.json.</td>
+  </tr>
+  <tr>
+    <td>Attendee email notification delivery</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Gap</td>
+    <td>ForumJourney fires webhook to partner; partner handles last-mile notification. No direct attendee email or push capability. OD-13 (Twilio legal approval pending) blocks SMS path.</td>
+  </tr>
+  <tr>
+    <td>SEO + social metadata</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Blocked</td>
+    <td>Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). Not stale.</td>
+  </tr>
+  <tr>
+    <td>GET /facts surface endpoint</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Backlog</td>
+    <td>No API endpoint to query <code>normalizedFacts</code> directly. Portals can't yet show collected data beyond what's in plan discoveries. First Surface layer item after parking pilot.</td>
+  </tr>
+  <tr>
+    <td>Plan staleness dashboard</td>
+    <td><span class="badge gray">P3</span></td>
+    <td>Partial</td>
+    <td>Operator health tab shows stale plan count but no drill-down to see which plans or which occurrences.</td>
+  </tr>
+  <tr>
+    <td>Dependency upgrade session</td>
+    <td><span class="badge green">P2</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td>All major gaps closed: typescript 5→7, uuid 11→14, @types/node 22→26, vitest 3→4, @anthropic-ai/sdk 0.116→0.122.</td>
+  </tr>
+  <tr>
+    <td>Frontend vitest config</td>
+    <td><span class="badge green">P2</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td><code>frontend/vitest.config.ts</code> added with jsdom + React plugin. Frontend tests now runnable.</td>
+  </tr>
+</table>
+
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+
+</body>
+</html>

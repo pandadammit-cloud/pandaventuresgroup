@@ -285,6 +285,30 @@ export default function BacklogPage() {
         </div>
       )}
 
+      <div className="backlog-doclinks">
+        {([
+          { product: 'dockbound',    label: 'DockBound',    path: '/docs/dockbound'    },
+          { product: 'forumjourney', label: 'ForumJourney', path: '/docs/forumjourney' },
+        ] as const).map(({ product, label, path }) => (
+          <div key={product} className="backlog-doclinks__row">
+            <img src={`/logo-${product}.png`} alt={label} className="backlog-doclinks__logo" />
+            <span className="backlog-doclinks__name">{label}</span>
+            <span className="backlog-doclinks__sep">—</span>
+            {[
+              { file: 'product-spec.html', title: 'Product Spec' },
+              { file: 'admin-spec.html',   title: 'Admin Spec'   },
+              { file: 'architecture.html', title: 'Architecture' },
+              { file: 'pm-report.html',    title: 'PM Report'    },
+              { file: 'roadmap.html',      title: 'Roadmap'      },
+            ].map(({ file, title }) => (
+              <a key={file} href={`${path}/${file}`} target="_blank" rel="noreferrer" className="backlog-doclinks__link">
+                {title}
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+
       <main className="backlog-main">
         {loading && <div className="tab-loading">Loading backlog…</div>}
         {error   && <div className="tab-error">Error: {error}</div>}

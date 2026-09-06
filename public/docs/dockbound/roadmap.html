@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Project Roadmap</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 56px;
+  }
+
+  /* Cover */
+  .cover {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 3px solid #0f766e;
+    margin-bottom: 48px;
+  }
+  .cover .logo { font-size: 13pt; font-weight: 700; color: #0f766e; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+  .cover .subtitle { font-size: 13pt; color: #555; }
+  .cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; display: flex; justify-content: center; gap: 2em; flex-wrap: wrap; }
+
+  /* TOC */
+  .toc { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+  .toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #0f766e; }
+  .toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+  .toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+  .toc a { color: #0f766e; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Headings */
+  h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #0f766e; padding-bottom: 6px; margin-top: 48px; }
+  h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #0f766e; padding-left: 10px; }
+  h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+  /* Callout boxes */
+  .callout {
+    background: #f0fdf4; border-left: 4px solid #0f766e;
+    padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt;
+  }
+  .callout.warning { background: #fff8ed; border-color: #f59e0b; }
+  .callout.danger  { background: #fef2f2; border-color: #ef4444; }
+  .callout.info    { background: #eff6ff; border-color: #3b82f6; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 16px 0; }
+  th { background: #0f766e; color: #fff; padding: 7px 10px; text-align: left; font-weight: 600; font-size: 9.5pt; text-transform: uppercase; letter-spacing: 0.04em; }
+  td { padding: 6px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fafb; }
+
+  /* Status badges */
+  .s { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8.5pt; font-weight: 700; white-space: nowrap; }
+  .s-done     { background: #dcfce7; color: #15803d; }
+  .s-wip      { background: #dbeafe; color: #1d4ed8; }
+  .s-next     { background: #fef9c3; color: #854d0e; }
+  .s-backlog  { background: #f1f5f9; color: #475569; }
+  .s-blocked  { background: #fee2e2; color: #b91c1c; }
+  .s-decision { background: #fdf4ff; color: #7e22ce; }
+  .s-hold     { background: #f1f5f9; color: #94a3b8; }
+
+  /* Size badges */
+  .sz { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 8.5pt; font-weight: 700; background: #f1f5f9; color: #475569; white-space: nowrap; font-family: 'Courier New', monospace; }
+
+  /* Summary health grid */
+  .health-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin: 20px 0; }
+  .health-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px 16px; }
+  .health-card .hc-label { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #6b7280; margin-bottom: 4px; }
+  .health-card .hc-value { font-size: 22pt; font-weight: 800; color: #111; line-height: 1; }
+  .health-card .hc-sub { font-size: 8.5pt; color: #9ca3af; margin-top: 2px; }
+  .health-card.good { border-color: #bbf7d0; }
+  .health-card.good .hc-value { color: #15803d; }
+  .health-card.warn { border-color: #fde68a; }
+  .health-card.warn .hc-value { color: #b45309; }
+  .health-card.bad  { border-color: #fca5a5; }
+  .health-card.bad  .hc-value { color: #b91c1c; }
+
+  /* Section header with stream progress */
+  .stream-header { display: flex; align-items: baseline; gap: 12px; margin-top: 36px; margin-bottom: 4px; }
+  .stream-header h2 { margin: 0; border-left: 4px solid #0f766e; padding-left: 10px; font-size: 14pt; flex: 1; }
+  .stream-pct { font-size: 9pt; color: #6b7280; white-space: nowrap; }
+  .progress { height: 5px; background: #e5e7eb; border-radius: 3px; margin-bottom: 16px; }
+  .progress-fill { height: 5px; background: #0f766e; border-radius: 3px; }
+
+  code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; }
+
+  /* Footer */
+  .footer { text-align: center; font-size: 8.5pt; color: #aaa; margin-top: 56px; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+
+  /* How-to-read legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 14px 0; font-size: 9.5pt; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  @media print {
+    body { font-size: 9pt; padding: 24px 32px; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .s, .sz, .health-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h1 { page-break-before: always; }
+    tr { page-break-inside: avoid; }
+    .done-toggle-row { display: none; }
+  }
+
+  /* Done-item toggle */
+  tr.row-done { display: none; }
+  tr.row-done.show { display: table-row; }
+  .done-toggle-btn {
+    display: inline-block; margin-top: 16px; padding: 6px 14px;
+    background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px;
+    font-size: 9.5pt; color: #475569; cursor: pointer; user-select: none;
+  }
+  .done-toggle-btn:hover { background: #e2e8f0; }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var doneRows = [];
+    document.querySelectorAll('tr').forEach(function(row) {
+      // Skip header rows and divider rows (those with a single colspan cell)
+      var cells = row.querySelectorAll('td');
+      if (cells.length === 0) return;
+      var firstCell = cells[0];
+      if (firstCell.getAttribute('colspan')) return;
+      if (row.querySelector('.s-done')) {
+        row.classList.add('row-done');
+        doneRows.push(row);
+      }
+    });
+
+    if (doneRows.length === 0) return;
+
+    var showing = false;
+    var btn = document.createElement('div');
+    btn.className = 'done-toggle-btn';
+    btn.textContent = 'Show ' + doneRows.length + ' completed items ✓';
+    btn.addEventListener('click', function() {
+      showing = !showing;
+      doneRows.forEach(function(row) {
+        row.classList.toggle('show', showing);
+      });
+      btn.textContent = showing
+        ? 'Hide completed items ✓'
+        : 'Show ' + doneRows.length + ' completed items ✓';
+    });
+
+    var healthGrid = document.querySelector('.health-grid');
+    if (healthGrid) {
+      healthGrid.parentNode.insertBefore(btn, healthGrid.nextSibling);
+    }
+  });
+</script>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">DockBound</div>
+  <h1>Project Roadmap</h1>
+  <div class="subtitle">Living plan — all work streams, all status</div>
+  <div class="meta">
+    <span>Last updated: 2026-09-05 (eve)</span>
+    <span>Maintained by <code>/pm</code> + human review</span>
+    <span>Internal use only</span>
+  </div>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#how">How to Read This Document</a></li>
+    <li><a href="#health">Project Health at a Glance</a></li>
+    <li><a href="#blockers">Deploy Blockers</a></li>
+    <li><a href="#decisions">Open Decisions</a></li>
+    <li><a href="#advisor">Advisor Experience</a></li>
+    <li><a href="#traveler">Traveler Experience</a></li>
+    <li><a href="#portguide">Port Guide Content</a></li>
+    <li><a href="#agency">Agency Hub</a></li>
+    <li><a href="#admin">Admin Tooling</a></li>
+    <li><a href="#dock">DOCK Scoring</a></li>
+    <li><a href="#qa">QA Pipeline</a></li>
+    <li><a href="#infra">Platform / Infrastructure</a></li>
+    <li><a href="#research">Product Research &amp; UX</a></li>
+    <li><a href="#data-arch">Data Architecture &amp; Guide Configuration</a></li>
+    <li><a href="#scaling">Technical Debt &amp; Scaling Risks</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HOW TO READ
+════════════════════════════════════════ -->
+<h1 id="how">1. How to Read This Document</h1>
+
+<p>This is the single source of truth for DockBound product work — completed, in progress, and planned. It replaces the individual phase plan files in memory. Architecture reference docs (what DockBound owns vs. PlatformCore, the *Bound pattern, API design) are kept separately in memory as they are design constraints, not work items.</p>
+
+<h3>Status key</h3>
+<div class="legend">
+  <div class="legend-item"><span class="s s-done">Done</span> Shipped and working</div>
+  <div class="legend-item"><span class="s s-wip">In Progress</span> Actively being coded this sprint</div>
+  <div class="legend-item"><span class="s s-next">Next</span> Ready to start — no blockers, requirements clear</div>
+  <div class="legend-item"><span class="s s-backlog">Backlog</span> Planned but not yet sequenced</div>
+  <div class="legend-item"><span class="s s-blocked">Blocked</span> Cannot start — external dependency</div>
+  <div class="legend-item"><span class="s s-decision">Decision</span> Needs a call before work can be scoped</div>
+  <div class="legend-item"><span class="s s-hold">Hold</span> Intentionally deferred — revisit later</div>
+</div>
+
+<h3>Size guide</h3>
+<div class="legend">
+  <div class="legend-item"><span class="sz">XS</span> &lt;2 hours</div>
+  <div class="legend-item"><span class="sz">S</span> ~half day</div>
+  <div class="legend-item"><span class="sz">M</span> 1–2 days</div>
+  <div class="legend-item"><span class="sz">L</span> 3–5 days</div>
+  <div class="legend-item"><span class="sz">XL</span> 1–2 weeks</div>
+  <div class="legend-item"><span class="sz">Epic</span> Multi-week / significant architecture</div>
+</div>
+
+<p style="font-size:9.5pt;color:#6b7280;margin-top:8px;">Sizes assume 1 developer with Claude. A session is typically 4–6 hours of productive output. <strong>Sprint = 2 weeks of sessions.</strong> The /pm agent checks this doc weekly and flags items whose status looks stale relative to recent commits.</p>
+
+<!-- ═══════════════════════════════════════
+     PROJECT HEALTH
+════════════════════════════════════════ -->
+<h1 id="health">2. Project Health at a Glance</h1>
+<p style="font-size:9.5pt;color:#6b7280;">Updated by <code>/pm</code> on each run. These counts reflect items in this document.</p>
+
+<div class="health-grid">
+  <div class="health-card good">
+    <div class="hc-label">Items Done</div>
+    <div class="hc-value">81</div>
+    <div class="hc-sub">across all streams</div>
+  </div>
+  <div class="health-card warn">
+    <div class="hc-label">In Progress</div>
+    <div class="hc-value">0</div>
+    <div class="hc-sub">active this sprint</div>
+  </div>
+  <div class="health-card warn">
+    <div class="hc-label">Next Up</div>
+    <div class="hc-value">5</div>
+    <div class="hc-sub">ready to start</div>
+  </div>
+  <div class="health-card">
+    <div class="hc-label">Backlog</div>
+    <div class="hc-value">39</div>
+    <div class="hc-sub">planned, not sequenced</div>
+  </div>
+  <div class="health-card bad">
+    <div class="hc-label">Blocked</div>
+    <div class="hc-value">1</div>
+    <div class="hc-sub">deploy blockers</div>
+  </div>
+  <div class="health-card bad">
+    <div class="hc-label">Decisions</div>
+    <div class="hc-value">6</div>
+    <div class="hc-sub">open, blocking work</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DEPLOY BLOCKERS
+════════════════════════════════════════ -->
+<h1 id="blockers">3. Deploy Blockers</h1>
+<div class="callout danger"><strong>These must be completed before the next full functions deploy to production.</strong> They are external/manual steps — cannot be done by Claude.</div>
+
+<table>
+  <thead><tr><th>Blocker</th><th>What to do</th><th>Who</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="s s-done">Done</span> SendGrid API key + dispute email</td>
+      <td>Resolved 2026-09-03. <code>SENDGRID_API_KEY</code> and <code>DISPUTE_ALERT_EMAIL</code> set as Firebase secrets via Twilio/SendGrid console.</td>
+      <td>Amy</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> SendGrid domain verification</td>
+      <td>Resolved 2026-09-03. SPF/DKIM/DMARC verified. <code>support@dockbound.app</code> confirmed as verified sender.</td>
+      <td>Amy</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> Stripe webhook registration</td>
+      <td>Done 2026-09-05. Destination <code>dockbound-prod-webhook</code> registered in Stripe Dashboard (Your account scope). Events: <code>charge.dispute.created</code>, <code>checkout.session.completed</code>, <code>customer.subscription.created</code>, <code>customer.subscription.updated</code>, <code>customer.subscription.deleted</code>. Signing secret written to Firestore <code>config/stripe.webhookSecret</code>.</td>
+      <td>Amy</td>
+    </tr>
+    <tr>
+      <td><span class="s s-blocked">Blocked</span> Twilio account approval</td>
+      <td>Campaign resubmitted 2026-09-03. Brand recreated under P&amp;A Ventures LLC (legal entity) with DockBound as product/campaign. P&amp;A Ventures logo + attribution added to dockbound.app footer so TCR can verify connection. In-app opt-in screenshot submitted as CTA evidence. Pending carrier review. Once approved: overwrite placeholder secrets (<code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_PHONE_NUMBER</code>), deploy functions, register <code>twilioInboundWebhook</code> URL in Twilio Console.</td>
+      <td>Amy + Twilio</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     OPEN DECISIONS
+════════════════════════════════════════ -->
+<h1 id="decisions">4. Open Decisions</h1>
+<div class="callout warning"><strong>Each item below is blocking or shaping downstream work.</strong> No action required until you're ready — but the longer they sit, the more the backlog is sequenced around an unknown.</div>
+
+<table>
+  <thead><tr><th>Decision</th><th>Options</th><th>Downstream impact</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="s s-done">Done</span> V4 manual fields — not DockBound's responsibility</td>
+      <td>Decision closed 2026-08-29: PlatformCore owns V4 manual field generation and ongoing updates. DockBound is a consumer of PlatformCore content, not a content editor. No GPT pass or admin tool needed on the DockBound side.</td>
+      <td>Removes this item from DockBound's roadmap entirely. PC team handles all 5 remaining manual fields.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> PlatformCore sync strategy — resolved 2026-08-29</td>
+      <td>Decision closed: DockBound is no longer the authoritative content source. PlatformCore PROD is the single source of truth. <code>port_guides</code> deprecated as fallback. No sync needed — DockBound no longer writes port content.</td>
+      <td>Unblocks all port guide items. Both dev and prod env point to PC PROD.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-decision">Decision</span> DOCK advisory delta calibration</td>
+      <td>Level 2 advisory currently adds C+0.5, producing +0.125 avg delta — below the 0.5 AT-RISK threshold. Option: C+1.0 for Level 2, C+1.5 for Level 3. Requires real advisor feedback data to justify.</td>
+      <td>Affects false-positive rate on AT-RISK flags. Recommend: defer until 30+ advisors active.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-decision">Decision</span> Data Arch — Expert role scoping</td>
+      <td>For entity-local field priority overrides (System A Phase 2): separate permission tier with <code>assignedEntities</code> on user record, or system admin operating in a scoped UI mode? Affects whether entity-local override writes need row-level Firestore rules.</td>
+      <td>Blocks System A Phase 2 entity-local overrides. Does not block Phase 1 (global overrides only).</td>
+    </tr>
+    <tr>
+      <td><span class="s s-decision">Decision</span> Data Arch — Resolver parity confirmation</td>
+      <td>The Phase 4 read-API resolver and the Phase 5 Travefy push resolver must be the exact same function with no drift. Confirm architecture before Phase 5 starts: <code>guideResolverService.ts</code> / <code>shared/guideResolver.js</code> is the single source of truth, called by both paths.</td>
+      <td>Blocks Phase 5. <code>ResolvedSection.source</code> ('base'|'override'|'custom') and <code>contentVersion</code> diffing are already typed — just needs the confirmation that no separate push-path resolver will be written.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> Agency Hub commercial model — confirmed 2026-08-29</td>
+      <td><strong>PRD model confirmed.</strong> Basic $99/named advisor/yr · Professional $49/mo or $499/yr · Engage $99/mo or $999/yr. Trial: 60 days per email, no tier selection until trial ends; advisors added under annual org subscription do not get individual trials. Seat = 1 named advisor login + 1 Travefy identity; admin access does not consume a seat. Tier mixing allowed (org may purchase different tiers for different advisors).</td>
+      <td>Phase 4 billing/seats implementation unblocked.</td>
+    </tr>
+    <tr>
+      <td><span class="s s-done">Done</span> Traveler dashboard redesign — completed 2026-08-29</td>
+      <td>Mental model reframed to "what's happening today." Implemented: slim day-nav pill strip (replaced teal gradient banner), light-mode surface cards throughout, port guide as hero section (rendered first, not collapsed), compact travel alert inline strip, weather + port info as tidy two-column surface cards above the fold. All dark gradients and glassmorphism removed from content area.</td>
+      <td>Advisor dashboard UI modernization still pending (different scope — user has additional notes).</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 1: ADVISOR EXPERIENCE
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="advisor">5. Advisor Experience</h2>
+  <span class="stream-pct">~80% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:80%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Auth, roles, protected routes</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr class="row-done"><td>Advisor landing page (<code>/for-advisors</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped 2026-09-01. Replaced ComingSoonPage placeholder. Full content from <em>DockBound Landing Page Content v1</em>. Sections: hero ("Turn port complexity into client confidence"), value prop, static itinerary comparison table, outcomes list, advisor-sees/traveler-receives split, practice cards, objections Q&amp;A, CTA. Primary CTA → product demo anchor; secondary → advisor signup.</td></tr>
+    <tr class="row-done"><td>Agency landing page (<code>/for-agencies</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped 2026-09-01. Replaced ComingSoonPage placeholder. Sections: agency value table, standalone vs. Travefy deployment model comparison, adoption options, pilot factors, Travefy callout card, CTA → advisor signup.</td></tr>
+    <tr class="row-done"><td>Travefy partner landing page (<code>/for-travefy</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped 2026-09-01. Replaced ComingSoonPage placeholder. Includes qualifier note: active Travefy account required — DockBound does not provide or resell Travefy access. Sections: 4 setup steps, fit bullets + workflow, example St. Thomas port card, agency benefit, CTA → advisor signup.</td></tr>
+    <tr><td>Agent dashboard — 4-tab structure (Sailings, Clients, Port Tools, Settings)</td><td><span class="s s-done">Done</span></td><td></td><td>Old URL params remapped via TAB_REMAP</td></tr>
+    <tr><td>Itinerary Timeline (grouped by cruise + sailDate, urgency sort, Port Guide → link)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Who's Sailing summary cards (Sailing Now / This Week CruiseCards)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Traveler Roster (add, archive/unarchive, + Cruise action, CSV import)</td><td><span class="s s-done">Done</span></td><td></td><td>Soft-delete pattern; archive toggle</td></tr>
+    <tr><td>Add client from cruise search results</td><td><span class="s s-done">Done</span></td><td></td><td>"Add Client" button on cruise cards, agents only</td></tr>
+    <tr><td>Travefy integration (connect, sync, enrich, nightly sync, TravefyLinkEditor)</td><td><span class="s s-done">Done</span></td><td></td><td>Stored trips in <code>agents/{uid}/trips</code>; deduped by PartnerIdentifier. 2026-08-30: <code>travefyConnect</code> CF now reads <code>travefyEmailOverride</code> from agents doc so advisor-saved override is honoured; "Save &amp; Reconnect" button triggers connect immediately after saving override.</td></tr>
+    <tr><td>Act Now panel (at-risk, imminent arrivals, undelivered guides)</td><td><span class="s s-done">Done</span></td><td></td><td>Paid access gate</td></tr>
+    <tr><td>Cruise Change Feed (filtered to advisor's ports, "Relevant to your trips" callout)</td><td><span class="s s-done">Done</span></td><td></td><td>2026-08-30: sail date and departure port change detection fixed — now checks <code>mapped_diff</code> key presence instead of <code>changed_fields</code> array (which only contains top-level keys like <code>mapped_fields</code>, never individual field names).</td></tr>
+    <tr><td>Port Activity section (grouped by port, Travefy-enriched advisors only)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Intelligence panel (Today's Ports, Next 3 Days, At-Risk Itineraries)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Port Tools tab (Port Guide, Port Day at a Glance, DOCK Diagnostics, Congestion Calendar, Guide Settings)</td><td><span class="s s-done">Done</span></td><td></td><td>Paid access gate on Port Guide + Calendar</td></tr>
+    <tr><td>Travefy Advisor self-serve trial (60-day, no Stripe at signup)</td><td><span class="s s-done">Done</span></td><td></td><td><code>travefyadvisor</code> path; trial is local Firestore only</td></tr>
+    <tr><td>Independent Advisor self-serve trial (60-day, Stripe checkout at onboarding)</td><td><span class="s s-done">Done</span></td><td></td><td>TRAVEFY_TIERS picker → Stripe with <code>trial_period_days: 60</code></td></tr>
+    <tr><td>Invite-only guard (DOCK-XXXX-XXXX codes, one-use)</td><td><span class="s s-done">Done</span></td><td></td><td>Validated via <code>validateInviteCode</code> CF before account creation</td></tr>
+    <tr><td>SMS TCPA opt-in form (advisor's own number, consent required)</td><td><span class="s s-done">Done</span></td><td></td><td>Consent never pre-checked; enrolled state with manage/remove actions</td></tr>
+    <tr><td>Keyword SMS invite — texting JOIN → auto-generate invite code via TwiML</td><td><span class="s s-done">Done</span></td><td></td><td>Idempotent per phone; source: 'sms' on code record</td></tr>
+    <tr><td>Agent communications (in-app thread, messages subcollection, log contact)</td><td><span class="s s-done">Done</span></td><td></td><td>Thread metadata in <code>agentCommunications</code></td></tr>
+    <tr><td>Manage Billing (Stripe Portal via <code>stripeCreatePortalSession</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Requires existing Stripe customer record</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED</td></tr>
+    <tr><td>My Clients tab + Intelligence panel redesign</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>2026-08-31: Trip Intelligence moved from dead import to live Sailings tab. Independent advisors now get port-day intelligence via roster+cruise data (<code>normalizeItinerary</code> + sail date → absolute port dates); Travefy advisors unchanged. Sync Now button hidden for non-Travefy advisors. Today's Ports / Next 3 Days / At-Risk all work without Travefy.</td></tr>
+    <tr><td>Advisor dashboard UI modernization</td><td><span class="s s-done">Done</span></td><td><span class="sz">L</span></td><td>2026-08-31: Plan Banner compressed to slim horizontal strip (inline badge + countdown + action buttons, ~42px vs full card). Settings tab sections now use <code>cardStyle</code> card wrappers with gap spacing instead of <code>borderTop</code> dividers. Clients tab <code>borderTop</code> separator removed. Further visual passes deferred to a dedicated session.</td></tr>
+    <tr class="row-done"><td>Port guide welcome message — rich text / HTML editor</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-02. <code>PortGuideDisplay.tsx</code> now renders welcome message as HTML via <code>dangerouslySetInnerHTML</code>. Settings form and live preview already supported HTML — only the display side needed updating.</td></tr>
+    <tr><td>Advisor proactive DOCKGuide delivery to traveler (Journey 9)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>One-click push via email or in-app. Depends on SendGrid being live.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 2: TRAVELER EXPERIENCE
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="traveler">6. Traveler Experience</h2>
+  <span class="stream-pct">~90% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:90%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Auth (sign up, log in, session handling)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Cruise search + browse (line, ship, date, region filters)</td><td><span class="s s-done">Done</span></td><td></td><td>Prefix-range Firestore query; prompt sign-up when unauthenticated</td></tr>
+    <tr class="row-done"><td>Nassau preview page (<code>/preview/nassau</code>) — full feature parity</td><td><span class="s s-done">Done</span></td><td></td><td>2026-09-01: DOCK scores restored (baseline regen run dev + prod — 2,259/2,262 ports); CurrencyConverter added (USD → BSD); weather date bug fixed (OWM returns 3-hour intervals — deduplicated to one entry per calendar day, closest to noon). Page now shows DOCK, weather (5 distinct days), currency, tours, port guide, CTA.</td></tr>
+    <tr><td>Stripe checkout — DOCKGuide purchase</td><td><span class="s s-done">Done</span></td><td></td><td>Session persists cruise selection through auth redirect</td></tr>
+    <tr><td>DOCKGuide dashboard (port guides, weather, alerts, currency, Viator tours, DOCK)</td><td><span class="s s-done">Done</span></td><td></td><td>Paid gate; freemium shows locked sections. Redesigned 2026-08-29: "what's happening today" mental model — slim day-nav pills, port guide as hero, light-mode surface cards throughout, compact travel alert strip.</td></tr>
+    <tr><td>Freemium access + upgrade prompts</td><td><span class="s s-done">Done</span></td><td></td><td>FeatureGate component; upgrade flow at <code>/upgrade/:orderId</code></td></tr>
+    <tr><td>Print cruise guide (<code>/print/cruise/:id</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Print-optimized, no chrome</td></tr>
+    <tr><td>Itinerary change alerts (modal on login when change detected)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Referral attribution (<code>agencyOnReferralSignup</code> CF)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Traveler-to-advisor link (<code>linkAgentRoster</code> CF at login)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Current + past cruises pages</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED</td></tr>
+    <tr class="row-done"><td>NWS Weather Alerts (US ports only — 40+ ports incl. FL, Gulf, East/West Coast, AK, HI, PR, USVI, Guam)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-05. <code>nwsAlerts</code> CF queries <code>api.weather.gov/alerts/active?point={lat},{lon}</code> — free public API, no key. Hardcoded <code>NWS_PORT_COORDS</code> map covers 40+ US/territory cruise ports; international ports return <code>covered:false</code> silently. Only fires for port days that are today or tomorrow. Advisor Intelligence panel: red <span style="font-family:monospace">🚨 NWS ALERT · until [time]</span> pill + event name on port day cards when Extreme or Severe alerts active. Traveler dashboard: dismissible danger banner with alert event, headline, expiry, and note explaining ship Wi-Fi-only passengers won't receive the cell broadcast automatically.</td></tr>
+    <tr class="row-done"><td>Offline / cached guide access</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped 2026-09-01 via <code>portGuideIdbCache.ts</code> (commit <code>8c1e2bc</code>). IndexedDB with 24-hour TTL; stale-serve pattern — on a cache hit past TTL, serves the stale guide immediately for speed, then writes a freshness gap record to <code>stale_guide_reports</code> Firestore collection for monitoring. IDB only — no service worker needed at this scale.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 3: PORT GUIDE CONTENT
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="portguide">7. Port Guide Content</h2>
+  <span class="stream-pct">100% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:100%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>V4 schema defined (types, PortGuide interface)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>V4 auto-fill — all 2,228 V2.0 guides upgraded to schemaVersion:4 (derivable fields)</td><td><span class="s s-done">Done</span></td><td></td><td>Scripts: <code>v4-gap-report.cjs</code>, <code>v4-auto-fill.cjs</code></td></tr>
+    <tr><td>PlatformCore backfilled from DockBound dev (2,231 guides)</td><td><span class="s s-done">Done</span></td><td></td><td>Run via <code>backfill-v4-from-dockbound.js</code> in PC repo</td></tr>
+    <tr><td>Port Day at a Glance section live in agent port guide</td><td><span class="s s-done">Done</span></td><td></td><td>V4 display layer in <code>PortGuideDisplay.tsx</code></td></tr>
+    <tr><td>PlatformCore as primary source; <code>port_guides</code> fallback removed</td><td><span class="s s-done">Done</span></td><td></td><td>Fallback removed 2026-08-29. CF proxy only — no local fallback. Both dev + prod env point to PC PROD.</td></tr>
+    <tr><td>Information Standards public page (<code>/information-standards</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Trust/transparency page; linked from CompassLanding</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED</td></tr>
+    <tr><td>Fallback audit — logging added; <code>port_guides</code> archive cross-check optional</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-29: <code>console.warn</code> added to PlatformCore catch block. Fallback removed entirely — no runtime reads from <code>port_guides</code>. Cross-check script optional/low priority.</td></tr>
+    <tr><td>V4 manual fields — owned by PlatformCore</td><td><span class="s s-done">Done</span></td><td></td><td>Closed 2026-08-29. PlatformCore generates and maintains all 5 manual V4 fields (<code>portAreaActivityDepth</code>, <code>majorExperienceTransferTime</code>, <code>returnDependencies</code>, <code>impactAction</code>, <code>taxiPricingMethod</code>). DockBound is a consumer only — no action needed.</td></tr>
+    <tr><td>Port guide visual redesign — Layer 1 (content rules doc)</td><td><span class="s s-done">Done</span></td><td></td><td>Completed 2026-08-29. <code>PORT_GUIDE_STRUCTURE.md</code> updated with: V3/V4 canonical field values, icon/badge mapping table (Appendix B), content generation addendum for all V4 fields (Appendix C), corrected <code>calmFactor</code> canonical values.</td></tr>
+    <tr><td>Port guide visual redesign — Layer 2 (display: icons, badges, chips)</td><td><span class="s s-done">Done</span></td><td></td><td>Completed with V4 changes. CalmBadge, WorthItBadge, transport icons, return stress gauge, safety badge, time chips, Who It's For chips, What to Bring pills, Pro Tips icon-prefixing — all in <code>PortGuideDisplay.tsx</code>. Fixed 2026-08-30: CSS utility layer added to <code>index.css</code> (flex, gap, rounded-full, etc.) — components were using Tailwind-style class names with no CSS backing; layout and chip shapes now render correctly.</td></tr>
+    <tr><td>Sailings and Clients tab pagination</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-30. Sailings table (20/page), active roster (25/page), archived roster (25/page) — all with Prev/Next controls. Urgency groups always visible above fold. Page resets on data change.</td></tr>
+    <tr><td>PlatformCore sync strategy — decision + implementation</td><td><span class="s s-done">Done</span></td><td></td><td>Resolved 2026-08-29. Not needed — DockBound is no longer a content editor. PC PROD is the authoritative source. No sync needed.</td></tr>
+    <tr><td>V4 production deploy (functions + hosting to dockbound-2de7d)</td><td><span class="s s-done">Done</span></td><td></td><td>Deployed 2026-08-29. Hosting + all 65 functions live on dockbound-2de7d. PLATFORMCORE_BASE_URL points to PC PROD.</td></tr>
+    <tr><td>Deprecate <code>port_guides</code> fallback</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-08-29. Fallback branch removed from <code>getPortGuide()</code>. Firestore <code>port_guides</code> collection retained as archive — not queried at runtime.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 4: AGENCY HUB
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="agency">8. Agency Hub</h2>
+  <span class="stream-pct">Phase 1 + Phase 2 core done (~45% of full PRD)</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:25%"></div></div>
+
+<div class="callout info">The Node system is the canonical organization hierarchy — every agency is an <code>org</code> node, every advisor is a <code>user</code> node. This is locked architecture. Do not add <code>parentAgencyId</code> or hierarchy fields to the Agency model.</div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 1 — Attention-first dashboard (COMPLETE)</td></tr>
+    <tr><td>Node system integration (createAgency, addAgencyAgent, removeAgencyAgent all write nodeId)</td><td><span class="s s-done">Done</span></td><td></td><td>Backfill script run on dev + prod</td></tr>
+    <tr><td>Activity logging scaffolding (<code>advisorMeaningfulActivity</code> flag on log entries)</td><td><span class="s s-done">Done</span></td><td></td><td>Login wired; remaining call sites done as features are built</td></tr>
+    <tr><td>Attention item data model + CRUD (<code>attention_items</code> collection)</td><td><span class="s s-done">Done</span></td><td></td><td>Full type system in <code>attentionService.ts</code>; history audit trail per item</td></tr>
+    <tr><td>Phase 1 detection (advisorNotActive 14-day, travefyAuthMissing, travefyAuthExpired)</td><td><span class="s s-done">Done</span></td><td></td><td>Runs client-side on each AgencyHostDashboard load; deduplicates</td></tr>
+    <tr><td>Exception-first AgencyHostDashboard (attention items as primary content)</td><td><span class="s s-done">Done</span></td><td></td><td>Summary strip → attention feed → nav cards → agency details</td></tr>
+    <tr><td>Advisor Roster page (<code>/agency-hub/roster</code>)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>CSV import (<code>/agency-hub/import</code>)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>AdvisorDetailPage (<code>/agency-hub/advisor/:agentDocId</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Shows name, email, status, last meaningful activity, open attention items</td></tr>
+    <tr><td>Agency reports page (<code>/agency-hub/reports</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Referral + activity analytics</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 2 — Operations</td></tr>
+    <tr><td>Current Sailings view (travelers actively sailing, today's ports first)</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-08-31. Cross-advisor tab in AgencyHostDashboard; groups by advisor, sail-date badges (sailing vs. upcoming), ±2/+7 day window. DockGuide sharing status deferred (blocked on email).</td></tr>
+    <tr><td>Action recording + outcome model (Resolved requires action + outcome)</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-08-31. ResolutionModal captures required action + outcome fields before calling <code>updateAttentionStatus('resolved')</code>. Attention rows now have Viewed / Resolve / Dismiss buttons.</td></tr>
+    <tr><td>Escalation + overdue enforcement (deadline config, advisor → manager → admin)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td></td></tr>
+    <tr><td>Phase 2 attention triggers — <code>trialExpiring</code> (7-day threshold)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-31. Added to <code>runPhase1Detection</code>; reads <code>agents/{uid}.plan</code> directly; creates <code>actionNeeded</code> item with days-left in metadata and inline display on attention row.</td></tr>
+    <tr><td>Phase 2 attention triggers — unsharedDockGuide, billingIssue, travelerRequest, dataQuality</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>unsharedDockGuide + travelerRequest blocked on email/messaging infra. billingIssue + dataQuality deferred pending further definition.</td></tr>
+    <tr><td>Adoption reporting (invited / activated / active / trial conversion)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-31. Adoption tab: funnel summary cards + per-advisor table showing type, Travefy connection status, and plan/trial status with warning coloring at ≤7 days. DockGuides created metric deferred.</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 3 — Communications (SendGrid live 2026-09-03; blocked on Twilio approval)</td></tr>
+    <tr><td>Send port guide to traveler — one-click email via SendGrid (advisor-branded)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>SendGrid now live. Still blocked on Twilio for SMS path. Log every send to Firestore for CRM export.</td></tr>
+    <tr><td>Bulk send — port guide to full sailing roster (preview + audit)</td><td><span class="s s-blocked">Blocked</span></td><td><span class="sz">L</span></td><td>Requires Twilio approval for SMS leg. Email leg unblocked — can build after single-send is done.</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 4 — Governance &amp; Commerce</td></tr>
+    <tr><td>Role system (org owner, agency admin, team manager, billing admin, reporting-only, support admin)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XL</span></td><td>Maps to nodePermissions section visibility</td></tr>
+    <tr class="row-done"><td>Billing &amp; Seats (seat inventory, per-advisor tier, org subscription, trial rules)</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped. Commercial model: Basic $99/advisor/yr · Pro $49/mo · Engage $99/mo. 60-day trial, no tier selection until end, tier mixing allowed. Seat inventory, per-advisor tier, and org subscription implemented.</td></tr>
+    <tr><td>Organization Settings &amp; Branding (logo upload, disclaimer)</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-08-31. Settings tab in AgencyHostDashboard: logo file upload to Firebase Storage (<code>agency-logos/{agencyId}/</code>), disclaimer textarea. Logo displayed in hub header. Colors deferred — no clear use case yet.</td></tr>
+    <tr class="row-done"><td>Audit Log (7-year retention, governed export)</td><td><span class="s s-done">Done</span></td><td></td><td>Shipped.</td></tr>
+    <tr><td>Notifications (in-app, email digest, SMS for urgent items)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">L</span></td><td>Requires SendGrid + Twilio</td></tr>
+    <tr><td>SSO via Firebase Auth (separately priced add-on)</td><td><span class="s s-done">Done</span></td><td><span class="sz">Epic</span></td><td>Already configured in Firebase Auth — SAML/OIDC provider support live. No additional implementation needed.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 5: ADMIN TOOLING
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="admin">9. Admin Tooling</h2>
+  <span class="stream-pct">~85% done (log wiring pass + Audit Log Viewer + Revenue Dashboard remaining)</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:65%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Admin Portal Hub — reorganized to 14 tiles in 4 groups (People &amp; Access, Commerce, Content &amp; Data, Platform Operations); sidebar matches</td><td><span class="s s-done">Done</span></td><td></td><td>Done 2026-09-03. Previously 9 tiles, flat. Orphaned pages (Agent Tools, Cross-Agency Reports) now reachable from the portal.</td></tr>
+    <tr><td>Content Health (PlatformCore tab, Legacy tab, QA Review tab)</td><td><span class="s s-done">Done</span></td><td></td><td>Schema version from Firestore <code>system_configs</code>; not hardcoded</td></tr>
+    <tr><td>Data Maintenance (ports, ships, cruise lines, extras, currency, alerts, Viator, weather, pipeline triggers, DOCK diagnostics)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Agency List + Create</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Agency Detail (roster counts, activate/deactivate)</td><td><span class="s s-done">Done</span></td><td></td><td>Cascade deactivation added 2026-09-03: confirm modal shows affected advisor count, suspends all active/invited advisors on confirm.</td></tr>
+    <tr><td>Agent Tools — Link Travefy Account</td><td><span class="s s-done">Done</span></td><td></td><td>Manual link by UID + Travefy email when emails don't match</td></tr>
+    <tr><td>Agent Tools — Promote to Advisor</td><td><span class="s s-done">Done</span></td><td></td><td>UID + role select (independentAdvisor | travefyadvisor) → creates agent record. 2026-08-30: promotion now sets <code>plan.status: active</code> (dot-notation) on the agents doc so <code>hasPaidAdvisorAccess</code> gate returns true and Travefy Sync section appears correctly.</td></tr>
+    <tr><td>API Keys (create, revoke, restore, delete; dbk_ format)</td><td><span class="s s-done">Done</span></td><td></td><td>SHA-256 hash stored; full key shown once</td></tr>
+    <tr><td>Invite Codes (DOCK-XXXX-XXXX format, create/revoke, SMS-sourced display)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Cruise Changes Log (filterable, expandable before/after diff)</td><td><span class="s s-done">Done</span></td><td></td><td>Read-only; no approve/reject workflow yet</td></tr>
+    <tr><td>Usage &amp; Costs (OpenAI, SendGrid, per-advisor cost modeling)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Cross-Agency Reports (total agencies, referral counts, open attention items by priority)</td><td><span class="s s-done">Done</span></td><td></td><td>Attention item view added 2026-09-03: urgent/actionNeeded/monitor counts per agency, sorted by open item total. Agency names link to detail page.</td></tr>
+    <tr><td>Reminders (recurring operational tasks, annual/quarterly/monthly cadence)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">P1 GAPS — highest priority admin gaps</td></tr>
+    <tr><td>Advisor Roster View (<code>/admin/advisors</code>) — searchable/filterable table of all advisors</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-08-30. Columns: email/name, agency, type, tier, slots, Travefy connected, plan status, trial/updated. Search + type + status filters. Linked from Admin Portal tile.</td></tr>
+    <tr class="row-done"><td>Advisor Detail Page (<code>/admin/advisors/:uid</code>) — admin-facing (distinct from agency host version)</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-09-02. Account + Plan cards, plan override (tier/slotCap/status dropdowns), suspend/unsuspend toggle, Travefy connection, alert settings. Clickable rows in Advisor Roster; lazy-loaded route /admin/advisors/:uid.</td></tr>
+    <tr class="row-done"><td>Order Lookup + Comp Access</td><td><span class="s s-done">Done</span></td><td><span class="sz">L</span></td><td>Done 2026-09-02. /admin/orders — email search → order history table; grant comp sets hasPurchasedCompass:true + writes comp order doc. Stripe refund via admin CF deferred.</td></tr>
+    <tr><td>Platform User Count KPIs (hub cards: travelers paid/freemium, advisors by tier, agencies, new users)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-30. KPI strip above tile grid: Paid Travelers, Freemium Travelers, Advisors, Agencies. Loads from users + agents + agencies collections on portal mount.</td></tr>
+    <tr><td>Content Coverage % by Region (summary table at top of Content Health)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-30. Collapsible "Coverage by country" table in PlatformCore panel. Sorted worst-first (lowest % first). Click a row to filter the guide list to that country; click again or "Clear" to reset. Progress bar + color coding (red &lt;50%, amber &lt;80%, green ≥80%).</td></tr>
+    <tr class="row-done"><td>Pipeline Health Dashboard (last run, success/fail, next scheduled, error summary per pipeline)</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-09-02. /admin/pipeline-health — all 9 scheduled CFs; pipeline_health Firestore collection written after each run. Status, last-run age, duration, records processed. CruiseMapper falls back to cruise_pipeline_runs.</td></tr>
+    <tr class="row-done"><td>Host Contracts admin UI (<code>/admin/host-contracts</code>)</td><td><span class="s s-done">Done</span></td><td><span class="sz">L</span></td><td>Done 2026-09-05. Super-admin contract editor: commercial model (sponsored / preferred / subsidy), eligible advisor plans, per-plan pricing table, volume bands, billing frequency, invoice net days, departure policy. <code>host_contracts/{agencyId}</code> is the single source of truth; all writes via Admin SDK CFs with immutable <code>host_billing_events</code> audit trail. Firestore rules: read = admin or ownsAgency; write = CF-only. New CFs: <code>upsertHostContract</code>, <code>hostEnrollAdvisor</code>, <code>hostRemoveAdvisor</code>, <code>stripeCreateHostSubscriptionSession</code>, <code>generateHostInvoice</code>, <code>generateHostInvoicesScheduled</code>.</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">P2 IMPROVEMENTS</td></tr>
+    <tr><td>Revenue Dashboard (<code>/admin/revenue</code>, super-admin only)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">L</span></td><td>MRR from Stripe API, one-time revenue from Firestore orders, month-over-month trend.</td></tr>
+    <tr class="row-done"><td>Cross-Agency Attention Item View (open items per agency, by priority)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-03. Added to Cross-Agency Reports page: urgent/actionNeeded/monitor badge counts per agency, summary KPI cards, sorted by open items descending.</td></tr>
+    <tr><td>Batch Content Generation ("Generate for region X")</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">M</span></td><td>Queue AI generation for all incomplete ports in a region. Show progress, allow review before publish.</td></tr>
+    <tr class="row-done"><td>Standardized log schema — <code>loggingService.ts</code> rewrite</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-03. <code>writeLog()</code> is the single canonical function: category, severity, summary, source, actor (auto-inferred from Auth), target, correlationId, auto 7-year expiresAt. <code>logPurchase()</code> kept as typed wrapper. CF schema documented in comment block. All <code>userService</code> role-change calls migrated; cascade deactivate wired.</td></tr>
+    <tr class="row-done"><td>Admin action log wiring — remaining pages</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-05. <code>writeLog()</code> wired into ApiKeyAdminPage (create/revoke/restore/delete), InviteCodesPage (generate/revoke), AdminOrderLookupPage (comp access grant), AdminAdvisorDetailPage (plan override, suspend/unsuspend), AdminAgencyListPage (create agency). All use <code>source: 'admin_ui'</code> with appropriate category, targetType, and targetId.</td></tr>
+    <tr class="row-done"><td>Audit Log Viewer (<code>/admin/audit-log</code>)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-09-05. <code>AuditLogPage.tsx</code> — loads last 500 entries from <code>logs</code> collection ordered by timestamp desc; client-side filters by category, severity, actor email, summary/target text; 25-per-page pagination; click-to-expand detail JSON. Wired into App.tsx route, AdminLayout sidebar, and AdminPortal tile grid.</td></tr>
+    <tr class="row-done"><td>Cascade deactivation (deactivate agency + suspend all affiliated advisors)</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Done 2026-09-03. Inline confirm prompt shows affected advisor count; suspends all active + invited advisors in parallel with agency deactivation.</td></tr>
+    <tr class="row-done"><td>V4 fields in AI generation prompts</td><td><span class="s s-done">Done</span></td><td></td><td>Implemented by PlatformCore. Not DockBound's concern — PC owns port content generation. <code>adminGeneratePortContent</code> CF remains for emergency local use only.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 6: DOCK SCORING
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="dock">10. DOCK Scoring</h2>
+  <span class="stream-pct">~90% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:90%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Baseline scoring system (<code>dock_scores_baseline</code>, regen script)</td><td><span class="s s-done">Done</span></td><td></td><td>Manual regen only — cost control. Script: <code>regenerate-dock-baselines.cjs</code></td></tr>
+    <tr><td>Dynamic adjusted scoring (<code>dockCalculateAdjusted</code> CF, <code>dock_scores_adjusted</code>)</td><td><span class="s s-done">Done</span></td><td></td><td><code>computeDockAdjusted()</code> shared across API endpoints</td></tr>
+    <tr><td>Port schedule index (<code>port_schedule</code> collection, monthly rebuild)</td><td><span class="s s-done">Done</span></td><td></td><td>Powers O/D dynamic adjustments + congestion calendar</td></tr>
+    <tr><td>40 scoring rules seeded in Firestore (<code>dock_scoring_rules</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>CSV source in <code>scripts/archive/</code>. Seeded dev + prod 2026-08-18.</td></tr>
+    <tr><td>AT-RISK flag (delta ≥ 0.5 = dynamicAvg − staticAvg)</td><td><span class="s s-done">Done</span></td><td></td><td>Surfaces in Intelligence panel + Act Now queue</td></tr>
+    <tr><td>State Dept advisory delta integration (Level 1–4 → C modifier)</td><td><span class="s s-done">Done</span></td><td></td><td>Via StateGovTravelAdvisory Cloud Run service</td></tr>
+    <tr><td>DOCK Diagnostics UI (<code>DatabaseDockDiagnostic</code> component)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED</td></tr>
+    <tr><td>Advisory delta calibration (Level 2: C+0.5 → C+1.0?)</td><td><span class="s s-decision">Decision</span></td><td><span class="sz">XS</span></td><td>Requires real advisor feedback data — defer until 30+ advisors active. Do not recalibrate without evidence.</td></tr>
+    <tr><td>Port schedule monthly rebuild (operational cadence)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">XS</span></td><td>Reminder: run <code>npm run dock:build-schedule:dev</code> then <code>:prod</code> each month.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 7: QA PIPELINE
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="qa">11. QA Pipeline</h2>
+  <span class="stream-pct">~95% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:95%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Validation gate — <code>shared/portGuideValidator.js</code> wired into <code>adminGeneratePortContent</code></td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Generation provenance fields (model, promptVersion, generatedAt on section docs)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>DOCK scoring Vitest (~40 cases in <code>dockDiagnosticService.test.ts</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>All scoring branches covered</td></tr>
+    <tr><td>DOCK summary validator (<code>shared/dockSummaryValidator.js</code>)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Golden fixtures (3 seed cases: pier-standard, tender-island, ferry-dependent)</td><td><span class="s s-done">Done</span></td><td></td><td>NAS-001 humanApproved: true. Run <code>npm run qa:regression</code> to validate.</td></tr>
+    <tr><td>QA result storage (<code>content_qa_results</code> collection, full QAResult schema)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Grounding evaluator (<code>shared/groundingEvaluator.js</code>, PlatformCore evidence injected)</td><td><span class="s s-done">Done</span></td><td></td><td>gpt-4o; <code>sourceEvidenceRef</code> stored on QA docs</td></tr>
+    <tr><td>Usefulness rubric (11 dimensions in <code>shared/qaPolicy.js</code>, combined with grounding)</td><td><span class="s s-done">Done</span></td><td></td><td>Thresholds: ≥0.75 approved, 0.60–0.75 advisories, &lt;0.60 human review</td></tr>
+    <tr><td>QA Review tab in ContentHealthPage + <code>adminGetQAResults</code> CF</td><td><span class="s s-done">Done</span></td><td></td><td>ScoreMeter, ReviewerDecisionBadge, fixture download</td></tr>
+    <tr><td>Regression runner (<code>scripts/run-qa-regression.cjs</code>, <code>npm run qa:regression</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>NAS-001 approved, 20/20 sections clean</td></tr>
+    <tr><td>CI regression workflow (<code>.github/workflows/qa-regression.yml</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Triggers on validator/policy/fixture changes</td></tr>
+    <tr><td>V4 validation (enums + <code>validateDocLevelFields()</code>); PC CJS synced</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Human review workflow (<code>adminSubmitQAReview</code> CF)</td><td><span class="s s-done">Done</span></td><td></td><td>Decisions propagate to section <code>qaStatus</code></td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 3 REMAINING</td></tr>
+    <tr><td><code>onSectionWritten</code> Firestore trigger + <code>processQaQueue</code> CF</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-08-31. Trigger now has fail-safe try/catch (evaluation error → <code>qaStatus: 'evaluation_error'</code>), <code>generatedBy</code> check, and queues AI grounding via <code>content_qa_queue</code>. <code>processQaQueue</code> scheduled CF runs every 15 min; fetches section + PlatformCore evidence, runs grounding evaluator, writes <code>content_qa_results</code>, updates <code>qaStatus</code>.</td></tr>
+    <tr><td>Evaluator calibration tracking (<code>content_qa_calibration</code> collection)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-31. <code>adminSubmitQAReview</code> writes calibration doc on every human decision (agreed = AI flagged → human rejected, or AI approved → human approved). <code>adminGetCalibrationStats</code> CF returns 30-day agreement rate + breakdown by disposition. ContentHealthPage QA tab shows calibration summary card with color-coded agreement %.</td></tr>
+    <tr><td>5 Gherkin acceptance scenarios (Flow20–24)</td><td><span class="s s-done">Done</span></td><td><span class="sz">S</span></td><td>Done 2026-08-31. Flow20: QA Review tab renders, calibration summary visible, summary cards present. Flow21: Needs Review disposition badge surfaces in admin UI. Flow22: Reviewed filter + review action buttons present. Flow23: Advisory filter + refresh. Flow24: <code>qa:regression</code> exits 0 on approved fixtures + schema version display. <code>loginAsAdmin</code> helper added to test-helpers.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 8: PLATFORM / INFRASTRUCTURE
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="infra">12. Platform / Infrastructure</h2>
+  <span class="stream-pct">~85% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:85%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Firebase Auth + Firestore + Cloud Functions v2 (Node 22, ESM)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Stripe checkout + subscriptions + Billing Portal</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Stripe webhook handler (dispute + checkout audit log)</td><td><span class="s s-done">Done</span></td><td></td><td>webhookSecret from Firestore <code>config/stripe.webhookSecret</code></td></tr>
+    <tr><td>Partner API (cruiseItineraryApi, portGuideApi, dockScoreApi, itineraryWithGuidesApi)</td><td><span class="s s-done">Done</span></td><td></td><td>Versioned, sandbox/paid tier, Cache-Control 3600s on guide responses</td></tr>
+    <tr><td>PlatformCore API client (<code>shared/platformcore.js</code>)</td><td><span class="s s-done">Done</span></td><td></td><td>Root <code>shared/</code> is canonical; <code>functions/shared/</code> copy is gitignored</td></tr>
+    <tr><td>SendGrid integration (installed, secrets structure ready)</td><td><span class="s s-done">Done</span></td><td></td><td>Not yet deployed — domain verification pending</td></tr>
+    <tr><td>Twilio SMS (placeholders set; <code>twilioInboundWebhook</code> handles JOIN + thread replies)</td><td><span class="s s-done">Done</span></td><td></td><td>Real secrets pending Twilio account approval</td></tr>
+    <tr><td>Node permission system (<code>resolveNodePermissions</code> CF, <code>effectivePermissions</code> cache)</td><td><span class="s s-done">Done</span></td><td></td><td></td></tr>
+    <tr><td>Deploy scripts (<code>npm run deploy:dev</code>, <code>npm run deploy:prod</code> — explicit --project)</td><td><span class="s s-done">Done</span></td><td></td><td>Never run bare <code>firebase deploy</code> — hits whatever <code>firebase use</code> points to</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED / BLOCKED</td></tr>
+    <tr class="row-done"><td>SendGrid domain live (SPF/DKIM/DMARC verified, secrets set)</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Done 2026-09-03. Domain authenticated via Twilio/SendGrid console, support@dockbound.app verified, SENDGRID_API_KEY secret set in Firebase.</td></tr>
+    <tr><td>Twilio account live (real secrets, functions deployed, webhook registered)</td><td><span class="s s-blocked">Blocked</span></td><td><span class="sz">XS</span></td><td>See Deploy Blockers. External: Twilio review pending.</td></tr>
+    <tr class="row-done"><td>Stripe webhook registration</td><td><span class="s s-done">Done</span></td><td><span class="sz">XS</span></td><td>Done 2026-09-05. Destination registered in Stripe Dashboard; signing secret in Firestore <code>config/stripe.webhookSecret</code>.</td></tr>
+    <tr><td>Spec docs — product-spec, admin-spec, architecture</td><td><span class="s s-done">Done</span></td><td></td><td><code>docs/product-spec.html</code> (1861 lines), <code>docs/admin-spec.html</code> (962 lines), <code>docs/architecture.html</code> (900 lines) — all exist and are substantive.</td></tr>
+    <tr><td>PlatformCore sync strategy implementation</td><td><span class="s s-done">Done</span></td><td></td><td>Decision closed 2026-08-29. No implementation needed — DockBound is a content consumer only. PlatformCore PROD is the authoritative source; <code>port_guides</code> fallback removed. V4 rollout complete.</td></tr>
+    <tr class="row-done"><td>Payment provider abstraction — <code>subscription</code> / <code>stripe</code> namespace refactor</td><td><span class="s s-done">Done</span></td><td><span class="sz">M</span></td><td>Done 2026-09-05. Stripe-specific fields moved out of <code>plan</code> into canonical <code>subscription.*</code> (status, trialEndsAt, currentPeriodEnd) and provider-specific <code>stripe.*</code> (customerId, subscriptionId, priceId) blobs. <code>paymentProvider: 'stripe'</code> tag added for future provider-switching. Updated: <code>agentService.ts</code>, <code>AgentDashboard.tsx</code>, <code>AdminAdvisorDetailPage.tsx</code>, <code>AdminAdvisorsPage.tsx</code>, <code>AdminUsagePage.tsx</code>, <code>AgencyHostDashboard.tsx</code>, <code>stripeWebhook</code> CF. Migration scripts applied: 5 dev agent docs, 6 prod agent docs, 1 dev agency doc, 2 prod agency docs.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     STREAM 9: PRODUCT RESEARCH & UX
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="research">13. Product Research &amp; UX</h2>
+  <span class="stream-pct">~10% done</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:10%"></div></div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td>Usability framework defined (ISO 9241-11 — effectiveness, efficiency, satisfaction)</td><td><span class="s s-done">Done</span></td><td></td><td>Framework in product backlog memory. Page checklist + test protocol + rollup report format ready.</td></tr>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PLANNED</td></tr>
+    <tr><td>Usability assessment execution (3–5 testers per page, unaided)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">Epic</span></td><td>Start with highest-traffic advisor flows. Requires recruiting testers — not a Claude task.</td></tr>
+    <tr><td>Static vs. dynamic score redesign in port guide display</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">M</span></td><td>Partially underway via PlatformCore V4 field analysis. Wait for that to complete before redesigning score display.</td></tr>
+    <tr><td>Video / product story</td><td><span class="s s-hold">Hold</span></td><td><span class="sz">Epic</span></td><td>HOLD — need to decide what story to tell before any production work.</td></tr>
+    <tr><td>Ergonomic review — /bound family (apply ISO 9241-11 framework)</td><td><span class="s s-backlog">Backlog</span></td><td><span class="sz">Epic</span></td><td>Panda Ventures scope. Systematic page-by-page checklist before user testing.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     DATA ARCHITECTURE & GUIDE CONFIGURATION
+════════════════════════════════════════ -->
+<div class="stream-header">
+  <h2 id="data-arch">14. Data Architecture &amp; Guide Configuration</h2>
+  <span class="stream-pct">System B types defined; System A not yet started (~10%)</span>
+</div>
+<div class="progress"><div class="progress-fill" style="width:10%"></div></div>
+
+<div class="callout info"><strong>EventBound has the reference implementation for both systems.</strong> System B types (<code>GuideProfile</code>, <code>AgentGuideOverride</code>, <code>AgentCustomSection</code>, <code>ResolvedSection</code>, resolver) are fully defined in <code>src/types/locations.ts</code> and the resolver is partially implemented in <code>guideResolverService.ts</code> + <code>shared/guideResolver.js</code>. System A (raw data pipeline) has not been started. The two systems are separable — System B can be activated without System A (PlatformCore continues to fill <code>locations/sections</code> content); System A adds a DockBound-owned data pipeline on top.</div>
+
+<table>
+  <thead><tr><th style="width:38%">Item</th><th>Status</th><th>Size</th><th>Notes / Dependencies</th></tr></thead>
+  <tbody>
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PRE-PHASE 1 — Data readiness check (do this first)</td></tr>
+    <tr>
+      <td>V4 field → fieldTypes mapping audit</td>
+      <td><span class="s s-next">Next</span></td>
+      <td><span class="sz">XS</span></td>
+      <td>Script: enumerate all distinct field keys present in <code>port_guides</code> V4 docs; map to proposed <code>fieldTypes</code> registry entries; identify gaps and fields without data. Output is the Phase 1 field registry spec. EventBound has a reference script to adapt. Feeds: <code>dataSources</code> registry seed + <code>fieldTypes</code> seed.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">SYSTEM B — Section, Profile &amp; Override Configuration (types defined; needs activation)</td></tr>
+    <tr>
+      <td><code>SectionType.sourceFieldKeys</code> — add to type + seed collection</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">XS</span></td>
+      <td>Adds System A linkage field (<code>sourceFieldKeys: string[]</code>) to <code>SectionType</code> interface and existing <code>sectionTypes</code> Firestore docs. Defer population until Phase 1 field registry is seeded — add the field now, fill values later.</td>
+    </tr>
+    <tr>
+      <td><code>guideProfiles</code> — seed platform default; wire into resolver fallback</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Type fully defined. Needs: (1) create <code>guideProfiles/platform-default</code> doc with all port section keys in canonical order, (2) confirm <code>guideResolverService.ts</code> falls back to it when no agent override exists, (3) admin UI to edit platform profile.</td>
+    </tr>
+    <tr>
+      <td><code>agentGuideOverrides</code> — confirm production path + admin UI</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Type + resolver already implemented. Needs: (1) verify docs are being written correctly for agents who customize their guide config, (2) admin/agency UI to add/remove sections and reorder. Currently only Guide Settings welcome message is persisted; full section add/remove is not exposed.</td>
+    </tr>
+    <tr>
+      <td><code>GET /v1/locations/:locationId/guide</code> API endpoint</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Unified read endpoint; accepts <code>?sections=a,b,c</code>, <code>?profile={profileId}</code>, or authenticated-agent context. Response: <code>locationType</code>, resolved sections with <code>contentVersion</code>, and provenance (<code>source: 'base'|'override'|'custom'</code> per section — already typed in <code>ResolvedSection</code>). Depends on <code>guideProfiles</code> being seeded.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">SYSTEM A — Phase 1: Raw data foundation</td></tr>
+    <tr>
+      <td><code>dataSources</code> registry (Firestore)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">XS</span></td>
+      <td>Seed with sources already flowing into DockBound: PlatformCore (commercial, high authority), State Dept advisories (government), OWM weather (commercial), <code>port_schedule</code> ship counts (internal). Fields: name, type, defaultReliabilityScore, notes.</td>
+    </tr>
+    <tr>
+      <td><code>fieldTypes</code> registry (Firestore)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>One doc per V4 field key — driven by the mapping audit above. Fields: label, applicableEntityTypes (<code>["port"]</code> initially), dataType, conflictThreshold. Product-agnostic: Eventbound defines its own fieldKeys without modifying these.</td>
+    </tr>
+    <tr>
+      <td><code>rawFieldData</code> observation ingestion — 1–2 pilot sources</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Start with PlatformCore + State Dept advisories (both already flowing). Schema: <code>rawFieldData/{entityId}/fields/{fieldKey}/observations/{observationId}</code> — sourceId, value, collectedAt, sourceReliabilityScore (snapshot at collection), rawSourceRef. Append-only, never overwrite.</td>
+    </tr>
+    <tr>
+      <td>Basic resolution — <code>resolvedFields</code> (default scores, no overrides)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td><code>resolveField(entityId, fieldKey)</code> picks highest-reliability observation. Persists to <code>resolvedFields/{entityId}/{fieldKey}</code>: value, resolvedFromSourceId, resolvedAt, conflictFlag, contributingObservationIds. Conflict flag = variance across observation values exceeds <code>fieldType.conflictThreshold</code>.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">SYSTEM A — Phase 2: Resolution controls</td></tr>
+    <tr>
+      <td><code>fieldPriorityOverrides</code> — global scope</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Admin-set: <code>fieldPriorityOverrides/global/{fieldKey}/{sourceId}</code> → priorityWeight, setBy, reason. Overrides <code>dataSources.defaultReliabilityScore</code> globally for a given field+source pair.</td>
+    </tr>
+    <tr>
+      <td>Admin screen: observations + resolved value per entity/field</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>"Show me everything behind this value" — lists all observations for a field+entity (with source, score, timestamp), shows which won resolution and why, surfaces conflict flag. Entry point from Content Health or Data Maintenance pages.</td>
+    </tr>
+    <tr>
+      <td>Conflict detection queue (conflictThreshold per fieldType)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Flag conflicts in the admin queue when variance exceeds threshold. Threshold calibration requires real observation volume — build the flag mechanism first, tune thresholds post-Phase-1.</td>
+    </tr>
+    <tr>
+      <td>Entity-local priority overrides (expert role)</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Scoped to one port/city: <code>fieldPriorityOverrides/{entityId}/{fieldKey}/{sourceId}</code>. <strong>Blocked on expert role scoping decision.</strong></td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">SYSTEM A — Phase 3: Synthesis pipeline</td></tr>
+    <tr>
+      <td><code>generateSectionContent</code> — <code>resolvedFields</code> → <code>locations/sections</code></td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">L</span></td>
+      <td>Reads <code>resolvedFields</code> for a location + <code>sectionType.sourceFieldKeys</code>; synthesizes section content (template or LLM pass with "empower not intimidate" framing); writes to <code>locations/{locationId}/sections/{sectionKey}</code> with bumped <code>contentVersion</code>. PlatformCore currently fills this path — this adds a DockBound-owned synthesis option for fields DockBound owns directly.</td>
+    </tr>
+    <tr>
+      <td>Auto-regenerate on resolution change + prior version retention</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Firestore trigger on <code>resolvedFields</code> change → queue synthesis job. Retain prior <code>locations/sections</code> content for diff/spot-check rather than a hard review gate — avoids backlog at volume while keeping an audit trail.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 5 — Travefy enrichment integration</td></tr>
+    <tr>
+      <td>Wire same resolver into Travefy push pipeline</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">M</span></td>
+      <td>Per TripEvent for ports, per TripDay/segment for city stays. Same <code>shared/guideResolver.js</code> function — no separate push-path resolver. Requires resolver parity decision (open decision). Depends on Phase 4 resolver being confirmed as canonical.</td>
+    </tr>
+    <tr>
+      <td><code>contentVersion</code> diffing to skip unchanged sections on re-push</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Compare <code>travefyEnrichments.{contentVersion}</code> vs current section <code>contentVersion</code>. Re-push only if stale. Idempotent by <code>PartnerIdentifier: "dockbound-{portCode}"</code>. <code>contentVersion</code> field already on <code>LocationSection</code> type.</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#fafafa;font-weight:600;color:#374151;font-size:9pt;padding:5px 10px;">PHASE 6 — Eventbound port</td></tr>
+    <tr>
+      <td>Define Eventbound <code>fieldTypes</code> and <code>dataSources</code> registry entries</td>
+      <td><span class="s s-backlog">Backlog</span></td>
+      <td><span class="sz">S</span></td>
+      <td>Eventbound-specific field keys (venue capacity, ticketing, lineup, etc.) added to the shared <code>fieldTypes</code> Firestore collection. System A + B code requires zero modification — product-agnostic by design. Both products share the same pipeline, differentiated only by fieldTypes and sourceData content.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════
+     TECHNICAL DEBT & SCALING RISKS
+════════════════════════════════════════ -->
+<h1 id="scaling">15. Technical Debt &amp; Scaling Risks</h1>
+<div class="callout"><strong>No action required now.</strong> These are working systems with known architectural constraints. Document them here so the tradeoff is on record — revisit only if the trigger condition is met.</div>
+
+<table>
+  <thead><tr><th style="width:28%">Risk</th><th>Status</th><th>Trigger to revisit</th><th>Details</th></tr></thead>
+  <tbody>
+    <tr class="row-done">
+      <td><strong>Remove PlatformCore serving dependency</strong></td>
+      <td><span class="s s-done">Done</span></td>
+      <td>—</td>
+      <td>
+        Shipped 2026-09-02 (commit <code>f6f8eca</code>). <code>getPortGuide()</code> in <code>portGuideService.ts</code> now reads directly from the local <code>port_guides</code> Firestore collection (2,259+ guides, all V4). The CF proxy (<code>getPlatformCorePortGuide</code>, <code>listDockGuides</code>, <code>registerMissingPort</code>) has been removed from both dev and prod. <code>shared/platformcore.js</code> is retained only for <code>adminGeneratePortContent</code> AI evidence grounding — not in any user-facing path. Eliminated: CF proxy hop, external API key dependency, two-source fallback logic with silent catch.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>StateGovTravelAdvisory — Cloud Run intermediary for State Dept. RSS</strong></td>
+      <td><span class="s" style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;padding:2px 8px;border-radius:4px;font-size:8.5pt;font-weight:600;">Fine at current scale</span></td>
+      <td>Fetch frequency increases, Cloud Run has operational issues, or <code>Aureum01</code> repo access becomes a problem</td>
+      <td>
+        <strong>What it is:</strong> A standalone Express + TypeScript server (submodule at <code>Aureum01/StateGovTravelAdvisory</code>, deployed to Cloud Run) that proxies the U.S. State Department public RSS feed at <code>travel.state.gov/…/traveladvisories.xml</code>. It adds rate limiting, caching, and OpenAPI docs on top of the raw RSS.<br><br>
+        <strong>How DockBound uses it:</strong> The <code>alertsScheduledFetch</code> Cloud Function (<code>functions/index.js</code> ~line 5796) runs on a cron at 6 AM + 6 PM ET (2×/day). It reads the <code>TRAVEL_ALERTS_API_URL</code> Firebase Secret, calls the Cloud Run service, and writes advisory data to Firestore. The <code>dataSource</code> field on each record is set to <code>'travel-advisory-api'</code> (line ~6023) confirming this path.<br><br>
+        <strong>Why it's fine now:</strong> Two fetches per day means essentially zero volume pressure. The rate limiting and caching the middleware provides are meaningless at this load. The Cloud Run service is not in DockBound's GitHub org — it lives under <code>Aureum01/StateGovTravelAdvisory</code> which the <code>pandadammit-cloud</code> account cannot push to (confirmed 2026-09-01).<br><br>
+        <strong>The simpler alternative (when needed):</strong> <code>alertsScheduledFetch</code> could call <code>https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories.xml/</code> directly — it is a public RSS feed, no auth required. Remove the Cloud Run service entirely. The middleware's rate limiting and caching are irrelevant at 2×/day. This would eliminate the external Cloud Run dependency and the cross-org repo problem in a single PR.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  DockBound Project Roadmap &nbsp;·&nbsp; Last updated 2026-09-05 (data arch stream added) &nbsp;·&nbsp; Maintained by <code>/pm</code> + human review &nbsp;·&nbsp; Internal use only
+</div>
+
+</body>
+</html>

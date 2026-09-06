@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForumJourney — System Architecture</title>
+<style>
+body {
+  font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 56px;
+}
+.cover {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 3px solid #1e40af;
+  margin-bottom: 48px;
+}
+.cover .logo { font-size: 13pt; font-weight: 700; color: #1e40af; letter-spacing: 0.08em; text-transform: uppercase; }
+.cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+.cover .subtitle { font-size: 13pt; color: #555; }
+.cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; }
+
+.toc { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+.toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #1e40af; }
+.toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+.toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+.toc a { color: #1e40af; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #1e40af; padding-bottom: 6px; margin-top: 48px; }
+h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #1e40af; padding-left: 10px; }
+h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+.callout { background: #eff6ff; border-left: 4px solid #1e40af; padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt; }
+.callout.warning { background: #fff8ed; border-color: #f59e0b; }
+.callout.danger  { background: #fef2f2; border-color: #ef4444; }
+.callout.info    { background: #f0fdf4; border-color: #22c55e; }
+
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+th { background: #1e40af; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+tr:hover td { background: #f9fafb; }
+
+code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+.cmd { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 9.5pt; padding: 14px 18px; border-radius: 6px; margin: 10px 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+
+.block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; }
+.block h4 { margin: 0 0 8px; font-size: 11pt; color: #1e40af; font-family: 'Courier New', monospace; font-style: normal; }
+.block p  { margin: 4px 0; font-size: 10.5pt; }
+.block ul { margin: 8px 0 0; padding-left: 18px; }
+.block li { margin: 3px 0; font-size: 10pt; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: 600; }
+.badge.green  { background: #dcfce7; color: #166534; }
+.badge.yellow { background: #fef9c3; color: #854d0e; }
+.badge.red    { background: #fee2e2; color: #991b1b; }
+.badge.blue   { background: #dbeafe; color: #1e40af; }
+.badge.gray   { background: #f3f4f6; color: #374151; }
+
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 9pt; color: #9ca3af; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">ForumJourney</div>
+  <h1>System Architecture</h1>
+  <div class="subtitle">Technical Reference for Platform Engineering</div>
+  <div class="meta">Internal codebase: EventBound &nbsp;·&nbsp; Generated: 2026-09-05 &nbsp;·&nbsp; PandA Ventures</div>
+</div>
+
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#overview">System Overview</a></li>
+    <li><a href="#layout">Repository Layout</a></li>
+    <li><a href="#functions">Cloud Functions</a></li>
+    <li><a href="#routes">API Routes</a></li>
+    <li><a href="#flows">Domain Flows</a></li>
+    <li><a href="#data-model">Data Model</a></li>
+    <li><a href="#frontend">Frontend</a></li>
+    <li><a href="#deployment">Environment &amp; Deployment</a></li>
+    <li><a href="#security">Security Model</a></li>
+  </ol>
+</div>
+
+<h1 id="overview">1. System Overview</h1>
+
+<p>ForumJourney is an API-first event readiness platform. Partners (event organizers) integrate via REST API. Attendees receive personalized pre-event plans via a public URL — no login required. Multi-role portals for organizers, venue staff, and speakers launched August 2026.</p>
+
+<table>
+  <tr><th>Component</th><th>Project ID</th><th>Notes</th></tr>
+  <tr><td>Development environment</td><td><code>eventbound-dev</code></td><td>Default alias in .firebaserc</td></tr>
+  <tr><td>Production environment</td><td><code>eventbound-prod</code></td><td>Deploy with <code>firebase deploy --project production</code></td></tr>
+</table>
+
+<div class="callout">
+  <strong>Branding note:</strong> External brand is <strong>ForumJourney</strong> (rebranded August 2026). Internal project ID remains <code>eventbound-dev</code> — Firebase project IDs are immutable. Outbound webhook payloads and UI assets use the ForumJourney name. Keep internal code and IDs as-is unless a file explicitly uses the ForumJourney brand.
+</div>
+
+<div class="callout info">
+  <strong>PlatformCore retired 2026-08-31.</strong> The external guide warehouse is no longer active. Venue guide data lives in <code>venues/{id}.guide</code> and city guide data in <code>cities/{id}.guide</code>, edited via the venue portal or admin tooling. The <code>PLATFORMCORE_API_KEY</code> secret is still declared in <code>index.ts</code> but PlatformCore calls have been removed from all active code paths.
+</div>
+
+<h1 id="layout">2. Repository Layout</h1>
+
+<div class="cmd">EventBound/
+  functions/          # Firebase Cloud Functions — API backend (Node 22, TypeScript)
+    src/
+      api/            # Express app and route handlers
+        routes/       # One file per route namespace
+      domain/         # Business logic (plan, changes, notifications, webhooks)
+      db/             # Firestore access layer (one file per collection)
+      lib/            # Config, logger, errors, weather, secrets clients
+      sourcing/       # Data collection pipeline
+        adapters/     # SourceAdapter implementations (Google Places, OSM)
+        normalizers/  # Raw payload → NormalizedFact converters
+      types/          # TypeScript type definitions (index.ts)
+      validation/     # Zod schemas
+      middleware/     # Auth, correlation, operator, portal middleware
+  frontend/           # React 18 + Vite SPA (TypeScript)
+    src/
+      pages/          # 19 page components across all roles
+      services/       # planService, operatorService
+      contexts/       # AuthContext
+      components/     # LegalLayout, AddAttendeeModal, etc.
+  scripts/            # Admin SDK utilities (set-claims.js, seed-backlog.js)
+  firestore.rules     # All collections: client access denied; writes via Admin SDK only
+  firebase.json       # Functions + Firestore + Hosting config
+  firestore.indexes.json
+  openapi.yaml        # OpenAPI 3.1.0 spec</div>
+
+<h1 id="functions">3. Cloud Functions</h1>
+
+<p>Two exported functions, Node 22 runtime, Gen 2, region <code>us-central1</code>:</p>
+
+<div class="block">
+  <h4>api</h4>
+  <p><code>onRequest</code> wrapping an Express app. Handles all HTTP traffic.</p>
+  <ul>
+    <li>Secrets: <code>PLATFORMCORE_API_KEY</code> (declared; PlatformCore retired), <code>ANTHROPIC_API_KEY</code>, <code>OPENWEATHERMAP_API_KEY</code></li>
+    <li>CORS restricted to explicit <code>ALLOWED_ORIGINS</code> array (8 origins: Firebase Hosting dev/prod, forumjourney.app, localhost). Configured on <code>onRequest</code> options — not Express middleware.</li>
+  </ul>
+</div>
+
+<div class="block">
+  <h4>onChangeCreated</h4>
+  <p><code>onDocumentCreated</code> Firestore trigger on <code>changes/{changeId}</code>. Fires webhook delivery when a change document is created.</p>
+  <ul>
+    <li>Retries enabled</li>
+    <li>Secret: <code>ANTHROPIC_API_KEY</code></li>
+  </ul>
+</div>
+
+<h1 id="routes">4. API Routes</h1>
+
+<h2>Route Namespaces</h2>
+
+<table>
+  <tr><th>Prefix</th><th>Auth</th><th>Notes</th></tr>
+  <tr><td><code>GET /health</code></td><td>None</td><td>Unauthenticated health check</td></tr>
+  <tr><td><code>/v1/*</code></td><td>SHA-256 hashed API key</td><td><code>X-Api-Key</code> header or <code>Authorization: Bearer</code></td></tr>
+  <tr><td><code>/public/plan/:occurrenceId</code></td><td>None</td><td>Public attendee plan — no auth</td></tr>
+  <tr><td><code>/public/join</code></td><td>None</td><td>Join code validation + Firebase Auth account creation</td></tr>
+  <tr><td><code>/public/leads</code></td><td>None</td><td>Landing page lead capture (CRM)</td></tr>
+  <tr><td><code>/operator/*</code></td><td>Firebase ID token</td><td>Requires <code>role: operator | apiadmin</code> custom claim</td></tr>
+  <tr><td><code>/user/*</code></td><td>Firebase ID token (any role)</td><td>Returns events the user is registered for</td></tr>
+  <tr><td><code>/venue/*</code></td><td>Firebase ID token (any role)</td><td>Venue staff endpoints — occurrence list, guide edits, conference notes</td></tr>
+  <tr><td><code>/speaker/*</code></td><td>Firebase ID token (any role)</td><td>Speaker endpoints — presentation URL, special requests</td></tr>
+</table>
+
+<h2>Full Route Table</h2>
+
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td colspan="3" style="background:#f1f5f9;font-weight:600;font-size:9.5pt;">Partner API — <code>/v1/*</code></td></tr>
+  <tr><td>GET</td><td><code>/health</code></td><td>Health check</td></tr>
+  <tr><td>POST</td><td><code>/v1/events</code></td><td>Create or update an event</td></tr>
+  <tr><td>GET</td><td><code>/v1/events</code></td><td>List events for partner</td></tr>
+  <tr><td>GET</td><td><code>/v1/events/:eventId</code></td><td>Get single event</td></tr>
+  <tr><td>POST</td><td><code>/v1/occurrences</code></td><td>Create occurrence</td></tr>
+  <tr><td>GET</td><td><code>/v1/occurrences</code></td><td>List occurrences</td></tr>
+  <tr><td>GET</td><td><code>/v1/occurrences/:id</code></td><td>Get single occurrence</td></tr>
+  <tr><td>POST</td><td><code>/v1/plans</code></td><td>Generate or refresh plan</td></tr>
+  <tr><td>GET</td><td><code>/v1/plans</code></td><td>List plans for occurrence</td></tr>
+  <tr><td>GET</td><td><code>/v1/plans/:planId</code></td><td>Get single plan</td></tr>
+  <tr><td>POST</td><td><code>/v1/webhooks/partner-events</code></td><td>Inbound partner event updates</td></tr>
+  <tr><td>POST</td><td><code>/v1/attendees</code></td><td>Add attendee to occurrence</td></tr>
+  <tr><td>GET</td><td><code>/v1/attendees</code></td><td>List attendees for occurrence</td></tr>
+  <tr><td>GET</td><td><code>/v1/venues</code></td><td>List venues</td></tr>
+  <tr><td>GET</td><td><code>/v1/venues/:id</code></td><td>Get venue</td></tr>
+  <tr><td>GET</td><td><code>/v1/cities</code></td><td>List cities</td></tr>
+  <tr><td>GET</td><td><code>/v1/cities/:id</code></td><td>Get city</td></tr>
+  <tr><td>GET</td><td><code>/v1/changes</code></td><td>List changes</td></tr>
+  <tr><td>POST</td><td><code>/v1/overrides</code></td><td>Record a manual override</td></tr>
+  <tr><td>POST</td><td><code>/v1/feedback</code></td><td>Submit plan feedback</td></tr>
+  <tr><td>GET</td><td><code>/v1/lookup</code></td><td>Look up occurrence by external ID</td></tr>
+  <tr><td>GET</td><td><code>/v1/source-registry</code></td><td>List active data sources</td></tr>
+  <tr><td>GET</td><td><code>/v1/collection/jobs/list</code></td><td>List collection jobs for partner</td></tr>
+  <tr><td>GET</td><td><code>/v1/collection/jobs/:jobId</code></td><td>Get collection job</td></tr>
+  <tr><td>POST</td><td><code>/v1/collection/jobs/:jobId/retry</code></td><td>Retry a failed collection job</td></tr>
+  <tr><td>POST</td><td><code>/v1/collection/run</code></td><td>Trigger collection for an occurrence</td></tr>
+  <tr><td colspan="3" style="background:#f1f5f9;font-weight:600;font-size:9.5pt;">Public — <code>/public/*</code></td></tr>
+  <tr><td>GET</td><td><code>/public/plan/:occurrenceId</code></td><td>Public attendee plan (no auth)</td></tr>
+  <tr><td>POST</td><td><code>/public/join</code></td><td>Join code validation + Firebase Auth account creation</td></tr>
+  <tr><td>POST</td><td><code>/public/leads</code></td><td>Landing page lead capture</td></tr>
+  <tr><td colspan="3" style="background:#f1f5f9;font-weight:600;font-size:9.5pt;">Operator — <code>/operator/*</code></td></tr>
+  <tr><td>GET</td><td><code>/operator/health</code></td><td>Operator health: webhook counts, stale plans, missing-data frequency</td></tr>
+  <tr><td>GET</td><td><code>/operator/occurrences</code></td><td>List occurrences with attendee counts</td></tr>
+  <tr><td>GET</td><td><code>/operator/occurrences/:id/attendees</code></td><td>List attendees for occurrence</td></tr>
+  <tr><td>PATCH</td><td><code>/operator/attendees/:id/preference</code></td><td>Update notification preference</td></tr>
+  <tr><td>GET</td><td><code>/operator/events/:eventId</code></td><td>Get event details</td></tr>
+  <tr><td>GET</td><td><code>/operator/venues/:venueId</code></td><td>Get venue details</td></tr>
+  <tr><td>GET</td><td><code>/operator/changes/dead-letter</code></td><td>List dead-letter webhook changes</td></tr>
+  <tr><td>POST</td><td><code>/operator/changes/:changeId/retry</code></td><td>Manually retry dead-letter webhook delivery</td></tr>
+  <tr><td>GET</td><td><code>/operator/leads</code></td><td>List captured leads (CRM)</td></tr>
+  <tr><td>PATCH</td><td><code>/operator/leads/:id</code></td><td>Update lead status</td></tr>
+  <tr><td>GET</td><td><code>/operator/sources</code></td><td>List all data sources (admin)</td></tr>
+  <tr><td>GET</td><td><code>/operator/sources/proposed</code></td><td>List proposed sources awaiting approval</td></tr>
+  <tr><td>GET</td><td><code>/operator/sources/:id</code></td><td>Get source detail</td></tr>
+  <tr><td>POST</td><td><code>/operator/sources</code></td><td>Create new data source</td></tr>
+  <tr><td>PATCH</td><td><code>/operator/sources/:id</code></td><td>Update source config</td></tr>
+  <tr><td>POST</td><td><code>/operator/sources/:id/approve</code></td><td>Approve a proposed source</td></tr>
+  <tr><td>POST</td><td><code>/operator/sources/:id/reject</code></td><td>Reject a proposed source</td></tr>
+  <tr><td colspan="3" style="background:#f1f5f9;font-weight:600;font-size:9.5pt;">Portal — <code>/user/*</code>, <code>/venue/*</code>, <code>/speaker/*</code></td></tr>
+  <tr><td>GET</td><td><code>/user/events</code></td><td>Events the authenticated user is registered for</td></tr>
+  <tr><td>GET</td><td><code>/venue/occurrences</code></td><td>Occurrences for venue staff</td></tr>
+  <tr><td>GET</td><td><code>/venue/data/:venueId</code></td><td>Get venue guide data</td></tr>
+  <tr><td>PATCH</td><td><code>/venue/data/:venueId</code></td><td>Update venue guide fields</td></tr>
+  <tr><td>GET</td><td><code>/venue/notes/:occurrenceId</code></td><td>Get conference notes (venue-staff-private)</td></tr>
+  <tr><td>POST</td><td><code>/venue/notes/:occurrenceId</code></td><td>Create/update conference notes</td></tr>
+  <tr><td>GET</td><td><code>/speaker/presentation/:occurrenceId</code></td><td>Get presentation record</td></tr>
+  <tr><td>PUT</td><td><code>/speaker/presentation/:occurrenceId</code></td><td>Update presentation URL</td></tr>
+  <tr><td>GET</td><td><code>/speaker/requests/:occurrenceId</code></td><td>Get special requests</td></tr>
+  <tr><td>POST</td><td><code>/speaker/requests/:occurrenceId</code></td><td>Create special request</td></tr>
+</table>
+
+<h2>Shared Response Shape</h2>
+<p>All routes return a consistent envelope:</p>
+<ul>
+  <li><strong>Read:</strong> <code>{ data, correlationId, generatedAt }</code></li>
+  <li><strong>Write:</strong> <code>{ data, correlationId, generatedAt, warnings, missingFields }</code></li>
+  <li><code>X-Correlation-Id</code> is propagated from request or generated per request</li>
+</ul>
+
+<h1 id="flows">5. Domain Flows</h1>
+
+<h2>5.1 Plan Generation</h2>
+<ul>
+  <li>Triggered by <code>POST /v1/plans</code> or <code>GET /public/plan/:occurrenceId</code></li>
+  <li><code>generatePlan()</code> in <code>src/domain/plan/generator.ts</code> fetches Occurrence, Event, Venue, City</li>
+  <li>Fetches weather and parking facts in parallel (<code>Promise.all</code>): weather uses stage-aware cache; parking facts query <code>normalizedFacts</code> with <code>category='parking'</code>, limit 10, falls back to <code>[]</code> on error</li>
+  <li><code>assembleContent()</code> in <code>src/domain/plan/content.ts</code> builds stage-appropriate <code>PlanContent</code></li>
+  <li>Plan stage auto-detected from days until event: <strong>registration</strong> (&gt;30d) → <strong>plan</strong> (8–30d) → <strong>prepare</strong> (1–7d) → <strong>attend</strong> (day-of or past). Per-partner stage thresholds override global defaults.</li>
+  <li>Plans upserted with deterministic doc ID: <code>{occurrenceId}_{attendeeId|anonymous}_{stage}</code></li>
+  <li>Venue guide (<code>venues/{id}.guide</code>) and city guide (<code>cities/{id}.guide</code>) read directly from Firestore and overlaid on the public plan response</li>
+  <li>Parking <code>normalizedFacts</code> surface in <code>content.discoveries[]</code> when present (category=parking)</li>
+</ul>
+
+<h2>5.2 Change Detection &amp; Webhooks (Inbound)</h2>
+<ul>
+  <li>Partners POST to <code>POST /v1/webhooks/partner-events</code></li>
+  <li>HMAC-SHA256 signature verified on raw body bytes (before JSON parse) via <code>X-ForumJourney-Signature</code> header</li>
+  <li>Timestamp replay check (±5 minutes); idempotency check against <code>processedWebhooks</code> collection</li>
+  <li><code>detectMaterialChanges()</code> diffs stored vs incoming fields; creates <code>Change</code> documents for material changes</li>
+  <li>Affected plans marked stale; <code>processedWebhooks</code> record written</li>
+  <li><code>organizerVerified</code> and <code>verifiedAt</code> stripped from inbound partner payloads — system-set only</li>
+</ul>
+
+<h2>5.3 Outbound Webhook Delivery</h2>
+<ul>
+  <li>Firestore trigger <code>onChangeCreated</code> fires on each new <code>changes</code> document</li>
+  <li><code>deliverWebhook()</code> in <code>src/domain/webhooks/deliver.ts</code> signs payload with HMAC-SHA256, POSTs to partner webhook URL</li>
+  <li>Payload type: <code>forumjourney.plan.changed</code></li>
+  <li>Retries up to 3 times; marks <code>dead_letter</code> on exhaustion</li>
+  <li>Operator can manually retry via <code>POST /operator/changes/:changeId/retry</code></li>
+  <li>Payload includes <code>notificationContent</code> with <code>factual</code> + <code>conversational</code> notification variants</li>
+</ul>
+
+<h2>5.4 Notification Content Generation</h2>
+<ul>
+  <li><strong>Factual variant:</strong> rule-based string from <code>src/domain/notifications/factual.ts</code></li>
+  <li><strong>Conversational variant:</strong> generated by Claude <code>claude-haiku-4-5</code> via <code>@anthropic-ai/sdk</code> in <code>src/domain/notifications/conversational.ts</code></li>
+  <li>Claude failure falls back to the factual message — conversational is never required</li>
+</ul>
+
+<h2>5.5 Data Collection Framework</h2>
+<p>The sourcing pipeline enriches occurrences with categorized local intelligence that surfaces in plan <code>discoveries[]</code> and venue guides.</p>
+<ul>
+  <li><strong>Trigger:</strong> <code>POST /v1/collection/run</code> or admin-initiated per occurrence</li>
+  <li><strong>Runner:</strong> <code>src/sourcing/runner.ts</code> — resolves the <code>EventCollectionSpecification</code> (creates one if absent), iterates enabled categories, creates <code>CollectionJob</code> per active source, invokes adapters</li>
+  <li><strong>Adapters:</strong> implement <code>SourceAdapter</code> interface (<code>src/sourcing/adapters/types.ts</code>) — active: <code>google_places_parking</code>, <code>googlePlaces</code>, <code>openStreetMap</code></li>
+  <li><strong>Normalization:</strong> adapter raw payload → <code>FactCandidate[]</code> via category normalizers (<code>src/sourcing/normalizers/parking.ts</code>)</li>
+  <li><strong>Storage:</strong> raw payload → <code>rawSourceRecords</code>; normalized facts → <code>normalizedFacts</code></li>
+  <li><strong>Geography:</strong> <code>src/sourcing/geography.ts</code> provides typed <code>GeographicRule</code> builders and Haversine-based <code>pointInRule()</code>. Default radii: parking 1.0 mi, transit 1.5 mi, dining 1.0 mi, activities 10.0 mi.</li>
+  <li><strong>Credentials:</strong> adapter API keys resolved at runtime from GCP Secret Manager via <code>src/lib/secrets.ts</code> (<code>resolveCredential()</code>); falls back to env var if no credential ref</li>
+  <li><strong>Admin UI:</strong> <code>/operator/sources/*</code> routes manage the <code>sourceRegistry</code> — propose, approve, reject, configure sources</li>
+</ul>
+
+<h2>5.6 Weather Sourcing</h2>
+<ul>
+  <li><code>src/lib/weather.ts</code> fetches from OpenWeatherMap (current conditions for <code>attend</code>, 5-day forecast for <code>prepare</code>) and overlays NWS active alerts</li>
+  <li>Stage-aware Firestore cache: 30 min for <code>attend</code>, 4 h for <code>prepare</code> (collection: <code>weatherCache</code>)</li>
+  <li>API key: <code>OPENWEATHERMAP_API_KEY</code> Firebase Secret</li>
+  <li>Returns <code>null</code> gracefully if coordinates or key absent; plan generator adds <code>'weather'</code> to <code>missingData</code></li>
+</ul>
+
+<h2>5.7 Join &amp; Portal Auth</h2>
+<ul>
+  <li><code>POST /public/join</code> validates a join code against <code>attendeeCode</code> or <code>venueCode</code> on the occurrence</li>
+  <li>On match: checks seat limit, checks duplicate registration, creates or links a Firebase Auth user, sets custom claims (<code>role</code>, <code>occurrenceId</code>, <code>firstName</code>), creates attendee record, returns a custom token for immediate sign-in</li>
+  <li>Portal middleware (<code>portalAuthMiddleware</code>) validates any Firebase ID token and extracts <code>uid</code>, <code>role</code>, <code>occurrenceId</code>, <code>venueId</code>, <code>partnerId</code> into <code>req.portalUser</code></li>
+</ul>
+
+<h1 id="data-model">6. Data Model</h1>
+
+<p>All Firestore collections deny client-side access. All writes go through the Admin SDK.</p>
+
+<div class="block">
+  <h4>partners</h4>
+  <p>Key: <code>{partnerId}</code></p>
+  <p>API credentials (hashed key), webhook URL, inbound/outbound HMAC secrets, active flag, optional <code>stageThresholds</code> for per-partner plan stage day overrides.</p>
+</div>
+
+<div class="block">
+  <h4>cities</h4>
+  <p>Key: <code>{cityId}</code></p>
+  <p>Name, timezone, transit and weather overview. <code>guide</code> field: hand-curated city guide (replaces PlatformCore city guides).</p>
+</div>
+
+<div class="block">
+  <h4>venues</h4>
+  <p>Key: <code>{venueId}</code></p>
+  <p>Address, coordinates, entrances, accessibility, parking. <code>guide</code> field (VenueGuide type): getting-there options, in-the-know tips, arrival advice. Edited via <code>PATCH /venue/data/:venueId</code>.</p>
+</div>
+
+<div class="block">
+  <h4>events</h4>
+  <p>Key: <code>{partnerId}_{externalEventId}</code></p>
+  <p>Event details, admission policy, sessions, status. Partners scope all event data.</p>
+</div>
+
+<div class="block">
+  <h4>occurrences</h4>
+  <p>Key: <code>{occurrenceId}</code></p>
+  <p>Date, time, timezone, links to event + venue + city, status, <code>attendeeCode</code>, <code>venueCode</code> for join flows.</p>
+</div>
+
+<div class="block">
+  <h4>plans</h4>
+  <p>Key: <code>{occurrenceId}_{attendeeId|anonymous}_{stage}</code></p>
+  <p>Generated plan content, stage, stale flag, missingData list.</p>
+</div>
+
+<div class="block">
+  <h4>changes</h4>
+  <p>Key: auto-ID</p>
+  <p>Material field changes detected from inbound webhooks. Each change document triggers outbound webhook delivery via Firestore trigger.</p>
+</div>
+
+<div class="block">
+  <h4>attendees</h4>
+  <p>Key: <code>{occurrenceId}_{uid}</code></p>
+  <p>Attendee email, firstName, role (attendee | venue), plan URL, notification preference.</p>
+</div>
+
+<div class="block">
+  <h4>feedback</h4>
+  <p>Key: auto-ID</p>
+  <p>Rating (1–5), reason, plan reference.</p>
+</div>
+
+<div class="block">
+  <h4>overrides</h4>
+  <p>Key: auto-ID</p>
+  <p>Manual field overrides with urgency and audit trail (author, reason, original value, new value).</p>
+</div>
+
+<div class="block">
+  <h4>processedWebhooks</h4>
+  <p>Key: <code>{idempotencyKey}</code></p>
+  <p>Deduplication log for inbound partner webhooks. Prevents reprocessing on retry. TTL field <code>expiresAt</code> set.</p>
+</div>
+
+<div class="block">
+  <h4>sourceRegistry</h4>
+  <p>Key: <code>{sourceId}</code></p>
+  <p>External data source config: adapter ID, category, credential ref, reliability, refresh profile. Managed via <code>/operator/sources/*</code> routes.</p>
+</div>
+
+<div class="block">
+  <h4>normalizedFacts</h4>
+  <p>Key: auto-ID</p>
+  <p>Normalized, source-agnostic facts indexed by occurrenceId + category. Payload shape is category-specific (e.g., <code>ParkingFactPayload</code>). Queried by plan generator for parking discoveries.</p>
+</div>
+
+<div class="block">
+  <h4>rawSourceRecords</h4>
+  <p>Key: auto-ID</p>
+  <p>Raw payloads from adapter fetch calls. Preserved for audit and re-normalization.</p>
+</div>
+
+<div class="block">
+  <h4>collectionJobs</h4>
+  <p>Key: auto-ID</p>
+  <p>Job execution record: status (pending/running/completed/failed), attempts, raw record IDs, normalized fact IDs, geographic rule used.</p>
+</div>
+
+<div class="block">
+  <h4>collectionSpecifications</h4>
+  <p>Key: auto-ID</p>
+  <p>Per-occurrence collection config: enabled categories, geographic overrides, collection window, status.</p>
+</div>
+
+<div class="block">
+  <h4>sourceChangeRequests</h4>
+  <p>Key: auto-ID</p>
+  <p>Proposed source changes awaiting admin approval/rejection workflow.</p>
+</div>
+
+<div class="block">
+  <h4>sourceValidations</h4>
+  <p>Key: auto-ID</p>
+  <p>Validation run records for data sources — health checks, reliability scoring.</p>
+</div>
+
+<div class="block">
+  <h4>weatherCache</h4>
+  <p>Key: <code>{occurrenceId}_{stage}</code></p>
+  <p>Cached weather fetch results. TTL: 30 min (attend) / 4 h (prepare). <code>expiresAt</code> field set for Firestore TTL.</p>
+</div>
+
+<div class="block">
+  <h4>venueNotes</h4>
+  <p>Key: auto-ID</p>
+  <p>Conference notes written by venue staff, private to venue role. Indexed by occurrenceId + createdAt (composite index required).</p>
+</div>
+
+<div class="block">
+  <h4>speakerRequests</h4>
+  <p>Key: auto-ID</p>
+  <p>Speaker special requests per occurrence. Indexed by occurrenceId + speakerUid + createdAt (composite index required).</p>
+</div>
+
+<div class="block">
+  <h4>speakerPresentations</h4>
+  <p>Key: <code>{occurrenceId}_{speakerUid}</code></p>
+  <p>Presentation URL (file upload stubbed — OD-19). One record per speaker per occurrence.</p>
+</div>
+
+<div class="block">
+  <h4>logs</h4>
+  <p>Key: auto-ID</p>
+  <p>Interaction audit log — public plan views, portal logins, key user actions. Structured JSON entries.</p>
+</div>
+
+<div class="block">
+  <h4>leads</h4>
+  <p>Key: auto-ID</p>
+  <p>Landing page lead submissions: name, email, organization, use case. Status field for CRM workflow (new → contacted → complete → archived). Visible in operator leads tab.</p>
+</div>
+
+<div class="block">
+  <h4>agenda</h4>
+  <p>Key: <code>{occurrenceId}</code> (or session sub-document)</p>
+  <p>Live Firestore-backed session agenda. Managed via organizer dashboard CRUD. Replaces static session arrays.</p>
+</div>
+
+<h1 id="frontend">7. Frontend</h1>
+
+<p>React 18 + React Router v6 + Vite. Firebase Auth is the only Firebase SDK used client-side — no Firestore client SDK. All data flows through the Cloud Functions API.</p>
+
+<p><strong>Role ranks (ProtectedRoute):</strong> apiadmin=100, eventbound_operator=60, operator=40, organizer=20, speaker=15, venue=12, attendee=10.</p>
+
+<table>
+  <tr><th>Page</th><th>Route</th><th>Auth</th><th>Description</th></tr>
+  <tr><td>LandingPage</td><td><code>/</code></td><td>None</td><td>Public marketing page with lead capture form. Uses <code>landing.css</code> with <code>.lp-</code> tokens.</td></tr>
+  <tr><td>PlanView</td><td><code>/plan/:occurrenceId</code></td><td>None</td><td>Public attendee plan. Stage-aware content: arrival plan, entry readiness, accessibility, weather, venue guide, city guide, discoveries (incl. parking).</td></tr>
+  <tr><td>Login</td><td><code>/login</code></td><td>None</td><td>Firebase email/password auth. Role-aware redirect for all 5 roles. Forgot password link; join code link.</td></tr>
+  <tr><td>JoinPage</td><td><code>/join</code></td><td>None</td><td>5-state join flow: form → link-existing / already-registered / full / invalid-code → success. Calls <code>POST /public/join</code>.</td></tr>
+  <tr><td>InviteAccept</td><td><code>/invite/:token</code></td><td>None</td><td>Organizer invite shell. Backend endpoint is post-pilot.</td></tr>
+  <tr><td>EventsPicker</td><td><code>/events</code></td><td>attendee+</td><td>Multi-event selector. Calls <code>GET /user/events</code>.</td></tr>
+  <tr><td>AttendeePortal</td><td><code>/attendee/:occurrenceId</code></td><td>attendee+</td><td>4-section warm portal: Home (leave-by card, favorites), Agenda (star toggle), Notes (textarea), Map. Favorites and notes stored in localStorage.</td></tr>
+  <tr><td>OrganizerDashboard</td><td><code>/organizer/*</code></td><td>organizer+</td><td>7-section warm portal: Dashboard, Agenda (CRUD), Attendees, Happenings, Requests, Venue Map, Settings.</td></tr>
+  <tr><td>VenuePortal</td><td><code>/venue/:occurrenceId</code></td><td>venue+</td><td>3-section warm portal: Dashboard, Venue Data (guide edits via <code>PATCH /venue/data</code>), Conference Notes (private).</td></tr>
+  <tr><td>SpeakerPortal</td><td><code>/speaker/:occurrenceId</code></td><td>speaker+</td><td>3-section warm portal: Session detail, Presentation (URL; file upload stubbed OD-19), Special Requests.</td></tr>
+  <tr><td>OperatorDashboard</td><td><code>/operator/*</code></td><td>operator+</td><td>Dark theme. Health dashboard (webhook counts, stale plans), occurrence list, attendee management, dead-letter retry UI, leads tab, admin sources tab.</td></tr>
+  <tr><td>About / Contact / FAQ</td><td><code>/about</code>, <code>/contact</code>, <code>/faq</code></td><td>None</td><td>Public legal/info pages. Shared <code>LegalLayout</code> component with landing page nav and footer.</td></tr>
+  <tr><td>Legal pages</td><td><code>/privacy</code>, <code>/terms</code>, <code>/disclaimers</code></td><td>None</td><td>Privacy policy, terms of service, disclaimers. Required for Twilio SMS approval.</td></tr>
+  <tr><td>NotFound</td><td>*</td><td>None</td><td>404 fallback.</td></tr>
+</table>
+
+<p><strong>Portal theme:</strong> <code>frontend/src/portal.css</code> provides a warm light theme scoped to <code>.portal-root</code> using <code>--p-*</code> CSS custom properties. All portal pages import it and wrap in <code>&lt;div className="portal-root"&gt;</code>. Landing page uses <code>landing.css</code> with <code>.lp-</code> tokens. OperatorDashboard uses its own dark theme.</p>
+
+<p><strong>API wiring:</strong> <code>frontend/src/config.ts</code> switches API base URL between local emulator and production based on <code>import.meta.env.PROD</code>.</p>
+
+<h1 id="deployment">8. Environment &amp; Deployment</h1>
+
+<h2>Commands</h2>
+
+<p><strong>Functions</strong> (run from <code>functions/</code>):</p>
+<div class="cmd">npm run build           # tsc compile to lib/
+npm run build:watch     # watch mode
+npm run test            # vitest run — 132 tests, 16 files
+npm run test:watch      # vitest watch
+npm run serve           # build + start local emulators (functions + firestore)</div>
+
+<p><strong>Frontend</strong> (run from <code>frontend/</code>):</p>
+<div class="cmd">npm run dev             # Vite dev server (hot reload)
+npm run build           # tsc + vite build → dist/
+npm run preview         # preview production build</div>
+
+<p><strong>Firebase deployment</strong> (run from <strong>repo root</strong>):</p>
+<div class="cmd">firebase deploy                    # deploy everything
+firebase deploy --only hosting     # frontend only
+firebase deploy --only functions   # functions only
+firebase deploy --only firestore   # rules + indexes only</div>
+
+<div class="callout warning">
+  <strong>Always build before deploying functions.</strong> Run <code>cd functions &amp;&amp; npm run build</code> then <code>cd .. &amp;&amp; firebase deploy --only functions</code>. Deploying without a fresh build causes "User code failed to load / Timeout after 10000" — the CLI analyzes compiled <code>lib/</code> output, not TypeScript source.
+</div>
+
+<h2>Secrets (Firebase Secret Manager)</h2>
+
+<table>
+  <tr><th>Secret</th><th>Used By</th><th>Purpose</th></tr>
+  <tr><td><code>PLATFORMCORE_API_KEY</code></td><td><code>api</code> function</td><td>Declared; PlatformCore retired 2026-08-31 — no active calls</td></tr>
+  <tr><td><code>ANTHROPIC_API_KEY</code></td><td><code>api</code>, <code>onChangeCreated</code></td><td>Claude haiku-4-5 for conversational notifications</td></tr>
+  <tr><td><code>OPENWEATHERMAP_API_KEY</code></td><td><code>api</code> function</td><td>Weather sourcing (current conditions + 5-day forecast)</td></tr>
+</table>
+
+<p><strong>Production env:</strong> <code>functions/.env.eventbound-prod</code> sets <code>EVENTBOUND_ENV=production</code> (gitignored — recreate manually on a new machine).</p>
+
+<h1 id="security">9. Security Model</h1>
+
+<table>
+  <tr><th>Area</th><th>Mechanism</th></tr>
+  <tr><td>Partner API keys</td><td>SHA-256 hashed in Firestore; raw key never persisted</td></tr>
+  <tr><td>Inbound webhooks</td><td>HMAC-SHA256 on raw bytes via <code>X-ForumJourney-Signature</code>; timestamp replay window ±5 min; idempotency check</td></tr>
+  <tr><td>Outbound webhooks</td><td>HMAC-SHA256 signed with per-partner <code>outboundWebhookSecret</code></td></tr>
+  <tr><td>CORS</td><td>Explicit <code>ALLOWED_ORIGINS</code> array on <code>onRequest</code> options (8 origins). Not Express middleware — runtime enforces before Express runs.</td></tr>
+  <tr><td>Firestore rules</td><td>All collections deny client-side access; all writes via Admin SDK</td></tr>
+  <tr><td>Admission field injection</td><td><code>organizerVerified</code> / <code>verifiedAt</code> stripped from inbound partner payloads — system-set only</td></tr>
+  <tr><td>Operator routes</td><td>Firebase ID token required with <code>role: operator | apiadmin</code> custom claim</td></tr>
+  <tr><td>Portal routes</td><td>Firebase ID token required (any role). Claims extracted by <code>portalAuthMiddleware</code>: uid, role, occurrenceId, venueId, partnerId.</td></tr>
+  <tr><td>Adapter credentials</td><td>API keys resolved at runtime from GCP Secret Manager via <code>resolveCredential()</code>. In-memory cache per function invocation. Never logged.</td></tr>
+</table>
+
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+
+</body>
+</html>

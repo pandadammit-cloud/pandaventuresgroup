@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — System Architecture</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 56px;
+  }
+
+  /* Cover */
+  .cover {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 3px solid #0f766e;
+    margin-bottom: 48px;
+  }
+  .cover .logo { font-size: 13pt; font-weight: 700; color: #0f766e; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+  .cover .subtitle { font-size: 13pt; color: #555; }
+  .cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; }
+
+  /* TOC */
+  .toc { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+  .toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #0f766e; }
+  .toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+  .toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+  .toc a { color: #0f766e; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Headings */
+  h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #0f766e; padding-bottom: 6px; margin-top: 48px; }
+  h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #0f766e; padding-left: 10px; }
+  h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+  h4 { font-size: 10.5pt; color: #444; margin-top: 16px; font-style: italic; }
+
+  /* Callout boxes */
+  .callout {
+    background: #f0fdf4;
+    border-left: 4px solid #0f766e;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10.5pt;
+  }
+  .callout.warning { background: #fff8ed; border-color: #f59e0b; }
+  .callout.danger  { background: #fef2f2; border-color: #ef4444; }
+  .callout.info    { background: #eff6ff; border-color: #3b82f6; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+  th { background: #0f766e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fafb; }
+  table.alt-head th { background: #1e293b; }
+
+  /* Code / monospace */
+  code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+  .cmd { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 9.5pt; padding: 14px 18px; border-radius: 6px; margin: 10px 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .cmd .comment { color: #64748b; }
+  .cmd .key { color: #7dd3fc; }
+  .cmd .val { color: #86efac; }
+
+  /* Collection / subsystem blocks */
+  .block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; }
+  .block h4 { margin: 0 0 8px; font-size: 11pt; color: #0f766e; font-family: 'Courier New', monospace; font-style: normal; }
+  .block p  { margin: 4px 0; font-size: 10.5pt; }
+  .block ul { margin: 8px 0 0; padding-left: 18px; }
+  .block li { margin: 3px 0; font-size: 10pt; }
+
+  /* Role badges */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 9pt; font-weight: 700; }
+  .badge.user   { background: #dbeafe; color: #1d4ed8; }
+  .badge.agent  { background: #dcfce7; color: #15803d; }
+  .badge.host   { background: #fef9c3; color: #a16207; }
+  .badge.admin  { background: #fee2e2; color: #b91c1c; }
+  .badge.public { background: #f1f5f9; color: #475569; }
+
+  /* Flow diagram (ASCII-style) */
+  .flow { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; white-space: pre; overflow-x: auto; line-height: 1.65; color: #1e293b; }
+
+  /* Section divider */
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 40px 0; }
+
+  /* Footer */
+  .footer { text-align: center; font-size: 8.5pt; color: #aaa; margin-top: 56px; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+
+  /* Pill row */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .pill { background: #f0fdf4; border: 1px solid #bbf7d0; color: #0f766e; padding: 3px 10px; border-radius: 12px; font-size: 9.5pt; font-weight: 600; }
+  .pill.gray { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
+  .pill.amber { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+  .pill.red   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+</style>
+</head>
+<body>
+
+<!-- ── Cover ─────────────────────────────────────────────────────────────── -->
+<div class="cover">
+  <div class="logo">DockBound</div>
+  <h1>System Architecture</h1>
+  <div class="subtitle">Developer onboarding reference — full system overview</div>
+  <div class="meta">Last updated: August 2026 &nbsp;·&nbsp; Internal use only</div>
+</div>
+
+<!-- ── TOC ───────────────────────────────────────────────────────────────── -->
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#overview">System at a Glance</a></li>
+    <li><a href="#layout">Project Layout</a></li>
+    <li><a href="#frontend">Frontend Architecture</a></li>
+    <li><a href="#backend">Cloud Functions Backend</a></li>
+    <li><a href="#firestore">Firestore Data Model</a></li>
+    <li><a href="#auth">Auth &amp; Role System</a></li>
+    <li><a href="#portguide">Port Guide Pipeline</a></li>
+    <li><a href="#dock">DOCK Scoring System</a></li>
+    <li><a href="#travefy">Travefy Integration</a></li>
+    <li><a href="#api">Partner API</a></li>
+    <li><a href="#qa">QA Pipeline</a></li>
+    <li><a href="#payments">Payments &amp; Subscriptions</a></li>
+    <li><a href="#comms">Email &amp; SMS</a></li>
+    <li><a href="#shared">Shared Code Pattern</a></li>
+    <li><a href="#deploy">Environments &amp; Deployment</a></li>
+    <li><a href="#testing">Testing Strategy</a></li>
+    <li><a href="#conventions">Engineering Conventions</a></li>
+    <li><a href="#pending">Known Issues &amp; Pending Work</a></li>
+  </ol>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="overview">1. System at a Glance</h1>
+
+<p>DockBound is a cruise port intelligence platform. Travel advisors use it to prepare clients for the real logistics of a port day — timing, friction, conditions, and what could go wrong — packaged into shareable DockGuides. The platform also monitors itinerary changes, integrates with Travefy, and exposes a versioned partner API.</p>
+
+<h2>Tech Stack</h2>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Notes</th></tr>
+  <tr><td>Frontend</td><td>React 19, TypeScript, Vite 7, React Router 7</td><td>SPA; lazy-loaded routes for non-critical pages</td></tr>
+  <tr><td>Backend</td><td>Firebase Cloud Functions v2 (Node 22, ESM)</td><td>All functions in a single <code>functions/index.js</code></td></tr>
+  <tr><td>Database</td><td>Firebase Firestore</td><td>Document-oriented; no SQL</td></tr>
+  <tr><td>Auth</td><td>Firebase Auth</td><td>Email/password; roles stored in Firestore user doc</td></tr>
+  <tr><td>Hosting</td><td>Firebase Hosting</td><td>Dev and prod are separate Firebase projects</td></tr>
+  <tr><td>Payments</td><td>Stripe (react-stripe-js, stripe-js)</td><td>Checkout sessions created server-side via CF</td></tr>
+  <tr><td>Email</td><td>SendGrid (<code>@sendgrid/mail</code>)</td><td>Transactional only; key in Firebase Secret Manager</td></tr>
+  <tr><td>SMS</td><td>Twilio</td><td>Advisor-traveler comms; account pending approval</td></tr>
+  <tr><td>Port intelligence</td><td>PlatformCore (internal service)</td><td>Primary source of truth for port guide content</td></tr>
+  <tr><td>Cruise data</td><td>Apify scraper</td><td>Writes to <code>cruises</code> Firestore collection</td></tr>
+  <tr><td>Tours</td><td>Viator API</td><td>Proxied through CF; 404 = no results (not error)</td></tr>
+  <tr><td>Weather</td><td>OpenWeather API</td><td>Used in DOCK dynamic adjustments</td></tr>
+  <tr><td>Travel advisories</td><td>U.S. State Department</td><td>Cloud Run service: <code>StateGovTravelAdvisory/</code></td></tr>
+  <tr><td>AI generation</td><td>OpenAI (gpt-4o)</td><td>Port guide generation; usage tracked in admin</td></tr>
+  <tr><td>Trip platform</td><td>Travefy API</td><td>Two-way: pull trips, write DockBound events back</td></tr>
+  <tr><td>Build / CI</td><td>Vite, ESLint (flat config), Vitest, Playwright</td><td>No Tailwind; CSS custom properties only</td></tr>
+</table>
+
+<h2>External Service Dependencies</h2>
+<div class="flow">Frontend (SPA)
+  │
+  ├── Firebase Auth         (login / session)
+  ├── Firestore             (reads: user profile, port guides, roster, scores)
+  └── Cloud Functions (HTTP, via fetch + Bearer token)
+        │
+        ├── PlatformCore        (port guide content — primary source)
+        ├── OpenWeather API     (weather for DOCK dynamic scoring)
+        ├── State Dept. CF      (travel advisory level)
+        ├── Viator API          (tour search)
+        ├── Travefy API         (advisor trip sync + enrichment write-back)
+        ├── Stripe API          (checkout sessions, webhook verification)
+        ├── SendGrid API        (transactional email)
+        ├── Twilio API          (SMS — pending)
+        └── OpenAI API          (port guide generation)</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="layout">2. Project Layout</h1>
+
+<div class="cmd">docbound2/
+├── src/                        <span class="comment"># React frontend (TypeScript)</span>
+│   ├── config/                 <span class="comment"># firebase.ts (eager) · lazyFirebase.ts (async)</span>
+│   ├── contexts/               <span class="comment"># AuthContext — Firebase Auth + onAuthStateChanged</span>
+│   ├── hooks/                  <span class="comment"># useUserProfile, useEffectivePermissions, useCompass,</span>
+│   │                           <span class="comment">#   useIsMobile, usePriceConfig</span>
+│   ├── services/               <span class="comment"># All Firestore/CF calls — one file per domain</span>
+│   ├── types/                  <span class="comment"># TypeScript interfaces (api, locations, dockScoring, etc.)</span>
+│   ├── pages/                  <span class="comment"># Route-level components (lazy-loaded)</span>
+│   │   ├── admin/              <span class="comment"># Admin-only pages</span>
+│   │   ├── agency/             <span class="comment"># Agency host pages</span>
+│   │   └── *.tsx               <span class="comment"># Top-level pages (Dashboard, Landing, Auth, etc.)</span>
+│   ├── components/
+│   │   ├── shared/             <span class="comment"># Reusable UI kit (Button, Card, Tabs, Sidebar, …)</span>
+│   │   ├── landing/            <span class="comment"># LandingNav, LandingFooter</span>
+│   │   └── pages/              <span class="comment"># Static content (Privacy, Terms, FAQ, Contact, …)</span>
+│   └── test/
+│       ├── setup.ts            <span class="comment"># Vitest setup; mocks Firebase + lucide-react</span>
+│       ├── fixtures/portGuides/<span class="comment"># Golden JSON fixtures (3 port archetypes)</span>
+│       └── integration/        <span class="comment"># Integration tests (excluded from default run)</span>
+│
+├── functions/                  <span class="comment"># Firebase Cloud Functions (Node 22, ESM)</span>
+│   ├── index.js                <span class="comment"># ALL Cloud Functions — single file</span>
+│   └── shared/                 <span class="comment"># Modules shared with frontend (GITIGNORED copies)</span>
+│
+├── shared/                     <span class="comment"># Root-level shared modules — edit HERE, not functions/shared/</span>
+│   ├── cruiseNormalization.js
+│   ├── guideResolver.js
+│   └── platformcore.js         <span class="comment"># PlatformCore API client; copied to functions/shared/ at predeploy</span>
+│
+├── tests/acceptance/           <span class="comment"># Playwright E2E specs (Flow01–Flow19+)</span>
+├── scripts/                    <span class="comment"># Node.js admin/maintenance scripts (.cjs)</span>
+├── docs/                       <span class="comment"># Internal HTML reference docs (this file)</span>
+├── StateGovTravelAdvisory/     <span class="comment"># Separate Cloud Run service — own package.json</span>
+├── .env.development            <span class="comment"># VITE_* env vars for dev (no secrets — checked in)</span>
+├── .env.production             <span class="comment"># VITE_* env vars for prod (no secrets — checked in)</span>
+├── firebase.json               <span class="comment"># Hosting + functions config</span>
+├── .firebaserc                 <span class="comment"># Default project alias (prod)</span>
+└── CLAUDE.md                   <span class="comment"># AI agent instructions for this repo</span></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="frontend">3. Frontend Architecture</h1>
+
+<h2>Routing</h2>
+<p>React Router 7 (v7 defaults, no <code>future</code> prop needed). All non-critical pages are lazy-loaded via <code>React.lazy()</code>. Route layout wrappers handle role-based access.</p>
+
+<table>
+  <tr><th>Path pattern</th><th>Component</th><th>Access</th></tr>
+  <tr><td><code>/</code></td><td>CompassLanding</td><td><span class="badge public">Public</span></td></tr>
+  <tr><td><code>/for-travelers</code></td><td>DocBoundLanding</td><td><span class="badge public">Public</span></td></tr>
+  <tr><td><code>/for-advisors</code>, <code>/for-agencies</code>, <code>/for-travefy</code></td><td>ComingSoonPage</td><td><span class="badge public">Public</span></td></tr>
+  <tr><td><code>/preview/nassau</code></td><td>NassauPreview</td><td><span class="badge public">Public</span> — product demo</td></tr>
+  <tr><td><code>/auth</code></td><td>DocBoundAuth</td><td><span class="badge public">Public</span></td></tr>
+  <tr><td><code>/dashboard</code></td><td>DocBoundUserDashboard</td><td><span class="badge user">user</span></td></tr>
+  <tr><td><code>/agent-dashboard</code></td><td>AgentDashboard</td><td><span class="badge agent">agent / advisor</span></td></tr>
+  <tr><td><code>/agency-hub</code></td><td>AgencyHostDashboard</td><td><span class="badge host">agencyhost</span></td></tr>
+  <tr><td><code>/admin/*</code></td><td>Admin pages</td><td><span class="badge admin">admin / super-admin</span></td></tr>
+  <tr><td><code>/search</code></td><td>SearchResultsPage</td><td><span class="badge public">Public</span></td></tr>
+</table>
+
+<h2>State Management</h2>
+<p>No Redux or Zustand. State is colocated at the component level or lifted to the nearest ancestor. Two context providers wrap the app:</p>
+<ul>
+  <li><strong>AuthContext</strong> (<code>contexts/authContextCore.tsx</code>) — Firebase Auth state + <code>onAuthStateChanged</code>. Use <code>useAuth()</code> to read <code>currentUser</code>.</li>
+  <li><strong>UserProfileContext</strong> (implicit in <code>useUserProfile</code> hook) — Firestore user doc including <code>role</code> and <code>effectivePermissions</code>.</li>
+</ul>
+
+<h2>Firebase Imports: Eager vs. Lazy</h2>
+<div class="callout">
+  <strong>Rule:</strong> use <code>lazyFirebase.ts</code> (async getters) for services not needed on the initial page load. Use <code>firebase.ts</code> (eager, synchronous) only for components that always need Auth/Firestore immediately (AuthContext, communicationsService).
+</div>
+
+<h2>Design System</h2>
+<p>The app uses light mode only. Dark mode is disabled (media query commented out in <code>src/index.css</code> pending full QA). There is no Tailwind CSS. All color tokens are CSS custom properties defined in <code>src/index.css</code>.</p>
+<ul>
+  <li>Never hardcode color values in inline styles. Always use a <code>--color-*</code> variable.</li>
+  <li>Add <code>class="on-dark"</code> to any element with a dark/navy/gradient background — children read the same CSS vars, no style branching needed.</li>
+  <li>Content cards: <code>background: var(--color-surface)</code>, <code>border: 1px solid var(--color-border)</code>, <code>box-shadow: var(--shadow-sm)</code>. No gradient backgrounds on content cards.</li>
+  <li>Status colors: use semantic pairs — danger → <code>--color-danger</code> + <code>--color-danger-background</code>; etc.</li>
+  <li>DOCK chip colors: CSS vars <code>--dock-chip-*</code> in <code>src/index.css</code>.</li>
+</ul>
+
+<h2>Agent Dashboard Tab Structure</h2>
+<p>The advisor's primary workspace is <code>AgentDashboard</code>, split into 4 top-level tabs:</p>
+<table>
+  <tr><th>Tab ID</th><th>Label</th><th>Key Contents</th></tr>
+  <tr><td><code>sailings</code></td><td>🗓 Sailings</td><td>Itinerary Timeline (cruise-centric table) + CruiseChangesSection + ActNowPanel</td></tr>
+  <tr><td><code>clients</code></td><td>👥 Clients</td><td>Traveler Roster + add/import forms + TravefyLinkEditor + messaging drawer</td></tr>
+  <tr><td><code>porttools</code></td><td>🗺️ Port Tools</td><td>AgentPortGuide + Congestion Calendar + AgentGuideSettings (paid access required)</td></tr>
+  <tr><td><code>settings</code></td><td>⚙️ Settings</td><td>AgentTravefyPanel (Travefy advisors only, paid) + AgentAlertSettingsTab</td></tr>
+</table>
+<p>Old URL params (<code>?tab=actnow</code>, <code>intelligence</code>, <code>sailing</code>, etc.) are remapped via the <code>TAB_REMAP</code> constant in AgentDashboard.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="backend">4. Cloud Functions Backend</h1>
+
+<h2>Structure</h2>
+<p>All Cloud Functions live in a <strong>single file</strong>: <code>functions/index.js</code> (ESM, Node 22). There is no function-per-file structure.</p>
+
+<h2>Function Types Used</h2>
+<table>
+  <tr><th>Type</th><th>Firebase API</th><th>Used for</th></tr>
+  <tr><td>HTTP endpoint</td><td><code>onRequest</code></td><td>All client-facing calls, webhooks, partner API</td></tr>
+  <tr><td>Cron job</td><td><code>onSchedule</code></td><td>Itinerary change polling, advisory refresh</td></tr>
+  <tr><td>Firestore trigger</td><td><code>onDocumentUpdated</code>, <code>onDocumentCreated</code></td><td>Post-write side effects (enrichment triggers, etc.)</td></tr>
+</table>
+
+<h2>Auth Pattern for HTTP Functions</h2>
+<p>The frontend calls Cloud Functions via <code>fetch</code> with a Firebase ID token:</p>
+<div class="cmd">Authorization: Bearer &lt;Firebase ID token&gt;</div>
+<p>Functions decode the token using the Admin SDK (<code>admin.auth().verifyIdToken()</code>) to get the caller's UID and role. Admin-only functions additionally verify the role from Firestore before proceeding.</p>
+
+<h2>Base URL</h2>
+<p>All CF calls use the shared base URL pattern:</p>
+<div class="cmd"><span class="key">VITE_FIREBASE_FUNCTIONS_URL</span> = https://us-central1-PROJECT.cloudfunctions.net
+
+<span class="comment"># Frontend calls:</span>
+fetch(`${FUNCTIONS_URL}/functionName`, { ... })</div>
+<div class="callout warning">Do NOT restructure to per-function URLs. The shared base URL is intentional — all services read from the same env var.</div>
+
+<h2>Secrets</h2>
+<p>Sensitive keys are stored in Firebase Secret Manager and declared with <code>defineSecret()</code> at the top of <code>functions/index.js</code>. They are never in env files or source code.</p>
+<table>
+  <tr><th>Secret name</th><th>Used for</th></tr>
+  <tr><td><code>SENDGRID_API_KEY</code></td><td>Transactional email</td></tr>
+  <tr><td><code>DISPUTE_ALERT_EMAIL</code></td><td>Stripe dispute alert destination</td></tr>
+  <tr><td><code>TWILIO_ACCOUNT_SID</code></td><td>SMS (placeholder — real value pending)</td></tr>
+  <tr><td><code>TWILIO_AUTH_TOKEN</code></td><td>SMS (placeholder — real value pending)</td></tr>
+  <tr><td><code>TWILIO_PHONE_NUMBER</code></td><td>SMS (placeholder — real value pending)</td></tr>
+  <tr><td><code>TRAVEFY_PUBLIC_KEY</code></td><td>Travefy API auth</td></tr>
+  <tr><td><code>TRAVEFY_PRIVATE_KEY</code></td><td>Travefy API auth</td></tr>
+  <tr><td><code>STRIPE_SECRET_KEY</code></td><td>Stripe server-side operations</td></tr>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="firestore">5. Firestore Data Model</h1>
+
+<p>Collections are listed alphabetically. Each entry shows the document ID pattern, key fields, and which system owns it.</p>
+
+<div class="block">
+  <h4>agents/{uid}</h4>
+  <p>One doc per travel advisor. Created by <code>registerAdvisorRole</code> CF at signup.</p>
+  <ul>
+    <li><code>uid</code>, <code>email</code>, <code>displayName</code>, <code>role</code></li>
+    <li><code>travefyConnection</code> — set by <code>travefyConnect</code> CF (accessToken, etc.)</li>
+    <li><code>stripePriceId</code>, <code>stripeSubscriptionStatus</code>, <code>trialEndsAt</code></li>
+    <li><code>agencyId</code> — if the advisor belongs to an agency host</li>
+    <li>Sub-collection: <code>agents/{uid}/trips</code> — Travefy trip cache</li>
+  </ul>
+</div>
+
+<div class="block">
+  <h4>agentCommunications/{agentId}_{rosterId}</h4>
+  <p>Thread metadata for advisor-traveler messaging. Sub-collection <code>messages</code> holds individual messages.</p>
+</div>
+
+<div class="block">
+  <h4>agentPortConfig/{uid}</h4>
+  <p>Per-advisor port guide customization (welcome message, port overrides). Firestore rule allows read on non-existent docs (resource == null) so first-time reads don't 403.</p>
+</div>
+
+<div class="block">
+  <h4>agentRoster/{rosterId}</h4>
+  <p>Traveler enrollment records. One doc per advisor-traveler pairing.</p>
+  <ul>
+    <li><code>agentId</code>, <code>travelerUid</code> (may be null if not yet linked), <code>name</code>, <code>email</code>, <code>phone</code>, <code>refId</code></li>
+    <li><code>cruiseId</code>, <code>cruiseName</code>, <code>shipName</code>, <code>sailDate</code>, <code>departurePort</code></li>
+    <li><code>archived</code> (boolean) — soft-delete only; never hard-delete roster entries</li>
+    <li><code>travefyTripId</code> — optional Travefy trip link</li>
+  </ul>
+</div>
+
+<div class="block">
+  <h4>api_keys/{8hexId}</h4>
+  <p>Partner API key records. Full key is never stored — only the SHA-256 hash.</p>
+  <ul>
+    <li><code>keyHash</code> (SHA-256 hex), <code>active</code> (bool), <code>plan</code> (sandbox|paid)</li>
+    <li><code>label</code>, <code>owner</code>, <code>note</code>, <code>createdAt</code></li>
+    <li>Key format: <code>dbk_{8hexId}_{secret}</code></li>
+  </ul>
+</div>
+
+<div class="block">
+  <h4>config/stripe</h4>
+  <p>Firestore-stored Stripe config (not secrets). Includes <code>webhookSecret</code> read at runtime by the <code>stripeWebhook</code> CF.</p>
+</div>
+
+<div class="block">
+  <h4>content_qa_results/{locationId}_{sectionKey}_{epoch}</h4>
+  <p>QA results from the AI content validator. One doc per flagged section per generation run. Read by the Content Health admin page.</p>
+</div>
+
+<div class="block">
+  <h4>cruises/{cruiseId}</h4>
+  <p>Cruise schedule data. Written by the Apify scraper. Key fields: <code>cruiseLine</code>, <code>shipName</code>, <code>sailDate</code>, <code>itinerary</code> (array of port stops), <code>is_future_sailing</code>.</p>
+</div>
+
+<div class="block">
+  <h4>dock_scoring_rules/{ruleId}</h4>
+  <p>40+ static + dynamic DOCK scoring rules. Seeded from CSV via <code>npm run dock:import-rules:dev</code>. Quarterly review — do not modify without evidence from advisor feedback.</p>
+</div>
+
+<div class="block">
+  <h4>dock_scores_baseline/{portCode}</h4>
+  <p>Baseline (static) DOCK scores computed from port guide JSON fields. Regenerated manually: <code>npm run dock:regen-baselines:dev</code>. Do not automate — cost control.</p>
+</div>
+
+<div class="block">
+  <h4>dock_scores_adjusted/{portCode}_{sailDate}</h4>
+  <p>Dynamic DOCK scores cached after the <code>dockCalculateAdjusted</code> CF applies modifiers (ship count, weather, advisories). Client reads from this collection; CF regenerates on demand.</p>
+</div>
+
+<div class="block">
+  <h4>invite_codes/{docId}</h4>
+  <p>One-use advisor signup codes in <code>DOCK-XXXX-XXXX</code> format. Managed from <code>/admin/invite-codes</code>. Validated by the <code>validateInviteCode</code> CF at signup to prevent orphaned auth accounts.</p>
+</div>
+
+<div class="block">
+  <h4>locations/{locationId}</h4>
+  <p>Location master records. Sub-collection <code>sections/{sectionKey}</code> holds normalized, section-keyed port guide content. This is a legacy path — PlatformCore is now the primary source. <code>qaStatus</code> on each section doc tracks AI content review state.</p>
+</div>
+
+<div class="block">
+  <h4>port_guides/{portCode}</h4>
+  <p>Flat legacy port guide docs (deprecated fallback path). Still served as fallback when PlatformCore CF call fails. Schema versions V1–V4; see <a href="#portguide">Port Guide Pipeline</a>.</p>
+</div>
+
+<div class="block">
+  <h4>port_schedule/{portCode}_{YYYY-MM-DD}</h4>
+  <p>Ship counts per port per day. Built from the <code>cruises</code> collection by <code>npm run dock:build-schedule:dev</code>. Powers DOCK O/D dynamic adjustments and port congestion calendar. Rebuild monthly.</p>
+</div>
+
+<div class="block">
+  <h4>sectionTypes/{key}</h4>
+  <p>Live catalog of port guide section keys. The TypeScript type <code>PortSectionKey</code> in <code>src/types/locations.ts</code> mirrors this.</p>
+</div>
+
+<div class="block">
+  <h4>travefyEnrichments/{agentUid}_{tripId}_{portCode}</h4>
+  <p>Deduplication log for Travefy enrichment writes. One doc per advisor+trip+port combination; prevents duplicate TripEvents in Travefy.</p>
+</div>
+
+<div class="block">
+  <h4>users/{uid}</h4>
+  <p>User profile docs. Managed by Firebase Auth triggers + Admin SDK (role writes bypass Firestore rules).</p>
+  <ul>
+    <li><code>role</code> — see <a href="#auth">Auth &amp; Role System</a>; client cannot write this field</li>
+    <li><code>effectivePermissions</code> — written by <code>resolveNodePermissions</code> CF at login; cached section visibility + tier</li>
+    <li><code>agentId</code>, <code>agencyId</code> — linkage fields; client cannot write these</li>
+  </ul>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="auth">6. Auth &amp; Role System</h1>
+
+<h2>Role Hierarchy</h2>
+<table>
+  <tr><th>Role</th><th>Dashboard</th><th>Notes</th></tr>
+  <tr><td><code>user</code></td><td><code>/dashboard</code></td><td>Consumer; requires purchase to access paid features</td></tr>
+  <tr><td><code>agent</code></td><td><code>/agent-dashboard</code></td><td>Generic advisor role</td></tr>
+  <tr><td><code>travefyadvisor</code></td><td><code>/agent-dashboard</code></td><td>Advisor imported via Travefy</td></tr>
+  <tr><td><code>independentAdvisor</code></td><td><code>/agent-dashboard</code></td><td>Self-signed-up via invite code + Stripe checkout</td></tr>
+  <tr><td><code>agentuser</code></td><td><code>/dashboard</code></td><td>Traveler enrolled by an advisor</td></tr>
+  <tr><td><code>agencyhost</code></td><td><code>/agency-hub</code></td><td>Agency-level view across advisors</td></tr>
+  <tr><td><code>admin</code></td><td><code>/admin/*</code></td><td>Internal admin portal</td></tr>
+  <tr><td><code>super-admin</code></td><td><code>/admin/*</code></td><td>All admin access + destructive ops</td></tr>
+</table>
+
+<div class="callout danger">
+  <strong>Roles cannot be self-promoted.</strong> Firestore rules block client writes to <code>role</code>, <code>agentId</code>, and <code>agencyId</code> fields. Role assignment always goes through Admin SDK in a Cloud Function.
+</div>
+
+<h2>Route Guards</h2>
+<ul>
+  <li><strong>ProtectedRoute</strong> — reads <code>useUserProfile()</code>, checks role flags, redirects unauthenticated users to <code>/auth</code>.</li>
+  <li><strong>AdminRoute</strong> — slim wrapper that only checks <code>isAdmin</code> flag.</li>
+</ul>
+
+<h2>Advisor Self-Service Signup</h2>
+<div class="flow">User visits /auth?mode=signup&advisor=true
+  │
+  ├── DocBoundAuth detects isAdvisorSignup from query param
+  ├── Shows advisor-flavored form (name, email, password, invite code)
+  ├── Calls validateInviteCode CF → checks invite_codes collection → marks code used
+  ├── Creates Firebase Auth account
+  ├── Calls registerAdvisorRole CF with ID token
+  │     └── Admin SDK sets role: 'independentAdvisor' on users/{uid}
+  │         (bypasses Firestore rules that block client-side role writes)
+  └── Redirects to /agent-dashboard → Stripe plan picker + trial gate</div>
+
+<h2>Effective Permissions</h2>
+<p>At login, the <code>resolveNodePermissions</code> CF writes <code>effectivePermissions</code> onto <code>users/{uid}</code>. This cache tracks section visibility and subscription tier (<code>free</code> | <code>paid</code>). The <code>FeatureGate</code> component gates rendering based on this tier — no inline role checks scattered through components.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="portguide">7. Port Guide Pipeline</h1>
+
+<h2>Source of Truth: PlatformCore</h2>
+<div class="callout">
+  <strong>PlatformCore is the primary source for all port guide content.</strong> The local Firestore <code>port_guides</code> collection is a deprecated fallback — it is only served when the PlatformCore CF call fails.
+</div>
+
+<div class="flow">getPortGuide() in portGuideService.ts
+  │
+  ├── 1. Call getPlatformCorePortGuide CF (HTTP proxy to PlatformCore)
+  │       │
+  │       ├── Success → map PlatformCore response → return
+  │       │     └── Mapper rule: spread ...sections BEFORE doc-level fields
+  │       │         (reversing this causes sections blob to overwrite scalar fields)
+  │       │
+  │       └── Failure → fall through to Firestore
+  │
+  └── 2. Firestore fallback: query port_guides/{portCode}
+        └── Stale local docs can silently intercept — verify source when debugging</div>
+
+<h2>Schema Versions</h2>
+<table>
+  <tr><th>Version</th><th>Identifier</th><th>Sections</th><th>Key additions</th></tr>
+  <tr><td>V1</td><td>(no version field)</td><td>12</td><td>Original schema: snapshot, budget, beforeYouGo, weather, returnTiming, audience, finalTips + shared</td></tr>
+  <tr><td>V2</td><td><code>version: "2.0"</code></td><td>17</td><td>dayStyle, inTheKnow, timeReality, gettingOff, doNothingVsSomething, gettingBack, whoItsFor, weatherReality, returnStress, whatToBring, confidenceCue + shared</td></tr>
+  <tr><td>V3</td><td><code>schemaVersion: 3</code></td><td>18</td><td>Doc-level: portTypeCode, planningPosture, primaryDriver, confidenceLevel, contentUpdatedAt. New section: accessibility. tags[] on WhoItsFor.</td></tr>
+  <tr><td>V4</td><td><code>schemaVersion: 4</code></td><td>18+</td><td>Doc-level: portAreaActivityDepth, majorExperienceTransferTime, returnComplexity, returnDependencies, impactAction. Section-level: cardAcceptance, cashRecommendation, tapWaterGuidance, criticalBringItems, helpfulBringItems, taxiPricingMethod. Powers <strong>Port Day at a Glance</strong> in PortGuideDisplay.</td></tr>
+</table>
+
+<h2>Port Guide Section Keys</h2>
+<p>Defined as TypeScript type <code>PortSectionKey</code> in <code>src/types/locations.ts</code>. The <code>sectionTypes</code> Firestore collection is the live catalog.</p>
+
+<h2>Guide Resolution</h2>
+<p><code>guideResolverService.ts</code> calls <code>shared/guideResolver.js</code> (pure, no Firestore) to compute the ordered list of section keys for a given location + advisor override. Firestore fetching happens in the service layer — the resolver stays pure.</p>
+
+<h2>V4 Rollout Scripts</h2>
+<div class="cmd"><span class="comment"># Derive V4 fields from existing docs (dry-run)</span>
+node scripts/v4-gap-report.cjs
+
+<span class="comment"># Write V4 fields to Firestore</span>
+node scripts/v4-auto-fill.cjs --write</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="dock">8. DOCK Scoring System</h1>
+
+<p>DOCK = <strong>D</strong>istance Friction + <strong>O</strong>perational Load + <strong>C</strong>onditions + <strong>K</strong>ey Risks. Each dimension is scored 1–5 and combined into a weighted overall score.</p>
+
+<h2>Two-Layer Architecture</h2>
+
+<div class="flow">Layer 1: Baselines (static)
+  dock_scores_baseline/{portCode}
+  └── Computed from port guide JSON fields
+  └── Regenerated manually: npm run dock:regen-baselines:dev
+  └── Script: scripts/regenerate-dock-baselines.cjs
+  └── Do NOT automate — cost control
+
+Layer 2: Adjusted (dynamic)
+  dock_scores_adjusted/{portCode}_{sailDate}
+  └── dockCalculateAdjusted CF applies modifiers:
+        ├── Ship count (from port_schedule)
+        ├── Weather (OpenWeather API)
+        └── Travel advisories (State Dept. CF)
+  └── computeDockAdjusted() helper is extracted and shared across API endpoints
+  └── Results cached in dock_scores_adjusted</div>
+
+<h2>Scoring Rules</h2>
+<p>40 static + dynamic rules in <code>dock_scoring_rules</code>. Seeded from CSV: <code>scripts/archive/dock-scoring/dock-scoring-rules-corrected.csv</code>.</p>
+<div class="cmd">npm run dock:import-rules:dev    <span class="comment"># requires ADC (Application Default Credentials)</span>
+npm run dock:import-rules:prod</div>
+
+<h2>Client-Side View: EnrichedPortScore</h2>
+<p>Defined in <code>src/types/agentTrips.ts</code>. Fields the UI consumes:</p>
+<table>
+  <tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+  <tr><td><code>staticAvg</code></td><td>number</td><td>Baseline score (from dock_scores_baseline)</td></tr>
+  <tr><td><code>dynamicAvg</code></td><td>number</td><td>Adjusted score (from dock_scores_adjusted)</td></tr>
+  <tr><td><code>delta</code></td><td>number</td><td>dynamicAvg − staticAvg</td></tr>
+  <tr><td><code>opState</code></td><td>string</td><td>Relaxed | Manageable | Elevated | High-Constraint</td></tr>
+  <tr><td><code>drivers</code></td><td>string[]</td><td>Active modifiers: weather / advisory / shipVolume</td></tr>
+  <tr><td><code>isAtRisk</code></td><td>boolean</td><td>true when delta ≥ 0.5</td></tr>
+</table>
+
+<h2>Port Schedule Index</h2>
+<p>Rebuild monthly after cruise data updates:</p>
+<div class="cmd">npm run dock:build-schedule:dev    <span class="comment"># then verify, then:</span>
+npm run dock:build-schedule:prod</div>
+
+<h2>UI Entry Point</h2>
+<p>The <strong>DatabaseDockDiagnostic</strong> component is the UI entry point for System 2 scoring. <code>AgentIntelligencePanel</code> (<code>src/pages/AgentIntelligencePanel.tsx</code>) shows port-day cards with static/dynamic scores, op-state badges, AT-RISK flags, and driver icons for the advisor's sailing timeline.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="travefy">9. Travefy Integration</h1>
+
+<h2>Overview</h2>
+<p>Travefy is an itinerary management platform used by many travel advisors. DockBound integrates two ways: pulling trip data in, and writing DockBound intelligence events back out.</p>
+
+<div class="flow">Advisor connects Travefy account
+  │
+  └── travefyConnect CF: links by email, stores accessToken in agents/{uid}.travefyConnection
+
+Advisor syncs trips (Settings tab → Travefy panel)
+  │
+  └── travefyTrips CF: fetches trips from Travefy API, enriches each port stop with
+        DOCK baseline + port guide, stores in agents/{uid}/trips (Firestore cache)
+      ⚠ Frontend reads from this cache — advisor must sync before Travefy links appear
+
+Advisor clicks "Enrich Travefy"
+  │
+  └── travefyEnrich CF: writes DockBound TripEvent (EventType 12) per port day
+        ├── Deduped by PartnerIdentifier: "dockbound-{portCode}"
+        ├── Prefers adjusted DOCK score within 14 days of sailing
+        ├── Description: HTML format (&lt;b&gt;&lt;big&gt; headings, &lt;br&gt;&lt;br&gt; paragraphs)
+        └── Logged in travefyEnrichments/{agentUid}_{tripId}_{portCode}</div>
+
+<h2>Cloud Functions</h2>
+<table>
+  <tr><th>Function</th><th>Purpose</th></tr>
+  <tr><td><code>travefyConnect</code></td><td>Links advisor account by email, stores access token</td></tr>
+  <tr><td><code>travefyTrips</code></td><td>Fetches + enriches trips from Travefy; populates local cache</td></tr>
+  <tr><td><code>travefyEnrich</code></td><td>Writes DockBound events back to Travefy (deduped)</td></tr>
+  <tr><td><code>travefyEcho</code></td><td>Admin-only diagnostic; echoes Travefy API response</td></tr>
+  <tr><td><code>travefyUsers</code></td><td>Admin-only; lists connected advisors</td></tr>
+</table>
+
+<h2>Before Full Deploy</h2>
+<div class="callout warning">Set Firebase secrets <code>TRAVEFY_PUBLIC_KEY</code> and <code>TRAVEFY_PRIVATE_KEY</code> in both dev and prod before deploying Travefy CFs.</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="api">10. Partner API</h1>
+
+<h2>Key Format</h2>
+<p>External API keys use format <code>dbk_{8hexId}_{secret}</code>. Only the SHA-256 hash of the full key is stored in Firestore. Cloud Functions validate via Admin SDK — the client SDK cannot access <code>api_keys</code>.</p>
+
+<h2>Endpoints</h2>
+<table>
+  <tr><th>CF name</th><th>Path pattern</th><th>Returns</th></tr>
+  <tr><td><code>cruiseItineraryApi</code></td><td><code>/v1/cruise-itinerary</code></td><td>Normalized cruise itinerary</td></tr>
+  <tr><td><code>portGuideApi</code></td><td><code>/v1/port-guide</code></td><td>Sandbox: sections 1–5; Paid: full guide. Cache-Control: 3600s.</td></tr>
+  <tr><td><code>dockScoreApi</code></td><td><code>/v1/dock-score</code></td><td>Sandbox: baseline only. Paid + sailDate: full adjusted score.</td></tr>
+  <tr><td><code>itineraryWithGuidesApi</code></td><td><code>/v1/itinerary-with-guides</code></td><td>Cruise itinerary + port guide per stop in one call (parallel guide fetches)</td></tr>
+</table>
+
+<h2>Tiers</h2>
+<ul>
+  <li><strong>sandbox</strong> — limited response (first 5 sections, baseline score only). Rate-limited.</li>
+  <li><strong>paid</strong> — full guide + full adjusted score with sail-date context.</li>
+</ul>
+
+<h2>Admin UI</h2>
+<p>API keys are managed at <code>/admin/api-keys</code> (<code>ApiKeyAdminPage</code>). Create (Web Crypto keygen + SubtleCrypto SHA-256), revoke/restore, delete. Full key is shown once at creation and never retrievable again.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="qa">11. QA Pipeline</h1>
+
+<p>DockBound runs a deterministic validator on all AI-generated port guide sections before writing to Firestore. The primary generation gate is in PlatformCore; DockBound runs a secondary gate at consumption time.</p>
+
+<h2>Shared Validator Files</h2>
+<div class="callout warning">
+  <strong>Sync rule:</strong> <code>shared/portGuideValidator.js</code> mirrors <code>../platformcore/functions/scripts/portGuideValidator.cjs</code>. Update PlatformCore's <code>.cjs</code> first, then sync here. Same for <code>shared/qaPolicy.js</code>.
+</div>
+<table>
+  <tr><th>File</th><th>Purpose</th></tr>
+  <tr><td><code>shared/portGuideValidator.js</code></td><td>Section-level rules (ESM; mirrors PlatformCore .cjs)</td></tr>
+  <tr><td><code>shared/qaPolicy.js</code></td><td>Blocking rules + disposition thresholds (mirrors PlatformCore)</td></tr>
+  <tr><td><code>shared/dockSummaryValidator.js</code></td><td>DOCK summary validation — DockBound-specific, canonical here</td></tr>
+</table>
+
+<h2>QA Status Values</h2>
+<p>Stored on <code>locations/{id}/sections/{key}</code> as <code>qaStatus</code>:</p>
+<div class="pills">
+  <span class="pill">approved</span>
+  <span class="pill amber">approved_with_advisories</span>
+  <span class="pill red">human_review_required</span>
+</div>
+
+<h2>Firestore QA Collection</h2>
+<p><code>content_qa_results/{locationId}_{sectionKey}_{epoch}</code> — one doc per flagged section per generation run. Read by the Content Health → QA Review tab (<code>adminGetQAResults</code> CF).</p>
+
+<h2>Golden Fixtures &amp; Regression</h2>
+<p>Three golden JSON fixtures in <code>src/test/fixtures/portGuides/</code>: <code>pier-standard.json</code> (humanApproved: true), <code>tender-island.json</code>, <code>ferry-dependent.json</code>. All at V3 schema.</p>
+<div class="cmd">npm run qa:regression    <span class="comment"># validates approved fixtures; exit 1 on regression</span></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="payments">12. Payments &amp; Subscriptions</h1>
+
+<h2>Flow</h2>
+<div class="flow">Advisor selects plan tier (plan picker UI)
+  │
+  └── stripeCreateAgentSubscriptionSession CF
+        ├── Creates Stripe Checkout session (server-side)
+        ├── Returns session URL
+        └── Frontend redirects to Stripe-hosted checkout
+
+Payment completes
+  │
+  └── stripeWebhook CF (verifies stripe-signature via constructEvent)
+        ├── checkout.session.completed → audit log
+        └── charge.dispute.created → sends email alert via SendGrid
+
+Trial gate
+  └── trialEndsAt (on agents/{uid}) vs. now
+        └── If expired + no active subscription → upgrade banner/blocker in dashboard</div>
+
+<h2>Pricing Tiers</h2>
+<p>Independent advisors use the same tier config as Travefy advisors (<code>TRAVEFY_TIERS</code>) — designed to be swapped out for <code>INDEPENDENT_ADVISOR_TIERS</code> when pricing diverges.</p>
+
+<h2>Webhook Config</h2>
+<ul>
+  <li>Webhook secret stored in Firestore <code>config/stripe.webhookSecret</code> (read at runtime, not hardcoded)</li>
+  <li>Email failure logged but does NOT return non-200 — prevents Stripe retry storms</li>
+  <li>Register CF URL in Stripe Dashboard → subscribe to <code>charge.dispute.created</code> + <code>checkout.session.completed</code></li>
+</ul>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="comms">13. Email &amp; SMS</h1>
+
+<h2>Email (SendGrid)</h2>
+<ul>
+  <li>Package: <code>@sendgrid/mail</code> in <code>functions/</code></li>
+  <li>Sender: <code>support@dockbound.app</code></li>
+  <li>Domain verification (SPF/DKIM/DMARC) required before emails will deliver — initiated via GoDaddy; confirm in SendGrid → Settings → Sender Authentication</li>
+  <li>API key in Firebase Secret Manager as <code>SENDGRID_API_KEY</code></li>
+</ul>
+
+<h2>SMS (Twilio)</h2>
+<ul>
+  <li>Intended for advisor-traveler communication via the DockBound platform</li>
+  <li>Twilio account pending review as of 2026-07-29 — placeholder secrets set in dev</li>
+  <li>Once approved: overwrite placeholder secrets with real values, deploy functions, register <code>twilioInboundWebhook</code> CF URL in Twilio Console</li>
+  <li>TCPA consent checkbox required in advisor Settings when SMS section is enabled</li>
+</ul>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="shared">14. Shared Code Pattern</h1>
+
+<p>Some business logic must run identically in the browser and in Cloud Functions. These files live in <code>shared/</code> at the root and are the <strong>single source of truth</strong>.</p>
+
+<table class="alt-head">
+  <tr><th>File</th><th>Used by</th><th>Purpose</th></tr>
+  <tr><td><code>shared/cruiseNormalization.js</code></td><td>Frontend + CFs</td><td>Canonical itinerary normalization. Never duplicate this logic elsewhere.</td></tr>
+  <tr><td><code>shared/guideResolver.js</code></td><td>Frontend + CFs</td><td>Pure section-key resolution. No Firestore — fetching stays in the service layer.</td></tr>
+  <tr><td><code>shared/platformcore.js</code></td><td>CFs only</td><td>PlatformCore API client. Copied (not symlinked) to <code>functions/shared/</code> at predeploy. The <code>functions/shared/</code> copy is gitignored.</td></tr>
+  <tr><td><code>shared/portGuideValidator.js</code></td><td>CFs + Vitest</td><td>AI content validator. Mirror of PlatformCore's <code>.cjs</code> version.</td></tr>
+  <tr><td><code>shared/qaPolicy.js</code></td><td>CFs + Vitest</td><td>Blocking rules + thresholds. Mirror of PlatformCore's <code>.cjs</code> version.</td></tr>
+  <tr><td><code>shared/dockSummaryValidator.js</code></td><td>CFs + Vitest</td><td>DOCK summary validation — DockBound-specific, canonical here (no mirror).</td></tr>
+</table>
+
+<div class="callout danger">
+  <strong>Always edit <code>shared/platformcore.js</code> at the root.</strong> Never edit the <code>functions/shared/platformcore.js</code> copy — it is overwritten at predeploy and gitignored.
+</div>
+
+<h2>cruiseItineraryService.ts</h2>
+<p>A thin TypeScript wrapper around <code>shared/cruiseNormalization.js</code>. Edit the shared <code>.js</code> file — not the wrapper — to change normalization behavior. The wrapper exists only to provide TypeScript types to the frontend.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="deploy">15. Environments &amp; Deployment</h1>
+
+<h2>Firebase Projects</h2>
+<table>
+  <tr><th>Environment</th><th>Firebase project</th><th>Build command</th><th>Deploy command</th></tr>
+  <tr><td>Dev</td><td><code>dockbound-dev</code></td><td><code>npm run build:dev</code></td><td><code>npm run deploy:dev</code></td></tr>
+  <tr><td>Prod</td><td><code>dockbound-2de7d</code></td><td><code>npm run build:prod</code></td><td><code>npm run deploy:prod</code></td></tr>
+</table>
+
+<div class="callout danger">
+  <strong>Always use <code>npm run deploy:dev</code> or <code>deploy:prod</code> — never bare <code>firebase deploy</code>.</strong> The default project alias in <code>.firebaserc</code> points to prod. A bare deploy with a dev build in <code>dist/</code> will push a dev-configured bundle to production.
+</div>
+
+<h2>Env Files</h2>
+<p>All environment variables are <code>VITE_*</code> prefixed. <code>.env.development</code> and <code>.env.production</code> are checked in — they contain only Firebase client config (public-safe, not secrets).</p>
+
+<h2>Typical Deploy Sequence</h2>
+<div class="cmd"><span class="comment"># Dev deploy</span>
+npm run build:dev                          <span class="comment"># builds against dockbound-dev</span>
+firebase deploy --only hosting --project dockbound-dev
+
+<span class="comment"># Prod deploy</span>
+npm run build:prod                         <span class="comment"># builds against dockbound-2de7d</span>
+firebase deploy --only hosting --project dockbound-2de7d
+
+<span class="comment"># Functions deploy (after secrets are set)</span>
+firebase deploy --only functions --project dockbound-dev</div>
+
+<h2>Cloud Run Service</h2>
+<p><code>StateGovTravelAdvisory/</code> is a separate Cloud Run service with its own <code>package.json</code>. It is deployed independently from the main Firebase project and exposes an HTTP endpoint for State Department travel advisory data.</p>
+
+<h2>Key Build / Maintenance Scripts</h2>
+<div class="cmd">npm run skill:standards          <span class="comment"># lint + build:check + unit tests (CI gate)</span>
+npm run skill:data-integrity    <span class="comment"># check cruise configs, extras, port data, Stripe config</span>
+npm run dock:regen-baselines:dev <span class="comment"># regenerate DOCK baselines from port guides — manual only</span>
+npm run dock:build-schedule:dev  <span class="comment"># rebuild port_schedule index — run monthly</span>
+npm run qa:regression           <span class="comment"># validate golden fixtures; exit 1 on regression</span></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="testing">16. Testing Strategy</h1>
+
+<h2>Unit Tests (Vitest)</h2>
+<ul>
+  <li>Framework: Vitest + jsdom + Testing Library + MSW (for HTTP mocking)</li>
+  <li>Firebase modules are entirely mocked in <code>src/test/setup.ts</code> — no real Firebase connections</li>
+  <li><code>lucide-react</code> is mocked (42 MB package; no tree-shaking in test env)</li>
+  <li><code>vitest.config.ts</code> caps <code>maxForks: 2</code> — low-RAM laptop constraint</li>
+  <li>Run all: <code>npx vitest run</code></li>
+  <li>Run one: <code>npx vitest run src/services/portGuideValidator.test.ts</code></li>
+</ul>
+
+<div class="callout warning">
+  <code>src/test/integration/dashboard.test.tsx</code> is excluded from default runs — it hangs in the forks pool. Run manually when needed: <code>npx vitest run src/test/integration/dashboard.test.tsx</code>
+</div>
+
+<h2>Integration Tests</h2>
+<p>These files exist and are run individually (not in the default pool):</p>
+<div class="pills">
+  <span class="pill gray">ActNowPanel.test.tsx</span>
+  <span class="pill gray">AdminAgentToolsPage.test.tsx</span>
+  <span class="pill gray">AdminCruiseChangesPage.test.tsx</span>
+  <span class="pill gray">AdminUsagePage.test.tsx</span>
+  <span class="pill gray">AgentAlertSettingsTab.test.tsx</span>
+  <span class="pill gray">ContentHealthPage.test.tsx</span>
+  <span class="pill gray">CruiseChangesSection.test.tsx</span>
+  <span class="pill gray">PortActivitySection.test.tsx</span>
+</div>
+
+<h2>E2E Tests (Playwright)</h2>
+<ul>
+  <li>Specs in <code>tests/acceptance/</code> (Flow01–Flow19+)</li>
+  <li>Run against deployed Firebase Hosting URLs — <strong>not localhost</strong></li>
+  <li><code>npm run test:e2e:dev</code> — targets <code>dockbound-dev.web.app</code></li>
+  <li><code>npm run test:e2e:prod</code> — targets production</li>
+  <li>Do not run E2E in automated or PM-driven runs — requires live environment</li>
+</ul>
+
+<h2>QA Regression</h2>
+<div class="cmd">npm run qa:regression    <span class="comment"># validates humanApproved golden fixtures; exit 1 on regression</span></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="conventions">17. Engineering Conventions</h1>
+
+<h2>Code Style</h2>
+<ul>
+  <li><strong>No <code>any</code> casts</strong> — prefer typed interfaces; <code>any</code> only in legacy adapter code</li>
+  <li><strong>Unused vars</strong> — prefix with <code>_</code> to suppress ESLint (<code>argsIgnorePattern: '^_'</code>)</li>
+  <li><strong>ESLint</strong> — flat config (<code>eslint.config.js</code>); <code>functions/</code> and <code>scripts/</code> are excluded</li>
+  <li><strong>Firestore Timestamps</strong> — always write with <code>serverTimestamp()</code>; convert on read with <code>.toDate()</code></li>
+  <li><strong>No comments by default</strong> — only add when the WHY is non-obvious (hidden constraint, surprising behavior, known bug workaround)</li>
+</ul>
+
+<h2>Scope Discipline</h2>
+<ul>
+  <li>Do not refactor unrelated working code — a bug fix is not a refactor ticket</li>
+  <li>Do not change existing product behavior unless the task explicitly requires it</li>
+  <li>Build the smallest reliable system that meets requirements</li>
+  <li>Do not add a large dependency when a small implementation in the existing stack is sufficient</li>
+</ul>
+
+<h2>AI-Generated Content Rules</h2>
+<ul>
+  <li>Never treat AI-generated output as human-approved ground truth — label synthetic fixtures clearly</li>
+  <li>Never silently invent scoring logic, rules, or thresholds — create a clearly named placeholder instead</li>
+  <li>Missing evidence must produce uncertainty, not fabricated certainty</li>
+</ul>
+
+<h2>Admin Pages Color Exception</h2>
+<p><code>ContentHealthPage</code>, <code>RemindersAdminPage</code>, and <code>InviteCodesPage</code> use hardcoded hex/rgba colors (Slate/Indigo palette) without CSS vars. Decision pending: migrate to CSS vars + <code>.on-dark</code> wrapper, or document as intentional dark admin-only pages.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════ -->
+<h1 id="pending">18. Known Issues &amp; Pending Work</h1>
+
+<h2>Deploy Blockers (before next full functions deploy)</h2>
+<ol>
+  <li>Add Firebase secrets: <code>SENDGRID_API_KEY</code>, <code>DISPUTE_ALERT_EMAIL</code> (<code>support@dockbound.app</code>)</li>
+  <li>Register <code>stripeWebhook</code> CF URL in Stripe Dashboard → subscribe to <code>charge.dispute.created</code> + <code>checkout.session.completed</code></li>
+  <li>Confirm SendGrid domain verification (initiated via GoDaddy — check SendGrid → Settings → Sender Authentication)</li>
+  <li>Set real Twilio secrets when account approved; then deploy functions to dev + prod</li>
+  <li>Register <code>twilioInboundWebhook</code> URL in Twilio Console → Phone Numbers → Messaging webhook</li>
+</ol>
+
+<h2>Test Stubs Needing Real Implementations</h2>
+<p>PM-generated stubs exist but have no real assertions — complete when the service is next touched:</p>
+<div class="pills">
+  <span class="pill amber">communicationsService.test.ts</span>
+  <span class="pill amber">cruiseChangesService.test.ts</span>
+  <span class="pill amber">guideResolverService.test.ts</span>
+</div>
+
+<h2>Known Transient Issues</h2>
+<ul>
+  <li><code>dashboard.test.tsx</code> excluded from default Vitest run (hangs in forks pool — pre-existing)</li>
+  <li><code>firebase-admin</code> transitive chain has 8 low-severity <code>@tootallnate/once</code> vulnerabilities — no non-breaking fix available; accepted risk</li>
+  <li>GitHub Actions "job not acquired by hosted runner" error — GitHub infrastructure flakiness, not a test failure; fix by re-running</li>
+</ul>
+
+<h2>DOCK Advisory Delta Calibration</h2>
+<p>Level 2 advisory currently applies C+0.5, producing only +0.125 average delta — below the 0.5 AT-RISK threshold. Consider C+1.0 for Level 2 and C+1.5 for Level 3 when advisor feedback data is available. Do not recalibrate without evidence.</p>
+
+<h2>Port Guide Fallback Risk</h2>
+<p>Stale local docs in <code>port_guides</code> can silently intercept when the PlatformCore CF call fails. A logging audit on the <code>getPortGuide()</code> catch block is needed to surface when fallback is being served. Until then, verify the source when debugging unexpected guide content.</p>
+
+<hr>
+<div class="footer">DockBound · Internal Architecture Reference · Last updated August 2026 · Not for external distribution</div>
+
+</body>
+</html>

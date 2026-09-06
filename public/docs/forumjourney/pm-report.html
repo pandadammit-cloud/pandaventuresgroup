@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForumJourney — PM Report · Run #8</title>
+<style>
+body {
+  font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 56px;
+}
+.cover {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 3px solid #1e40af;
+  margin-bottom: 48px;
+}
+.cover .logo { font-size: 13pt; font-weight: 700; color: #1e40af; letter-spacing: 0.08em; text-transform: uppercase; }
+.cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #111; }
+.cover .subtitle { font-size: 13pt; color: #555; }
+.cover .meta { margin-top: 20px; font-size: 9.5pt; color: #888; }
+
+.toc { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+.toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #1e40af; }
+.toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+.toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+.toc a { color: #1e40af; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #1e40af; padding-bottom: 6px; margin-top: 48px; }
+h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #1e40af; padding-left: 10px; }
+h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+.callout { background: #eff6ff; border-left: 4px solid #1e40af; padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt; }
+.callout.warning { background: #fff8ed; border-color: #f59e0b; }
+.callout.danger  { background: #fef2f2; border-color: #ef4444; }
+.callout.info    { background: #f0fdf4; border-color: #22c55e; }
+
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+th { background: #1e40af; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+tr:hover td { background: #f9fafb; }
+
+code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+.cmd { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 9.5pt; padding: 14px 18px; border-radius: 6px; margin: 10px 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+
+.block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; }
+.block h4 { margin: 0 0 8px; font-size: 11pt; color: #1e40af; font-family: 'Courier New', monospace; font-style: normal; }
+.block p  { margin: 4px 0; font-size: 10.5pt; }
+.block ul { margin: 8px 0 0; padding-left: 18px; }
+.block li { margin: 3px 0; font-size: 10pt; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: 600; }
+.badge.green  { background: #dcfce7; color: #166534; }
+.badge.yellow { background: #fef9c3; color: #854d0e; }
+.badge.red    { background: #fee2e2; color: #991b1b; }
+.badge.blue   { background: #dbeafe; color: #1e40af; }
+.badge.gray   { background: #f3f4f6; color: #374151; }
+
+/* stat cards */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+.stat-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; text-align: center; }
+.stat-card .stat-num { font-size: 28pt; font-weight: 700; color: #1e40af; line-height: 1; }
+.stat-card .stat-label { font-size: 9pt; color: #555; margin-top: 4px; }
+
+/* pills */
+.pill { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 9pt; font-weight: 600; margin: 2px; }
+.pill.pass { background: #dcfce7; color: #166534; }
+.pill.fail { background: #fee2e2; color: #991b1b; }
+.pill.skip { background: #fef9c3; color: #854d0e; }
+
+.check-list { list-style: none; padding: 0; margin: 10px 0; }
+.check-list li { padding: 5px 0; font-size: 10.5pt; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 8px; }
+.check-list li:last-child { border-bottom: none; }
+.check-list .check { color: #166534; font-weight: 700; }
+.check-list .skip-mark { color: #9ca3af; }
+
+.lesson { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 14px 18px; margin: 10px 0; }
+.lesson .lesson-date { font-size: 9pt; color: #2563eb; font-weight: 600; margin-bottom: 4px; }
+.lesson p { margin: 0; font-size: 10.5pt; }
+
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 9pt; color: #9ca3af; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">ForumJourney</div>
+  <h1>PM Report</h1>
+  <div class="subtitle">Run #8 &nbsp;·&nbsp; 2026-09-05</div>
+  <div class="meta">EventBound / ForumJourney &nbsp;·&nbsp; PandA Ventures &nbsp;·&nbsp; Branch: eventbound-dev</div>
+</div>
+
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#stats">Run Stats</a></li>
+    <li><a href="#auto-fixed">Auto-Fixed</a></li>
+    <li><a href="#resolved">Previously Pending — Resolved</a></li>
+    <li><a href="#tests">Test Results</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#deps">Dependencies</a></li>
+    <li><a href="#roadmap">Roadmap Currency</a></li>
+    <li><a href="#review">Needs Your Review</a></li>
+    <li><a href="#lessons">Lessons Learned</a></li>
+    <li><a href="#summary-table">Summary Table</a></li>
+  </ol>
+</div>
+
+<h1 id="stats">1. Run Stats</h1>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-num">132</div>
+    <div class="stat-label">Tests Passing</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Commits This Run</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Lessons Added</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Stubs Written</div>
+  </div>
+</div>
+
+<h2>Commits This Run</h2>
+<table>
+  <tr><th>Hash</th><th>Message</th></tr>
+  <tr><td><code>9d38d87</code></td><td>PM run 8: test fixes, new test stubs, CLAUDE.md refresh</td></tr>
+  <tr><td><code>07c0c52</code></td><td>Add scripts/seed-backlog.js — seeds ForumJourney items into shared pandaventuresgroup backlog</td></tr>
+  <tr><td><code>6537bcd</code></td><td>Roadmap: mark parking facts wire-up Done; health grid 118 done / 7 next</td></tr>
+  <tr><td><code>d41d61b</code></td><td>Wire parking normalized facts into plan content via discoveries[]</td></tr>
+  <tr><td><code>b494123</code></td><td>Roadmap: full backlog consistency pass — fix stale OD refs, statuses, missing items</td></tr>
+</table>
+
+<h1 id="auto-fixed">2. Auto-Fixed</h1>
+
+<ul class="check-list">
+  <li><span class="check">+</span> <strong>Test fix — join.test.ts:</strong> "returns INVALID_CODE when join code matches no occurrence" was missing <code>password</code> in the request body. The route's missing-fields guard caught it first, returning <code>BAD_REQUEST</code> instead of <code>INVALID_CODE</code>. Fixed. 117→117 tests all passing (no net change, but now testing the correct code path).</li>
+  <li><span class="check">+</span> <strong>Code quality — leads.ts:</strong> <code>limit(200)</code> query cap lacked a comment explaining the basis. Added: "operator UI cap — pilot expects &lt; 100 leads total" per round-number query limit rule.</li>
+  <li><span class="check">+</span> <strong>Test stubs written:</strong> <code>geography.test.ts</code> (7 tests — pointInRule Haversine math + defaultRuleForCategory) and <code>normalizers/parking.test.ts</code> (8 tests — normalizeParkingFacts + inferFacilityType). Total: 132 passing / 16 files.</li>
+  <li><span class="check">+</span> <strong>CLAUDE.md refreshed:</strong> Test count 114/14 → 132/16. <code>scripts/seed-backlog.js</code> added to scripts section.</li>
+  <li><span class="check">+</span> <strong>Lessons learned:</strong> 2 new entries added (see <a href="#lessons">Section 9</a>).</li>
+  <li><span class="check">+</span> <strong>pm-report.html:</strong> Refreshed to Run #8.</li>
+  <li><span class="check">+</span> <strong>Cron:</strong> Weekly PM re-registered (Monday 9:23 AM local).</li>
+  <li><span class="skip-mark">—</span> <strong>CLAUDE.md:</strong> Updated test count only — architecture sections current, no drift found.</li>
+  <li><span class="skip-mark">—</span> <strong>Security-review skill:</strong> Not present — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Simplify skill:</strong> Not present — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Permission allowlist:</strong> Run #8 (8 % 4 = 0 — eligible), but <code>fewer-permission-prompts.md</code> not present — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Project hooks:</strong> No <code>pm-hooks.md</code> found — skipped.</li>
+</ul>
+
+<h1 id="resolved">3. Previously Pending — Resolved</h1>
+
+<div class="callout info">
+  <strong>2 items resolved this run.</strong> 3 carry forward.
+</div>
+
+<ul class="check-list">
+  <li>
+    <span class="check">✓</span>
+    <div><strong>Frontend vitest config</strong> — <code>frontend/vitest.config.ts</code> was added (jsdom + React plugin). Frontend tests are now runnable. <strong>Resolved.</strong></div>
+  </li>
+  <li>
+    <span class="check">✓</span>
+    <div><strong>Dependencies upgrade session</strong> — All major gaps closed this sprint: typescript 5→7, uuid 11→14, @types/node 22→26, vitest 3→4, @anthropic-ai/sdk 0.116→0.122. <strong>Resolved.</strong></div>
+  </li>
+  <li>
+    <span class="skip-mark">—</span>
+    <div><strong>D005 demo form</strong> — <code>LandingPage.tsx</code> still has <code>// TODO (D005): Connect to approved lead destination before launch.</code> Form simulates submission. Backend lead destination not connected. Carried forward.</div>
+  </li>
+  <li>
+    <span class="skip-mark">—</span>
+    <div><strong>SEO + social metadata</strong> — blocked on D010 (marketing copy) and D001 (canonical URL). Not stale. Carried forward.</div>
+  </li>
+  <li>
+    <span class="skip-mark">—</span>
+    <div><strong>Amy to fill in userCategory fields</strong> on the 47 ForumJourney backlog items seeded into pandaventuresgroup Firestore. Carried forward.</div>
+  </li>
+</ul>
+
+<h1 id="tests">4. Test Results</h1>
+
+<p>
+  <span class="pill pass">132 pass</span>
+  <span class="pill fail">0 fail</span>
+  <span class="pill skip">0 skip</span>
+</p>
+
+<p><strong>16 test files</strong> — all passing. Up from 117 / 14 files — 2 new backend test stubs added this run covering the data collection normalizer and geography utilities.</p>
+
+<table>
+  <tr><th>Test File</th><th>Status</th></tr>
+  <tr><td><code>src/sourcing/normalizers/parking.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 8 tests)</td></tr>
+  <tr><td><code>src/sourcing/geography.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 7 tests)</td></tr>
+  <tr><td><code>src/domain/plan/generator.test.ts</code></td><td><span class="badge green">Pass</span> (17 tests — includes 3 new parking facts tests from prior run)</td></tr>
+  <tr><td><code>src/api/routes/join.test.ts</code></td><td><span class="badge green">Pass</span> (fixed INVALID_CODE test this run)</td></tr>
+  <tr><td><code>src/middleware/portalAuth.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/venue.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/speaker.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/userEvents.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/domain/changes/detector.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/domain/plan/leave-by.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/webhooks.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/partners.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/plans.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/changes.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/lib/weather.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/domain/notifications/generator.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+</table>
+
+<h1 id="security">5. Security</h1>
+
+<table>
+  <tr><th>Check</th><th>Result</th></tr>
+  <tr><td>Secret scan (last 5 commits)</td><td><span class="badge green">Clean</span> — no hardcoded credentials found</td></tr>
+  <tr><td>Hardcoded white/color values</td><td><span class="badge green">Pass</span> — All <code>color: '#fff'</code> occurrences in new legal pages are on <code>var(--lp-navy)</code> backgrounds (legitimate exception). Modal overlay <code>rgba(0,0,0,0.45)</code> is correct.</td></tr>
+  <tr><td>Round-number query limits</td><td><span class="badge yellow">Fixed</span> — <code>leads.ts limit(200)</code> now has explanatory comment</td></tr>
+  <tr><td>Undefined writes to Firestore</td><td><span class="badge green">Pass</span> — no violations found in recently modified files</td></tr>
+  <tr><td>npm audit (high/critical)</td><td><span class="badge green">0 high/critical</span> — 7 moderate transitive vulns in firebase-admin chain (accepted risk, unchanged)</td></tr>
+  <tr><td>Security-review skill</td><td><span class="badge gray">Skipped</span> — skill not present</td></tr>
+</table>
+
+<h1 id="deps">6. Dependencies</h1>
+
+<div class="callout info">
+  <strong>All major dependency gaps resolved this sprint.</strong> The 4 packages flagged in Run #7 have been upgraded.
+</div>
+
+<table>
+  <tr><th>Package</th><th>Current</th><th>Status</th></tr>
+  <tr><td><code>typescript</code></td><td>^7.0.2</td><td><span class="badge green">Up to date</span></td></tr>
+  <tr><td><code>uuid</code></td><td>^14.0.2</td><td><span class="badge green">Up to date</span></td></tr>
+  <tr><td><code>@types/node</code></td><td>^26.4.0</td><td><span class="badge green">Up to date</span></td></tr>
+  <tr><td><code>vitest</code></td><td>^4.1.11</td><td><span class="badge green">Up to date</span></td></tr>
+  <tr><td><code>@anthropic-ai/sdk</code></td><td>^0.122.0</td><td><span class="badge green">Current (monitor)</span></td></tr>
+  <tr><td><code>firebase-admin</code></td><td>^14.3.0</td><td><span class="badge green">Current</span></td></tr>
+  <tr><td><code>firebase-functions</code></td><td>^7.3.2</td><td><span class="badge green">Current</span></td></tr>
+</table>
+
+<div class="callout warning">
+  <strong>npm audit:</strong> 7 moderate vulnerabilities (transitive, via <code>firebase-admin</code> → <code>@google-cloud/storage</code> → <code>teeny-request</code>). No direct fix available. No high or critical findings. Accepted risk — unchanged from prior runs.
+</div>
+
+<h1 id="roadmap">7. Roadmap Currency</h1>
+
+<div class="callout info">
+  <strong>Roadmap looks current.</strong> 1 item In Progress: "SEO + social metadata" — correctly blocked on D010/D001 decisions, not stale (has clear block documented). No uncatalogued shipped work detected — parking facts wire-up, backlog seed script, and associated roadmap commits are all properly captured. Done-toggle already present.
+</div>
+
+<h1 id="review">8. Needs Your Review</h1>
+
+<div class="callout warning">
+  <strong>D005 — Demo form backend destination unresolved.</strong> <code>LandingPage.tsx</code> has <code>// TODO (D005): Connect to approved lead destination before launch.</code> The form currently simulates a successful submission. Real leads will be lost. Needs a CRM webhook, Firestore endpoint, or approved automation platform before <code>forumjourney.app</code> is promoted to live traffic.
+</div>
+
+<div class="callout warning">
+  <strong>SEO + social metadata (roadmap In Progress):</strong> Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). No action until decisions are made.
+</div>
+
+<div class="callout warning">
+  <strong>ForumJourney backlog userCategory fields.</strong> 47 backlog items were seeded into pandaventuresgroup Firestore with blank <code>userCategory</code> fields. Amy needs to fill these in (MVP / Later / Future) directly in Firestore or by re-running the seed script with values populated.
+</div>
+
+<div class="callout">
+  <strong>GET /facts endpoint — next Surface layer item.</strong> Portals cannot yet query collected data beyond what's surfaced in plan <code>discoveries[]</code>. A <code>GET /facts/:occurrenceId/:category</code> endpoint is the logical next step to let portals (attendee, organizer) consume live collected data. Backlog item fj-surface-1.
+</div>
+
+<h1 id="lessons">9. Lessons Learned</h1>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-05</div>
+  <p><strong>A data collection pipeline with no downstream reader is incomplete.</strong> The parking adapter wrote facts into <code>normalizedFacts</code> for the entire data collection phase with no consumer — it was only wired into plan content (<code>discoveries[]</code>) later. When adding a new data category, always trace the full path from collection → normalization → consumer in the same sprint. An unread collection is dead weight and its value can't be validated until something reads it.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-05</div>
+  <p><strong>Test stubs missing required fields silently test the wrong failure branch.</strong> In <code>join.test.ts</code>, the "invalid join code" test was missing <code>password</code> in the request body. The route's required-fields guard (<code>!email || !firstName || !password || !joinCode</code>) caught it first and returned <code>BAD_REQUEST</code> — so the test passed but was testing the missing-fields branch, not the invalid-code branch. When writing a test for a specific error path, ensure all required fields are present so the guard conditions don't intercept the test before it reaches the target code path.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-02</div>
+  <p><strong>New routes with <code>where()+orderBy()</code> must ship their Firestore composite indexes in the same commit.</strong> <code>venue.ts</code> and <code>speaker.ts</code> added compound queries but no entries to <code>firestore.indexes.json</code>. Without composite indexes, Firestore rejects these queries at runtime. Single-field <code>where()</code> without <code>orderBy()</code> does not require a composite index — only <code>where+orderBy</code> combinations do.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-08-31</div>
+  <p><strong>Use <code>vi.hoisted()</code> when Vitest mock factories must close over reassignable variables.</strong> Without hoisting, the variable declaration is hoisted by JS but not initialized before the factory runs — the mock closes over <code>undefined</code>. Pattern: <code>const { mockGet } = vi.hoisted(() => ({ mockGet: vi.fn() }))</code>. Required any time a mock factory needs a module-level variable that changes between tests.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-08-31</div>
+  <p><strong>Test files in <code>frontend/src/</code> must be excluded from the app tsconfig.</strong> Vite resolves <code>tsconfig.app.json</code> at build time; if <code>*.test.tsx</code> files are included, Vite attempts to bundle them and fails. Fix: add <code>"exclude": ["src/**/*.test.tsx", "src/**/*.test.ts"]</code> to <code>frontend/tsconfig.app.json</code>.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-08-30</div>
+  <p><strong>Scripts in <code>scripts/</code> outside npm workspaces must self-configure NODE_PATH.</strong> Fix: set <code>process.env.NODE_PATH</code> and call <code>Module._initPaths()</code> before any requires. Any standalone script depending on <code>functions/node_modules</code> packages must do the same.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-08-28</div>
+  <p><strong>New Firestore collections must get a rules stub immediately.</strong> Add a named <code>match /X/{docId}</code> stub in the same commit as any new <code>db.collection('X')</code> call. The catch-all <code>allow read, write: if false</code> protects it but intent is invisible without the stub.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-08-28</div>
+  <p><strong>Stage-aware cache TTLs are the right model for time-sensitive sourcing data.</strong> Weather sourcing uses 30-min TTL for <code>attend</code> and 4-hour TTL for <code>prepare</code>. Apply the same stage-aware TTL pattern to any future real-time sourcing adapter.</p>
+</div>
+
+<h1 id="summary-table">10. Summary Table</h1>
+
+<table>
+  <tr><th>Metric</th><th>Value</th></tr>
+  <tr><td>Commits since last run</td><td>5</td></tr>
+  <tr><td>CLAUDE.md last updated</td><td>This run — test count + seed-backlog.js noted</td></tr>
+  <tr><td>Test stubs written</td><td>2 (geography.test.ts + normalizers/parking.test.ts)</td></tr>
+  <tr><td>Tests passing</td><td>132 / 132 (16 files)</td></tr>
+  <tr><td>Test bugs fixed</td><td>1 (join.test.ts INVALID_CODE testing wrong branch)</td></tr>
+  <tr><td>Code quality fixes</td><td>1 (leads.ts limit(200) comment added)</td></tr>
+  <tr><td>Hardcoded color violations fixed</td><td>0 (all flagged occurrences are legitimate exceptions)</td></tr>
+  <tr><td>Pending items resolved from Run #7</td><td>2 (frontend vitest config ✓, dependency upgrades ✓)</td></tr>
+  <tr><td>New pending items</td><td>1 (userCategory backlog fill-in)</td></tr>
+  <tr><td>Items still pending</td><td>3 (D005 form, SEO metadata, userCategory backlog)</td></tr>
+  <tr><td>Lessons added</td><td>2 (unread pipeline, wrong test branch)</td></tr>
+  <tr><td>High/critical vulnerabilities</td><td>0 (7 moderate, accepted risk)</td></tr>
+</table>
+
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+
+</body>
+</html>

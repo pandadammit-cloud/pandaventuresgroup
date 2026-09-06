@@ -634,6 +634,33 @@ button { cursor: pointer; font-family: var(--sans); }
 .backlog-kpi__logo   { height: 16px; width: auto; object-fit: contain; vertical-align: middle; }
 .backlog-kpi__overall { font-weight: 700; font-size: 0.75rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
 
+.backlog-doclinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 24px;
+  background: var(--color-surface-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+.backlog-doclinks__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+.backlog-doclinks__logo { height: 16px; width: auto; object-fit: contain; opacity: 0.8; }
+.backlog-doclinks__name { font-weight: 600; color: var(--color-text-primary); min-width: 90px; }
+.backlog-doclinks__sep  { color: var(--color-border); }
+.backlog-doclinks__link {
+  color: var(--color-brand);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1px 0;
+  border-bottom: 1px solid transparent;
+}
+.backlog-doclinks__link:hover { border-bottom-color: var(--color-brand); text-decoration: none; }
+
 .backlog-main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 28px; max-width: 1280px; }
 
 .backlog-group {

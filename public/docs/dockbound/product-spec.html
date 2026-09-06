@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound Product Specification</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    background: #fff;
+  }
+
+  /* ── Cover Header ── */
+  .cover {
+    background: linear-gradient(135deg, #1e0a4a 0%, #3b0f8c 60%, #0d9488 100%);
+    color: #fff;
+    padding: 3rem 2.5rem 2.5rem;
+    margin-bottom: 0;
+  }
+  .cover .logo-mark {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 0.25rem;
+  }
+  .cover .logo-mark span { color: #c9920b; }
+  .cover h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .cover .meta {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+  }
+  .cover .meta span { margin-right: 1.5rem; }
+
+  /* ── Table of Contents ── */
+  .toc {
+    background: #f5f3ff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem 2.5rem;
+  }
+  .toc h2 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7c3aed;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .toc ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.2rem 2rem;
+    padding-left: 1.25rem;
+  }
+  .toc li { font-size: 0.8rem; color: #374151; }
+  .toc a { color: #7c3aed; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Layout ── */
+  .content { max-width: 960px; margin: 0 auto; padding: 2rem 2.5rem; }
+
+  /* ── Section Headers ── */
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #1e0a4a;
+    border-bottom: 3px solid #7c3aed;
+    padding-bottom: 0.4rem;
+    margin: 2.5rem 0 1.25rem;
+  }
+  .section-title.first { margin-top: 0; }
+  .subsection-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #3b0f8c;
+    margin: 1.75rem 0 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 4px solid #c9920b;
+  }
+  .tab-group-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7c3aed;
+    margin: 1.25rem 0 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: #f5f3ff;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  /* ── Prose ── */
+  p { margin-bottom: 0.75rem; color: #374151; }
+  .note {
+    background: #fffbeb;
+    border-left: 3px solid #c9920b;
+    padding: 0.6rem 0.875rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.82rem;
+    color: #92400e;
+    margin: 0.75rem 0 1rem;
+  }
+  .roadmap-badge {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1px 6px;
+    border-radius: 999px;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+
+  /* ── Simple Data Tables (roles, tiers, glossary) ── */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+  }
+  table.data-table th {
+    background: #1e0a4a;
+    color: #fff;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  table.data-table td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  table.data-table tr:nth-child(even) td { background: #f9fafb; }
+  table.data-table td code {
+    background: #f3f0ff;
+    color: #6d28d9;
+    font-size: 0.78rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── Function Cards ── */
+  .function-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem; }
+  .fn {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .fn-name {
+    background: #f5f3ff;
+    padding: 0.45rem 0.875rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: #1e0a4a;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .fn-body {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    font-size: 0.8rem;
+  }
+  .fn-body .label {
+    padding: 0.3rem 0.5rem 0.3rem 0.875rem;
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #fff;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 0.45rem;
+  }
+  .fn-body .label.what { background: #7c3aed; }
+  .fn-body .label.who  { background: #c9920b; }
+  .fn-body .label.result { background: #0d9488; }
+  .fn-body .def {
+    padding: 0.35rem 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .fn-body .def:last-child { border-bottom: none; }
+  code.path {
+    background: #f3f0ff;
+    color: #6d28d9;
+    font-size: 0.75rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ── Journey Steps ── */
+  .journey {
+    background: #f9f7ff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .journey h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #3b0f8c;
+    margin-bottom: 0.5rem;
+  }
+  .journey p { font-size: 0.82rem; color: #4b5563; margin-bottom: 0.5rem; }
+  .journey ol {
+    padding-left: 1.25rem;
+    font-size: 0.81rem;
+    color: #374151;
+    margin-bottom: 0.75rem;
+  }
+  .journey ol li { margin-bottom: 0.3rem; }
+  .journey ol li strong { color: #1e0a4a; }
+  .journey .functions-used {
+    font-size: 0.75rem;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .journey .functions-used strong { color: #3b0f8c; }
+
+  /* ── Glossary ── */
+  .glossary-section { margin-bottom: 1.25rem; }
+  .glossary-section h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7c3aed;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { font-size: 11px; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .toc { page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-title { page-break-before: auto; }
+    .fn { page-break-inside: avoid; }
+    .journey { page-break-inside: avoid; }
+    a { text-decoration: none; color: inherit; }
+    .fn-body .label { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.data-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Cover ── -->
+<div class="cover">
+  <div class="logo-mark">DOCK<span>Bound</span></div>
+  <h1>Product Specification</h1>
+  <div class="meta">
+    <span>Last updated: 2026-09-05</span>
+    <span>Maintained via <code style="color:rgba(255,255,255,0.6);font-size:0.75rem">/update-spec</code></span>
+  </div>
+</div>
+
+<!-- ── Table of Contents ── -->
+<div class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">Platform Overview</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#journeys">User Journeys (11)</a></li>
+    <li><a href="#traveler-functions">Traveler Functions</a></li>
+    <li><a href="#advisor-functions">Advisor Functions</a></li>
+    <li><a href="#agency-functions">Agency Host Functions</a></li>
+    <li><a href="#admin-functions">Admin Functions</a></li>
+    <li><a href="#pipeline-functions">Data Pipeline Functions</a></li>
+    <li><a href="#glossary">Feature Glossary (Marketing)</a></li>
+    <li><a href="#tiers">Tiers &amp; Access</a></li>
+  </ol>
+</div>
+
+<div class="content">
+
+<!-- ══════════════════════════════════════════════
+     1. PLATFORM OVERVIEW
+════════════════════════════════════════════════ -->
+<h2 class="section-title first" id="overview">1. Platform Overview</h2>
+<p>DockBound is a cruise intelligence platform serving two distinct audiences.</p>
+<p><strong>Consumer side</strong> — Cruise travelers who purchase DOCKGuides for their itinerary. A DOCKGuide is a full port-by-port guide covering every stop on a specific cruise: transport, food, safety, budget, and what to know before you dock. Individual port content within a DOCKGuide is called a <strong>port guide</strong>.</p>
+<p><strong>Professional side</strong> — Travel advisors and agencies who use DockBound's live intelligence dashboard to monitor their entire book of cruise business, powered by Travefy trip data and DockBound's proprietary DockScore system.</p>
+<p><strong>Landing pages</strong> — The root <code class="path">/</code> route renders the <strong>Compass Landing</strong> page, a full-featured marketing hub built from shared landing components (<code class="path">LandingNav</code>, <code class="path">LandingFooter</code>). Dedicated audience-specific landing pages are live at <code class="path">/for-advisors</code> (<code class="path">ForAdvisorsPage</code>), <code class="path">/for-agencies</code> (<code class="path">ForAgenciesPage</code>), and <code class="path">/for-travefy</code> (<code class="path">ForTravefyPage</code>) — each with full content for their respective audiences, replacing the previous <code class="path">ComingSoonPage</code> placeholders. The original consumer landing is accessible at <code class="path">/for-travelers</code>. A public transparency page at <code class="path">/information-standards</code> describes DockBound's data sources, content methodology, and quality practices for advisors, travelers, and partners evaluating the platform.</p>
+<div class="note"><strong>DockScore:</strong> A proprietary port accessibility and congestion rating (0–10, lower = better). A <em>static</em> baseline reflects normal conditions; a <em>dynamic</em> score adjusts for live signals. A port is flagged "at risk" when dynamic exceeds static by ≥ 0.5.</div>
+<div class="note"><strong>DOCKGuide vs. port guide:</strong> A DOCKGuide is the product a traveler purchases — it covers all ports on their itinerary. A port guide is the content for one specific port. Port guides are the building blocks of a DOCKGuide and are also maintained individually by the admin team.</div>
+
+<!-- ══════════════════════════════════════════════
+     2. ROLES
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="roles">2. Roles</h2>
+<table class="data-table">
+  <thead><tr><th>Role</th><th>Firestore Value</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Traveler</td><td><code>user</code></td><td>Consumer who browses, previews, and purchases DOCKGuides.</td></tr>
+    <tr><td>Invited Traveler</td><td><code>agentuser</code></td><td>Traveler linked to an advisor's roster; accesses guide via the advisor relationship.</td></tr>
+    <tr><td>Advisor</td><td><code>agent</code></td><td>Travel agent managing travelers and the live cruise intelligence dashboard.</td></tr>
+    <tr><td>Agency Host</td><td><code>agencyhost</code></td><td>Agency administrator managing a roster of advisors on DockBound.</td></tr>
+    <tr><td>Admin</td><td><code>admin</code></td><td>Platform staff — full access to data maintenance and the admin portal.</td></tr>
+    <tr><td>Super Admin</td><td><code>super-admin</code></td><td>All admin access plus ability to promote other users to any role.</td></tr>
+    <tr><td>Maintenance</td><td><code>maintenance</code></td><td>Data team — content editors and pipeline tools only; no agency/agent admin.</td></tr>
+    <tr><td>Travefy Advisor</td><td><code>agent</code> (<code>advisorType: travefyadvisor</code>)</td><td>Independent advisor who signed up via the Travefy Advisor self-serve path. Starts with a 60-day free trial (no Stripe required at signup), then transitions to a monthly subscription. Connected to Travefy from onboarding.</td></tr>
+    <tr><td>Independent Advisor</td><td><code>agent</code> (<code>advisorType: independentAdvisor</code>)</td><td>Solo advisor who signed up independently without agency affiliation, managing travelers manually without Travefy integration.</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     3. USER JOURNEYS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="journeys">3. User Journeys</h2>
+
+<div class="journey">
+  <h3>Journey 1 — Traveler: Self-Serve Paid DOCKGuide</h3>
+  <p>A cruise passenger discovers DockBound, previews their itinerary, and purchases a full DOCKGuide for their cruise.</p>
+  <ol>
+    <li><strong>Discover</strong> — Arrives at Compass Landing (<code class="path">/</code>) or Traveler Landing (<code class="path">/for-travelers</code>)</li>
+    <li><strong>Browse</strong> — Searches for their cruise at <code class="path">/micro-selection</code>, filtering by cruise line, ship, sail date, or region</li>
+    <li><strong>Preview</strong> — Views port-by-port itinerary preview at <code class="path">/preview</code> with sample port guide content and DockScore teaser</li>
+    <li><strong>Authenticate</strong> — Signs up or logs in at <code class="path">/auth</code>; if unauthenticated at checkout, session stores the cruise and redirects back post-auth</li>
+    <li><strong>Purchase</strong> — Completes Stripe checkout at <code class="path">/payment-checkout</code></li>
+    <li><strong>Confirm</strong> — Sees payment success at <code class="path">/payment-success</code></li>
+    <li><strong>Access</strong> — Full DOCKGuide on dashboard (<code class="path">/dashboard</code>): all port guides, live weather, travel alerts, currency, tours, and DockScore</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Search for cruise · Preview itinerary · Sign up / Log in · Purchase DOCKGuide · View DOCKGuide · Read port guide · View DockScore · View DOCK diagnostics · View port weather · View travel alerts · Convert currency · Browse &amp; book tours · Print cruise guide · View upcoming cruises · View itinerary change alerts</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 2 — Traveler: Freemium Access</h3>
+  <p>A traveler receives free or partial DOCKGuide access — via advisor referral, promotional access, or sign-up without purchase — and sees locked premium sections with an upgrade prompt.</p>
+  <ol>
+    <li><strong>Arrive</strong> — Comes via advisor referral link or direct sign-up</li>
+    <li><strong>Authenticate</strong> — Signs up or logs in at <code class="path">/auth</code></li>
+    <li><strong>Access</strong> — Dashboard shows freemium content; locked sections display an upgrade prompt</li>
+    <li><strong>Upgrade</strong> — Can purchase full access from the upgrade prompt or at <code class="path">/upgrade/:orderId</code></li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Sign up / Log in · View freemium DOCKGuide (gated sections) · View locked section upgrade prompts · Upgrade to full paid access</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 3 — Advisor: Joins Solo, Manual Roster (No Travefy)</h3>
+  <p>A travel agent signs up independently as an <code class="path">independentAdvisor</code>, selects a subscription plan, builds a client roster manually, and uses the intelligence dashboard to monitor their book of business.</p>
+  <ol>
+    <li><strong>Sign up</strong> — Creates an account at <code class="path">/auth?mode=signup&amp;advisor=true</code>; <code class="path">registerAdvisorRole</code> CF sets role to <code class="path">agent</code> with <code class="path">advisorType: independentAdvisor</code></li>
+    <li><strong>Onboarding</strong> — First dashboard visit shows the onboarding flow; advisor selects a plan and completes Stripe checkout with a 60-day trial period (<code class="path">trial_period_days: 60</code>); card is required at signup but billing starts after 60 days</li>
+    <li><strong>Subscribe</strong> — Inline plan picker appears on the dashboard for trial users without a Stripe customer record; advisor selects a plan (Basic $199/mo, Professional $699/mo, or Engage $1,499/mo — same as Travefy Advisor tiers) and completes Stripe checkout</li>
+    <li><strong>Build roster</strong> — Adds travelers one at a time or bulk-imports via CSV; can also add a client directly from search results via the "Add Client" button on cruise cards</li>
+    <li><strong>Monitor</strong> — Uses the Sailings tab (Itinerary Timeline, Who's Sailing, Act Now, Intelligence) and Port Tools tab (Congestion Calendar, Port Guide &amp; DOCK)</li>
+    <li><strong>Customize</strong> — Configures which guide sections clients see and in what order</li>
+    <li><strong>Deliver</strong> — Looks up port guides and DockScores for specific clients</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Sign up / Log in · Subscribe to tier · Add traveler manually · Import travelers via CSV · Add client from search results · Archive / unarchive traveler · Add cruise to roster entry · View team roster · View archived travelers · Open traveler communication thread · Send in-app message · Log contact · Send SMS to traveler · View Itinerary Timeline · View Act Now queue · View Today's Ports · View Next 3 Days · View At-Risk Itineraries · View Who's Sailing timeline · View port congestion calendar · Look up port guide · View Port Day at a Glance · View DockScore · View DOCK diagnostics · Customize guide settings · View port utilization</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 4 — Advisor: Joins Solo, Links Travefy</h3>
+  <p>An advisor links their Travefy account, syncing cruise trips automatically and enriching them with DockBound intelligence.</p>
+  <ol>
+    <li><strong>Sign up &amp; subscribe</strong> — Same as Journey 3, steps 1–2</li>
+    <li><strong>Connect Travefy</strong> — In the Settings tab (Travefy Sync section), authenticates and links account; AccessToken stored in Firestore</li>
+    <li><strong>Sync trips</strong> — Clicks "Sync Now"; trips pulled from Travefy and stored in <code class="path">agents/{uid}/trips</code></li>
+    <li><strong>Auto-sync</strong> — Nightly Cloud Function re-syncs all trips at 2am ET</li>
+    <li><strong>View enriched trips</strong> — DockScore and port guide data overlaid on each synced trip</li>
+    <li><strong>Enrich back</strong> — Writes DockBound TripEvents back to Travefy port days; registry stored in <code class="path">travefyEnrichments</code></li>
+    <li><strong>Monitor</strong> — All intelligence views draw from synced Travefy trip data</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> All functions from Journey 3 · Connect Travefy account · Sync Travefy trips manually · View Travefy trip list · Enrich Travefy trip · View enrichment records · Auto nightly trip sync</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 5 — Agency Host: Joins With Travefy</h3>
+  <p>An agency admin provisions a DockBound agency, imports advisors, and oversees intelligence across all agents who connect Travefy.</p>
+  <ol>
+    <li><strong>Sign up</strong> — Account provisioned with role <code class="path">agencyhost</code></li>
+    <li><strong>Create agency</strong> — Sets agency name, website, phone at <code class="path">/agency-hub</code>; a corresponding <code>org</code> node is created in the Node system and <code>nodeId</code> is written to both the agency doc and the owner user doc</li>
+    <li><strong>Import agents</strong> — Uploads CSV of advisor roster at <code class="path">/agency-hub/import</code>; each activated advisor gets a <code>user</code> node created under the agency's org node</li>
+    <li><strong>Invite agents</strong> — System auto-sends email invitations to each advisor</li>
+    <li><strong>Agents onboard</strong> — Each advisor follows Journey 4 to connect their own Travefy account</li>
+    <li><strong>Monitor</strong> — Agency Hub dashboard auto-detects advisor issues (inactive 14+ days, missing Travefy auth) and surfaces them as Attention Items; host reviews, marks viewed, or dismisses each item inline</li>
+    <li><strong>Reports &amp; Roster</strong> — Reviews agent activity and referral analytics at <code class="path">/agency-hub/reports</code>; manages agent status at <code class="path">/agency-hub/roster</code></li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Sign up / Log in · Create agency profile · View agency overview (attention-first dashboard) · View and manage attention items · Copy agency referral code · Import agent roster via CSV · View agent roster · Suspend / activate agents · View agency reports · (Advisors individually connect Travefy per Journey 4)</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 6 — Agency Host: Joins Without Travefy</h3>
+  <p>An agency uses DockBound entirely without Travefy — advisors build rosters manually and the agency host monitors advisor activity and referral reports.</p>
+  <ol>
+    <li><strong>Sign up &amp; create agency</strong> — Same as Journey 5, steps 1–2</li>
+    <li><strong>Import &amp; invite agents</strong> — CSV import + invite emails</li>
+    <li><strong>Agents build rosters manually</strong> — Each advisor follows Journey 3</li>
+    <li><strong>Monitor</strong> — Agency host reviews agent activity and referral reports</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Same as Journey 5 excluding all Travefy-specific functions</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 7 — Advisor: Invited by Agency Host</h3>
+  <p>An advisor receives an invite email from their host agency and joins DockBound as part of that agency's team.</p>
+  <ol>
+    <li><strong>Receive invite</strong> — Gets email from the <code class="path">sendRosterInviteEmail</code> Cloud Function</li>
+    <li><strong>Click link</strong> — Directed to sign-up with agency pre-linked via referral code or invite token</li>
+    <li><strong>Sign up</strong> — Creates account; <code class="path">linkAgentRoster</code> Cloud Function associates them with the agency roster</li>
+    <li><strong>Activate</strong> — Roster entry status changes <code class="path">invited → active</code></li>
+    <li><strong>Use platform</strong> — Advisor proceeds with Journey 3 (manual) or Journey 4 (Travefy)</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Sign up via invite link · Auto-link to agency roster · View advisor dashboard · All advisor functions from Journey 3 or 4</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 8 — Traveler: Referred by an Advisor</h3>
+  <p>An advisor shares a referral link; the traveler signs up through it and their account is attributed to that advisor.</p>
+  <ol>
+    <li><strong>Advisor shares link</strong> — Distributes unique referral link to a client</li>
+    <li><strong>Traveler clicks</strong> — Lands on DockBound with referral tracked in session</li>
+    <li><strong>Traveler signs up</strong> — <code class="path">agencyOnReferralSignup</code> Cloud Function records attribution</li>
+    <li><strong>Traveler accesses guide</strong> — Receives freemium or paid access per the advisor's setup</li>
+    <li><strong>Advisor gets credit</strong> — Referral counted in agency reports</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> (Advisor) Share referral link · (Traveler) Sign up via referral · (Traveler) Access DOCKGuide · (System) Record referral attribution</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 9 — Advisor: Delivers DOCKGuide to Traveler <span class="roadmap-badge">Roadmap</span></h3>
+  <p>An advisor proactively pushes a client's port guide to them for a port arriving today or tomorrow.</p>
+  <ol>
+    <li><strong>Identify</strong> — Sees in "Who's Sailing" that a client arrives at port tomorrow</li>
+    <li><strong>Select</strong> — Chooses the client and specific port day</li>
+    <li><strong>Send</strong> — One-click delivery pushes DOCKGuide via email or in-app notification</li>
+    <li><strong>Traveler receives</strong> — Gets the port guide link before they even think to look</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> View Who's Sailing timeline · Send DOCKGuide to traveler (roadmap) · View delivery history (roadmap)</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 10 — Traveler: Day-of Port Experience</h3>
+  <p>A traveler is arriving at port today and uses DockBound on their phone — potentially with limited ship Wi-Fi.</p>
+  <ol>
+    <li><strong>Open app</strong> — Accesses <code class="path">/dashboard</code> from mobile; today's port highlighted</li>
+    <li><strong>Read guide</strong> — Full port guide: snapshot, transport, safety contacts, food, budget</li>
+    <li><strong>Check alerts</strong> — Views any active travel advisory for the destination country</li>
+    <li><strong>Convert currency</strong> — Quick lookup of local exchange rate</li>
+    <li><strong>Book tour</strong> — Browses and books Viator tours for the port</li>
+    <li><strong>Check DockScore</strong> — Sees current congestion/accessibility rating</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> View today's port day · Read full port guide · View travel alerts · Convert currency · Browse &amp; book Viator tours · View DockScore · Offline/cached port guide access</div>
+</div>
+
+<div class="journey">
+  <h3>Journey 11 — Advisor: Self-Serve Free Trial (Travefy or Independent)</h3>
+  <p>An independent travel advisor signs up for a 60-day free trial — either via the Travefy Advisor path (<code class="path">advisorType: travefyadvisor</code>) or the independent advisor path (<code class="path">advisorType: independentAdvisor</code>). Both use the same TRAVEFY_TIERS pricing and the same inline plan picker for conversion. The trial mechanics differ by path.</p>
+  <ol>
+    <li><strong>Sign up</strong> — Creates account at <code class="path">/auth?mode=signup&amp;advisor=true</code>; role set to <code class="path">agent</code> with the appropriate <code class="path">advisorType</code></li>
+    <li><strong>Trial starts</strong> — Account provisioned with <code class="path">plan.status: trialing</code> and a <code class="path">trialEndsAt</code> timestamp 60 days out. <strong>Travefy Advisor path</strong>: no Stripe payment required at signup — trial is held locally. <strong>Independent Advisor path</strong>: Stripe checkout with <code class="path">trial_period_days: 60</code> is required at onboarding; a credit card is collected but billing does not start until day 61</li>
+    <li><strong>Connect Travefy</strong> — (Travefy Advisor path only) Authenticates and links Travefy account; AccessToken stored in Firestore</li>
+    <li><strong>Access paid features</strong> — All advisor tabs and intelligence tools are available for the trial duration</li>
+    <li><strong>Trial nears end</strong> — Dashboard shows trial end date countdown; a "Subscribe" button appears in the plan banner</li>
+    <li><strong>Subscribe</strong> — Inline plan picker expands on the dashboard; advisor selects Basic $199/mo, Professional $699/mo, or Engage $1,499/mo; completes Stripe checkout; <code class="path">plan.status</code> transitions to <code class="path">active</code>. Applies to both <code class="path">travefyadvisor</code> and <code class="path">independentAdvisor</code> types</li>
+  </ol>
+  <div class="functions-used"><strong>Functions:</strong> Sign up / Log in · Connect Travefy account (Travefy path) · Sync Travefy trips (Travefy path) · View Itinerary Timeline · View Act Now queue · View Cruise Change Feed · View Port Activity · Configure Alert Settings · View Who's Sailing timeline · Enrich Travefy trip (Travefy path) · Subscribe to tier (at trial end)</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     4. TRAVELER FUNCTIONS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="traveler-functions">4. Traveler Functions</h2>
+
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Sign Up</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Creates a new DockBound traveler account using email and password.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/auth</code>.</div>
+    <div class="label result">Result</div><div class="def">Account created with role <code class="path">user</code>; user directed to dashboard or back to pending checkout if a cruise was in session.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Log In</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Authenticates an existing traveler to their DockBound account.</div>
+    <div class="label who">Who</div><div class="def">Returning traveler, at <code class="path">/auth</code>.</div>
+    <div class="label result">Result</div><div class="def">Session established; user redirected to dashboard or back to a pending cruise checkout.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Search for Cruise</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Searches and filters the DockBound cruise database by cruise line, ship name, sail date, and region.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/micro-selection</code>.</div>
+    <div class="label result">Result</div><div class="def">A filtered list of matching sailings is displayed; traveler selects one to preview.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Preview Itinerary</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays a port-by-port itinerary preview for the selected cruise — including sample port guide content, a DockScore teaser, and a sample weather snapshot — before the traveler commits to purchasing.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/preview</code>.</div>
+    <div class="label result">Result</div><div class="def">Traveler can evaluate the cruise before buying; a "Buy DOCKGuide" CTA initiates checkout.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Purchase DOCKGuide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens a Stripe checkout session for the selected cruise DOCKGuide. If the traveler is not yet logged in, their cruise selection is saved in session and they are redirected to auth first.</div>
+    <div class="label who">Who</div><div class="def">Authenticated traveler, from <code class="path">/preview</code> via <code class="path">/payment-checkout</code>.</div>
+    <div class="label result">Result</div><div class="def">Payment processed; full DOCKGuide access granted for the purchased itinerary; order recorded in Firestore.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View DOCKGuide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Loads the full cruise dashboard for a purchased itinerary — all port guides, live weather, travel alerts, currency converter, Viator tours, and DockScore in one place.</div>
+    <div class="label who">Who</div><div class="def">Traveler with a completed purchase, at <code class="path">/dashboard</code>.</div>
+    <div class="label result">Result</div><div class="def">Traveler has a complete, port-by-port intelligence view for every stop on their cruise.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Read Port Guide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays the detailed content for a specific port: an overview snapshot, transport options, food and dining picks, safety contacts (hospital, embassy, emergency), budget guidance, and "In the Know" local tips curated by the DockBound team.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">Traveler has actionable, port-specific intelligence ready for their arrival day.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View DockScore</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Shows the proprietary 0–10 port accessibility and congestion score for each port on the itinerary. Lower scores indicate easier, less congested ports; higher scores indicate more constraints or congestion.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">At-a-glance signal for how challenging a port is expected to be — green (low) to red (high).</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View DOCK Diagnostics</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Expands the full breakdown of every factor contributing to a port's DockScore, with an icon identifying the data source (weather, travel alerts, congestion signals, etc.) for each driver.</div>
+    <div class="label who">Who</div><div class="def">Traveler or advisor, from the dashboard.</div>
+    <div class="label result">Result</div><div class="def">Full transparency into exactly why a port scores the way it does.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Port Weather</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Fetches and displays current weather conditions and a multi-day forecast for each port day via the weather API, including temperature, conditions, and UV index.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">Traveler sees what to expect weather-wise for each port call on their cruise.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Travel Alerts</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Retrieves and displays government-issued travel advisories relevant to each port's country, surfaced directly within the port guide.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">Traveler is informed of any active safety, entry, or health advisories before arriving in that country.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Convert Currency</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays the live exchange rate for the local currency at each port and provides an interactive conversion calculator for planning local spending.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">Traveler can immediately calculate how much local currency they'll need at current rates.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Browse &amp; Book Tours</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Searches Viator's tour and activity catalog for options available at each port, with ratings, duration, pricing, and affiliate booking links displayed inline.</div>
+    <div class="label who">Who</div><div class="def">Traveler, within their DOCKGuide dashboard.</div>
+    <div class="label result">Result</div><div class="def">Traveler can discover and book excursions directly from their port guide without leaving DockBound.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Upcoming Cruises</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lists all cruises for which the traveler has active DOCKGuide access, sorted by sail date.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/current-cruises</code>.</div>
+    <div class="label result">Result</div><div class="def">Quick access to all active cruise guides in one place.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Past Cruises</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lists previously sailed cruises for which the traveler purchased a DOCKGuide.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/past-cruises</code>.</div>
+    <div class="label result">Result</div><div class="def">Historical reference access to past cruise guides.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Print Cruise Guide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Generates a print-optimized version of the full DOCKGuide for a cruise, formatted for paper with clean typography and no navigation chrome.</div>
+    <div class="label who">Who</div><div class="def">Traveler, at <code class="path">/print/cruise/:id</code>.</div>
+    <div class="label result">Result</div><div class="def">A printable document the traveler can bring onboard without needing ship Wi-Fi.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Upgrade Guide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens the upgrade flow allowing a traveler to convert freemium or limited-tier access to full paid DOCKGuide access for a specific itinerary.</div>
+    <div class="label who">Who</div><div class="def">Traveler with freemium access, from an upgrade prompt or at <code class="path">/upgrade/:orderId</code>.</div>
+    <div class="label result">Result</div><div class="def">All guide sections unlocked; upgraded order recorded in Firestore.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Itinerary Change Alerts</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Surfaces a modal notification when DockBound's change detection pipeline identifies that the traveler's cruise itinerary has been modified — a port swap, time shift, or cancellation.</div>
+    <div class="label who">Who</div><div class="def">Traveler, on the dashboard after a change is detected on their itinerary.</div>
+    <div class="label result">Result</div><div class="def">Traveler is immediately aware of any schedule change and can adjust their plans accordingly.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Log Out</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Ends the current authenticated session.</div>
+    <div class="label who">Who</div><div class="def">Any authenticated user, via the header navigation.</div>
+    <div class="label result">Result</div><div class="def">Session cleared; user returned to the landing page.</div>
+  </div>
+</div>
+
+</div><!-- /function-list -->
+
+<!-- ══════════════════════════════════════════════
+     5. ADVISOR FUNCTIONS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="advisor-functions">5. Advisor Functions</h2>
+
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Sign Up / Log In</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Creates a new advisor account or authenticates an existing one.</div>
+    <div class="label who">Who</div><div class="def">Travel agent, at <code class="path">/auth</code>.</div>
+    <div class="label result">Result</div><div class="def">Account with role <code class="path">agent</code> established; advisor directed to the agent dashboard.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Subscribe to Tier</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Initiates a Stripe subscription checkout for the advisor's chosen plan — 25, 100, 300, or 750 traveler slots (slot-based plans) or Basic $199/mo / Professional $699/mo / Engage $1,499/mo (Travefy Advisor and Independent Advisor plans, both use TRAVEFY_TIERS) — during first-time onboarding or trial-to-paid conversion. For trial advisors (<code class="path">travefyadvisor</code> or <code class="path">independentAdvisor</code>), an inline plan picker expands on the dashboard when they click "Subscribe" or "Change Plan".</div>
+    <div class="label who">Who</div><div class="def">Advisor, during the onboarding flow on the agent dashboard or when converting from a trial; for slot-based plan advisors, during initial setup; for trial advisors, from the plan banner "Subscribe" button.</div>
+    <div class="label result">Result</div><div class="def">Subscription active; roster slot capacity set; recurring billing established in Stripe.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Manage Billing</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens the Stripe Billing Portal for the advisor to manage their subscription — view invoices, update payment method, or cancel. Requires an existing Stripe customer record on the agent's Firestore document (<code class="path">plan.stripeCustomerId</code>). Implemented via the <code class="path">stripeCreatePortalSession</code> Cloud Function.</div>
+    <div class="label who">Who</div><div class="def">Advisor with an active Stripe subscription, from the agent dashboard billing section.</div>
+    <div class="label result">Result</div><div class="def">Advisor redirected to the Stripe-hosted Billing Portal to manage their own subscription details.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Advisor Dashboard</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens the main advisor hub — a four-tab interface consolidating all advisor tools. <strong>Sailings</strong> contains the Itinerary Timeline (with "Port Guide →" quick-link to Port Tools per cruise), Who's Sailing summary cards (with "View itinerary ↗" links), Act Now queue, Cruise Change Feed, Intelligence panel, and Port Activity. <strong>Clients</strong> contains the full Traveler Roster (with add/import forms, archive toggle, and + Cruise action) and (for Travefy advisors) the Travefy link editor. <strong>Port Tools</strong> contains Port Guide lookup (including Port Day at a Glance for V4 ports), DOCK Diagnostics, Congestion Calendar, Port Utilization, and Guide Settings. <strong>Settings</strong> contains Travefy Sync (Travefy advisors only) and Notification Preferences. Old URL params (<code class="path">?tab=roster</code>) remap to <code class="path">clients</code>; <code class="path">?tab=travefy</code>, <code class="path">alerts</code> remap to <code class="path">settings</code>; <code class="path">?tab=actnow</code>, <code class="path">intelligence</code> remap to <code class="path">sailings</code>.</div>
+    <div class="label who">Who</div><div class="def">Authenticated advisor, at <code class="path">/agent-dashboard</code>.</div>
+    <div class="label result">Result</div><div class="def">Central access point for every advisor capability in DockBound.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Sailings Tab — Act Now Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Act Now Queue</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays a ranked, prioritized list of the most urgent advisor actions across all active client trips — imminent port arrivals, at-risk ports, clients sailing this week with undelivered guides.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Act Now section.</div>
+    <div class="label result">Result</div><div class="def">Advisor immediately knows what to work on first without manually scanning the full roster.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Cruise Change Feed</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays a rolling feed of cruise itinerary changes detected by DockBound's CruiseMapper pipeline — new sailings, itinerary updates, deletions, and reappearances. When the advisor has Travefy enrichments, changes matching ports in their tracked trips surface first under a "Relevant to your trips" callout with teal highlighting and port name pills; all other changes appear below as "Other changes."</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Act Now section.</div>
+    <div class="label result">Result</div><div class="def">Advisor immediately spots itinerary changes that affect clients at their tracked ports without manually cross-referencing the change log.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Sailings Tab — Intelligence Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Today's Ports</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Aggregates every port call happening today across all active client trips and displays them in a single consolidated view with DockScore and conditions for each.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Intelligence section.</div>
+    <div class="label result">Result</div><div class="def">Advisor sees at a glance which clients are in port today and what conditions they're facing.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Next 3 Days</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lists all upcoming port calls within the next three days across all client trips, organized into date buckets.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Intelligence section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can prepare client outreach and guide delivery for imminent arrivals.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View At-Risk Itineraries</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Scans all active trips and flags any port where the dynamic DockScore exceeds the static baseline by 0.5 or more — a meaningful degradation in port conditions. Flagged ports are highlighted in red.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Intelligence section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can proactively contact clients about ports where conditions are significantly worse than normal, before the client experiences them.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Port Activity</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Groups all cruise changes detected in the last 30 days by port, filtered to only the ports present in the advisor's Travefy-enriched trips. Each port group shows a change count badge sorted highest first, with type badges, cruise identifiers, changed fields, and detection dates for each entry. Hidden when the advisor has no Travefy enrichments.</div>
+    <div class="label who">Who</div><div class="def">Advisor with Travefy enrichments, on the Sailings tab — Intelligence section.</div>
+    <div class="label result">Result</div><div class="def">Advisor sees at a glance which ports on their tracked itineraries have been most volatile recently, enabling targeted proactive client outreach.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Sailings Tab — Who's Sailing Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Itinerary Timeline</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A grouped table of all cruise sailings across the advisor's roster, sorted by temporal urgency. Urgent rows (Sailing Now / This Week) appear first with colored highlights; remaining sailings are grouped under month-year bucket headers. Each row shows cruise name, ship, departure port, sail date, status pill, client count, and a <strong>"Port Guide →"</strong> quick-link that switches to the Port Tools tab with the first port of call pre-selected.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Who's Sailing section.</div>
+    <div class="label result">Result</div><div class="def">Quick scan of the entire forward sailing calendar, grouped by cruise and sorted by urgency — one row per cruise+sailDate combination regardless of how many clients are on that sailing. One click reaches the port guide for the first port without navigating away.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Who's Sailing Summary Cards</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Below the Itinerary Timeline, individual CruiseCards are shown for urgent sailings (Sailing Now and This Week) providing richer detail: cruise name, ship, departure port, duration, sail date, status pill, a client count link to the roster, and a <strong>"View itinerary ↗"</strong> link that opens the full cruise itinerary printable view at <code class="path">/print/cruise/:cruiseId</code> in a new tab.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Sailings tab — Who's Sailing section.</div>
+    <div class="label result">Result</div><div class="def">At-a-glance spotlight on the most time-sensitive sailings with enough detail to act; the itinerary link lets the advisor quickly share or review the full sailing schedule without navigating away.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Port Tools Tab — Congestion Calendar Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Port Congestion Calendar</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Renders a forward-looking heatmap showing port congestion levels across all tracked sailings — which ports and dates are projected to be busiest.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Congestion Calendar section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can spot high-congestion dates in advance and set expectations with clients before they embark.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Port Tools Tab — Port Guide &amp; DOCK Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Look Up Port Guide</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lets the advisor search for and display the full port guide content for any port in the DockBound database — the same content their clients will see in their DOCKGuide.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Port Guide &amp; DOCK section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can review and validate the exact port guide their client will receive, and answer client questions with confidence.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Port Day at a Glance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">The first section of each port guide (for ports with V4 schema data), surfacing a badge row of cruise-intelligence fields: port type chip, activity depth (Low/Moderate/High/Very High), major experience transfer time, return complexity (Easy/Plan Ahead/Complex with semantic color coding), taxi pricing estimate, and a single high-priority "impact action" callout — the one thing the traveler must act on for this port. All data comes from V4 doc-level fields (<code class="path">portAreaActivityDepth</code>, <code class="path">returnComplexity</code>, <code class="path">impactAction</code>, <code class="path">majorExperienceTransferTime</code>, <code class="path">returnDependencies</code>). The section is hidden if the port has no V4 data.</div>
+    <div class="label who">Who</div><div class="def">Advisor (in the Port Tools tab) or traveler (in their DOCKGuide), wherever the port guide is displayed.</div>
+    <div class="label result">Result</div><div class="def">At-a-glance logistical intelligence for the port day — before the advisor or traveler reads a single paragraph of guide prose.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View DockScore</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays both the static baseline and live dynamic DockScore for a selected port, including the delta between them and a red risk flag when the delta is ≥ 0.5.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Port Guide &amp; DOCK section.</div>
+    <div class="label result">Result</div><div class="def">Advisor has a precise read on current port conditions and can contextualize them accurately for clients.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View DOCK Diagnostics</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Shows the complete breakdown of every signal contributing to a port's DockScore, labeled by data source with icons per driver.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Port Guide &amp; DOCK section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can explain exactly what is driving port conditions to any client who asks.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Clients Tab — Roster Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Add Traveler Manually</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens a form to add a single client to the advisor's roster: name, email, cruise (chosen from a filterable picker by cruise line, ship, or sail date), and optional phone number and booking reference ID.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Clients tab — Roster section.</div>
+    <div class="label result">Result</div><div class="def">Client added to the roster; one slot consumed from the advisor's plan capacity; client status set to pending.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Import Travelers via CSV</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Accepts a CSV file upload with columns (name, email, cruise_id, optional phone, optional reference_id). DockBound validates each row against the cruise database — showing a preview of valid vs. skipped rows — before the advisor confirms the import.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Clients tab — Roster section.</div>
+    <div class="label result">Result</div><div class="def">All valid rows added to the roster in bulk; a summary reports how many were imported vs. skipped with a reason for each skip.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Team Roster</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays the advisor's full active client list as a table, each row showing name, email, phone, assigned cruise, and status (pending / active / expired). Row actions include Messages (opens communication thread), + Cruise (opens the cruise picker to update or add a cruise to the roster entry), and Archive. A "Show archived travelers" toggle at the bottom of the table reveals a separate archived section.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Clients tab — Roster section.</div>
+    <div class="label result">Result</div><div class="def">Complete view of every active client the advisor is currently managing, with one-click access to contact history, cruise assignment, or archiving for any traveler.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Archive / Unarchive Traveler</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Soft-deletes a roster entry by setting its <code class="path">archived: true</code> flag in Firestore. The entry is hidden from the main roster view but can be revealed via the "Show archived travelers" toggle. Archived entries can be unarchived at any time, which restores their slot consumption and visibility. This replaces the previous hard-delete "Remove" action.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Clients tab — Roster section, via the Archive button on a roster row.</div>
+    <div class="label result">Result</div><div class="def">Client entry moved to the archived section; slot freed for active capacity. No Firestore data is permanently deleted — the record is recoverable.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Add Cruise to Roster Entry</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens the Cruise Picker modal on an existing roster entry, allowing the advisor to assign or update the cruise associated with that traveler. The cruise picker filters by cruise line, ship, and sail date.</div>
+    <div class="label who">Who</div><div class="def">Advisor, via the "+ Cruise" button on a roster row (both active and Travefy-linked roster sections).</div>
+    <div class="label result">Result</div><div class="def">Roster entry updated with the selected cruise; sail date and ship name stored on the entry for use by the Itinerary Timeline and intelligence panels.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Open Traveler Communication Thread</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens a right-side drawer for a specific traveler, showing the full history of all correspondence with that client — in-app messages, logged emails, logged calls, logged SMS, and notes — in chronological order.</div>
+    <div class="label who">Who</div><div class="def">Advisor, via the Messages button on a roster row.</div>
+    <div class="label result">Result</div><div class="def">Advisor sees every past touchpoint with that client in one view; any unread messages are automatically marked read and the thread's unread count resets to zero.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send In-App Message</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Composes and sends an in-app message to a specific traveler. Messages are stored in Firestore and appear in real time in the thread. Press Enter to send; Shift+Enter for a newline.</div>
+    <div class="label who">Who</div><div class="def">Advisor, in the communication thread drawer with "In-App Message" compose mode active.</div>
+    <div class="label result">Result</div><div class="def">Message saved to <code class="path">agentCommunications/{threadId}/messages</code> and the thread's last-message preview updates instantly.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Log Contact</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Records a completed correspondence event — email, phone call, SMS, or a free-form note — against the traveler's thread. The advisor selects the type, marks direction (sent or received), optionally adds a subject line, and writes a summary. The entry is saved as a permanent log record, not delivered to the traveler.</div>
+    <div class="label who">Who</div><div class="def">Advisor, in the communication thread drawer with "Log Contact" compose mode active.</div>
+    <div class="label result">Result</div><div class="def">Correspondence record saved to the thread; the full history of advisor-traveler contact is preserved in DockBound regardless of which external channel was used.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send SMS to Traveler</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Sends a real SMS text message from a DockBound platform number to the traveler's phone number on file. The message is also logged in the communication thread. Inbound replies from the traveler are routed back to the correct thread and appear automatically. Requires the traveler to have a phone number on their roster entry.</div>
+    <div class="label who">Who</div><div class="def">Advisor, in the communication thread drawer — select "Log Contact" mode, type SMS, direction Outbound.</div>
+    <div class="label result">Result</div><div class="def">SMS delivered via Twilio; the outbound message is logged to the thread immediately. Inbound replies are captured by the <code class="path">twilioInboundWebhook</code> Cloud Function and written back to the thread in real time.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Port Tools Tab — Guide Settings Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Customize Guide Settings</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Provides controls to select which port guide sections are visible to the advisor's clients, set the display order of those sections, and configure tier-level visibility (free vs. premium) for each section.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Guide Settings section.</div>
+    <div class="label result">Result</div><div class="def">All DOCKGuides delivered under this advisor's account reflect the customized section configuration, overriding the platform defaults.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Settings Tab — Travefy Sync Section (Travefy Advisors Only)</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Connect Travefy Account</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Links the advisor's Travefy account to DockBound by authenticating and storing a Travefy AccessToken in the advisor's Firestore record (<code class="path">agents/{uid}.travefyConnection</code>).</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Settings tab — Travefy Sync section.</div>
+    <div class="label result">Result</div><div class="def">DockBound is authorized to read trips from and write enrichment data back to the advisor's Travefy account.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Sync Travefy Trips</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manually triggers a fetch of all trips from the advisor's linked Travefy account via the Travefy API and stores them in DockBound's Firestore database.</div>
+    <div class="label who">Who</div><div class="def">Advisor, via the "Sync Now" button on the Settings tab — Travefy Sync section.</div>
+    <div class="label result">Result</div><div class="def">All Travefy trips stored in <code class="path">agents/{uid}/trips</code>; the intelligence dashboard (Act Now, Who's Sailing, At-Risk) populates with the advisor's full book of business.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Travefy Trip List</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays all trips synced from Travefy, each showing the trip name, associated cruise, port days, and per-port enrichment status (which ports have had DockBound data written back).</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Settings tab — Travefy Sync section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can see which trips are fully enriched and which ports still need DockBound intelligence applied.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Enrich Travefy Trip</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Writes DockBound intelligence — DockScore ratings and port guide summaries — back into Travefy as TripEvent entries on each port day. Records the enrichment in the <code class="path">travefyEnrichments</code> Firestore collection.</div>
+    <div class="label who">Who</div><div class="def">Advisor, via the enrich button on a specific trip in the Settings tab — Travefy Sync section.</div>
+    <div class="label result">Result</div><div class="def">The advisor's Travefy clients see DockBound port intelligence directly within their Travefy itinerary, without leaving Travefy.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Enrichment Records</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Shows a history log of all past enrichment writes to Travefy — which trips and ports were enriched, and when each enrichment was applied.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Settings tab — Travefy Sync section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can confirm which enrichments have been applied and audit the full history of DockBound-to-Travefy writes.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Auto Nightly Trip Sync</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A scheduled Cloud Function (<code class="path">scheduledTravefyTripSync</code>) automatically re-fetches trips from all connected advisors' Travefy accounts and updates Firestore at 2am ET every night — no manual action required.</div>
+    <div class="label who">Who</div><div class="def">System-triggered; no user action required.</div>
+    <div class="label result">Result</div><div class="def">Every connected advisor's intelligence dashboard reflects current Travefy data at the start of each business day.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Port Tools Tab — Port Utilization Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Port Utilization</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays analytics on which ports appear most frequently across all of the advisor's tracked sailings and on which dates, surfaced as a chart.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Port Tools tab — Port Utilization section.</div>
+    <div class="label result">Result</div><div class="def">Advisor can prioritize which port guides to review and become expert in, based on where their clients most often sail.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Settings Tab — Notification Preferences Section</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Configure Alert Settings</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lets the advisor configure two alert channels for cruise changes at their tracked ports. <strong>Email alerts</strong>: on/off toggle, custom delivery address (defaults to account email), and checkboxes for which change types trigger an alert (new sailings, updates, deletions, reappearances); frequency is a daily digest sent each morning. <strong>SMS alerts</strong>: a TCPA-compliant opt-in form — advisor enters their mobile number, selects change types, and must check an explicit consent checkbox (never pre-selected) before clicking "Yes, sign me up!". Once enrolled, full STOP/HELP keyword disclosures are displayed; advisor can remove SMS alerts at any time. Inbound STOP/HELP replies are handled by Twilio. Settings are stored on the agent's Firestore document under <code class="path">alertSettings</code>; <code class="path">lastAlertSentAt</code> is updated by the system after each send.</div>
+    <div class="label who">Who</div><div class="def">Advisor, on the Settings tab — Notification Preferences section.</div>
+    <div class="label result">Result</div><div class="def">Advisor receives a morning email (and/or an SMS text for enrolled advisors) on any day new matching changes are detected at their tracked ports — ensuring they're never the last to know about an itinerary modification.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Search Results — Add Client</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Add Client from Search Results</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">From the cruise search results page (<code class="path">/search-results</code>), an advisor can click "Add Client" on any cruise result card to open a modal form. The advisor enters the traveler's name, email, optional phone, and optional booking reference. The selected cruise is pre-filled.</div>
+    <div class="label who">Who</div><div class="def">Authenticated advisor, on the Search Results page — the "Add Client" button appears only for agents.</div>
+    <div class="label result">Result</div><div class="def">A new roster entry is created via <code class="path">addRosterEntry</code> with the cruise pre-assigned. The advisor does not need to navigate away from search to enroll a client.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="tab-group-title">Cross-Cutting</div>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">View Notifications</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens a notification bell dropdown in the header showing recent platform events — Travefy sync status, itinerary changes detected, and system alerts.</div>
+    <div class="label who">Who</div><div class="def">Any authenticated advisor, via the bell icon in the header.</div>
+    <div class="label result">Result</div><div class="def">Advisor stays informed of relevant platform events without navigating to a specific tab.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send DOCKGuide to Traveler <span class="roadmap-badge">Roadmap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lets the advisor push a specific client's port guide for an arriving port directly to that client via email or in-app notification — without the client needing to log in first.</div>
+    <div class="label who">Who</div><div class="def">Advisor, from the Sailings tab — Who's Sailing section. (Feature not yet built — Phase 2.4.)</div>
+    <div class="label result">Result</div><div class="def">Client receives their port guide proactively on the day before or day of arrival; advisor delivers tangible value at the exact right moment.</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     6. AGENCY HOST FUNCTIONS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="agency-functions">6. Agency Host Functions</h2>
+
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Sign Up / Log In</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Creates a new agency host account or authenticates an existing one.</div>
+    <div class="label who">Who</div><div class="def">Agency administrator, at <code class="path">/auth</code>.</div>
+    <div class="label result">Result</div><div class="def">Account with role <code class="path">agencyhost</code> established; user directed to the Agency Hub.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Create Agency Profile</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Sets up the agency's profile with name, website URL, and phone number. This is required on first visit to the Agency Hub before any other features are accessible.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub</code> on first visit (setup form).</div>
+    <div class="label result">Result</div><div class="def">Agency document created in Firestore; a unique referral code generated automatically; full Agency Hub unlocked.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Agency Overview (Exception-First Dashboard)</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">The Agency Hub main dashboard (<code class="path">/agency-hub</code>) uses an exception-first layout. On load it displays: (1) a <strong>summary strip</strong> with four stat chips — urgent item count, action-needed count, active advisor count, invited advisor count; (2) an <strong>Attention Items panel</strong> as the primary content, listing all open attention items sorted by priority (urgent → action needed → monitor → informational), each showing priority chip, trigger label, advisor name/email, last-active timestamp, status, and inline "Mark Viewed" / "Dismiss" buttons; (3) <strong>nav cards</strong> for Advisor Roster, Import Advisors, and Reports; (4) compact agency details (owner, phone, website) and the referral code at the bottom. Phase 1 detection runs automatically on each load — detecting <code>advisorNotActive</code> (14-day threshold) and <code>travefyAuthMissing</code> / <code>travefyAuthExpired</code> triggers — and creates new attention items if none exist for that advisor+trigger combination.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub</code>.</div>
+    <div class="label result">Result</div><div class="def">Host sees exactly what needs attention first — not a navigation menu. Problems surface automatically without the host having to drill into each advisor's record.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View and Manage Attention Items</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Attention items are auto-generated work queue entries that flag advisor situations requiring the agency host's action. Each item has a <strong>trigger type</strong> (<code>advisorNotActive</code>, <code>travefyAuthMissing</code>, <code>travefyAuthExpired</code>, and Phase 2+ types including <code>trialExpiring</code>, <code>billingIssue</code>, <code>travelerRequest</code>, <code>dataQuality</code>, <code>materialConditionChange</code>), a <strong>priority</strong> (urgent / actionNeeded / monitor / informational), a <strong>status</strong> lifecycle (new → viewed → actionPlanned → resolved / noActionNeeded / reassigned), and a full audit history of every status and priority change. CRUD operations (<code>getOpenAttentionItems</code>, <code>updateAttentionStatus</code>, <code>updateAttentionPriority</code>, <code>reassignAttentionItem</code>, <code>reopenAttentionItem</code>) are implemented in <code class="path">src/services/attentionService.ts</code>. Items are deduplicated — only one open item per advisor+trigger can exist at a time. Stored in the <code class="path">attention_items</code> Firestore collection, scoped by <code>agencyId</code> and <code>nodeId</code>.</div>
+    <div class="label who">Who</div><div class="def">Agency host, via inline actions on the Agency Hub dashboard.</div>
+    <div class="label result">Result</div><div class="def">Host can acknowledge ("Mark Viewed") or dismiss ("No Action Needed") items without leaving the dashboard. Status transitions are audited with actor UID and timestamp. Items dismissed as "noActionNeeded" disappear from the open list.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Copy Agency Referral Code</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Surfaces the agency's unique referral code for copying and sharing with prospective advisors. Advisors enter this code at sign-up to automatically link to the agency.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub</code>.</div>
+    <div class="label result">Result</div><div class="def">New advisors who sign up with the code are linked to the agency automatically — no manual admin step required.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Agent Roster</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lists all advisors associated with the agency, each showing name, email, and current status (active, invited, or suspended).</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub/roster</code>.</div>
+    <div class="label result">Result</div><div class="def">Complete view of the advisory team and each advisor's current standing on the platform.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Suspend Agent</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Changes an advisor's status to <code class="path">suspended</code>, immediately revoking their access to the DockBound agent dashboard.</div>
+    <div class="label who">Who</div><div class="def">Agency host, on the Roster page.</div>
+    <div class="label result">Result</div><div class="def">Advisor access revoked; advisor remains in the roster record and can be reactivated at any time.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Activate Agent</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Restores a suspended advisor's status to <code class="path">active</code>, reinstating full access to all agent dashboard tools.</div>
+    <div class="label who">Who</div><div class="def">Agency host, on the Roster page.</div>
+    <div class="label result">Result</div><div class="def">Advisor regains access to their full advisor dashboard and all its capabilities.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Import Agent Roster via CSV</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Accepts a CSV upload of advisor names and email addresses to bulk-add them to the agency's roster.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub/import</code>.</div>
+    <div class="label result">Result</div><div class="def">Roster entries created for each advisor row; invite emails triggered automatically for each imported advisor.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send Roster Invite Emails</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Automatically sends a personalized email invitation to each advisor added to the agency roster, containing a sign-up link that pre-links them to the agency.</div>
+    <div class="label who">Who</div><div class="def">System-triggered by the <code class="path">sendRosterInviteEmail</code> Cloud Function when a roster document is created.</div>
+    <div class="label result">Result</div><div class="def">Each invited advisor receives an email; clicking it takes them directly to sign-up already linked to the agency — no code entry required.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Agency Reports</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Opens the agency analytics dashboard showing advisor activity metrics and referral performance over a configurable time period.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub/reports</code>.</div>
+    <div class="label result">Result</div><div class="def">Host can assess engagement across the advisory team and evaluate the volume and quality of referrals being driven.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Referred Users Report</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Lists all travelers who signed up through referrals from this agency's advisors, including which advisor referred each traveler and when.</div>
+    <div class="label who">Who</div><div class="def">Agency host, on the Reports page.</div>
+    <div class="label result">Result</div><div class="def">Host can track the direct traveler acquisition impact generated by their advisory team.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Agent Activity Report</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Shows per-advisor metrics — roster size, Travefy syncs completed, enrichments run, and general platform activity over time.</div>
+    <div class="label who">Who</div><div class="def">Agency host, on the Reports page.</div>
+    <div class="label result">Result</div><div class="def">Host can identify highly active advisors and those who may need additional onboarding support or coaching.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Advisor Detail</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays a full status view for a single advisor — name, email, account status (active / invited / suspended), last meaningful platform activity, and all open attention items for that advisor with their priority and trigger labels.</div>
+    <div class="label who">Who</div><div class="def">Agency host, at <code class="path">/agency-hub/advisor/:agentDocId</code> (accessible by clicking an advisor in the attention items feed or roster).</div>
+    <div class="label result">Result</div><div class="def">Host can investigate a specific advisor's situation in detail — combining status, activity history, and outstanding work items in one view — without needing Firestore access.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Agency Hub Settings</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A Settings tab on the Agency Hub dashboard (<code class="path">/agency-hub</code>) where the agency host can upload a logo (stored in Firebase Storage at <code class="path">agency-logos/{agencyId}/</code>, URL saved to <code class="path">agencies/{agencyId}.logoUrl</code>) and configure an agency disclaimer (free-text, saved to <code class="path">agencies/{agencyId}.disclaimer</code>). The uploaded logo is displayed in the Agency Hub header.</div>
+    <div class="label who">Who</div><div class="def">Agency host, on the Settings tab of the Agency Hub dashboard.</div>
+    <div class="label result">Result</div><div class="def">Agency branding (logo + disclaimer) persisted and visible in the hub header; helps agency hosts configure a branded presence within DockBound.</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     7. ADMIN FUNCTIONS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="admin-functions">7. Admin Functions</h2>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:1rem;">Requires role <code class="path">admin</code> or <code class="path">super-admin</code>. Functions marked (M) are also available to role <code class="path">maintenance</code>.</p>
+
+<h3 class="subsection-title">Admin Portal</h3>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Admin Portal Hub</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">The main admin landing page, providing navigation tiles to all administrative tools — advisors, content health, data maintenance, agencies, API key management, invite codes, cruise changes, usage &amp; costs, test results, and reminders. Displays a KPI strip (paid travelers, freemium travelers, advisor count, agency count) loaded live on page render.</div>
+    <div class="label who">Who</div><div class="def">Admin or super-admin, at <code class="path">/admin</code>.</div>
+    <div class="label result">Result</div><div class="def">Single entry point for all platform administration tasks.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Usage &amp; Costs</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Tracks platform operational costs month-over-month — OpenAI token usage broken down by Cloud Function, SendGrid email send counts and alert digest volume, per-advisor enrichment and alert activity, and a cost calculator for estimating the monthly cost per advisor based on trip volume. Pulls from the <code class="path">usage_logs</code> Firestore collection.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/usage</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can monitor AI content generation costs, identify high-cost advisors, and model cost projections without accessing external billing dashboards.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Cruise Changes Log</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A filterable, read-only log of all cruise itinerary changes detected by the CruiseMapper pipeline. Filters include date range, change type (new / updated / deleted / reappeared), cruise line, and status. Each row is expandable to show a before-and-after diff of the mapped fields that changed.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/cruise-changes</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can audit detected changes, investigate unexpected itinerary modifications, and verify the change detection pipeline is operating correctly.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Test Results</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Runs the automated test suite and presents results in a readable dashboard interface.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/test-results</code>.</div>
+    <div class="label result">Result</div><div class="def">Current platform health status based on automated checks across key functions.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Content Health</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Generates a report of all ports in the database, flagging those with incomplete or stale port guide content based on configurable completeness thresholds. The <strong>QA Review tab</strong> surfaces all AI-generated sections flagged by the automated validator (<code>onSectionWriteQA</code> trigger) — admin can submit reviewer decisions (Approved / Approved w/ Correction / Rejected / Evaluator Finding Incorrect) and download golden regression test fixtures.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/content-health</code>.</div>
+    <div class="label result">Result</div><div class="def">A prioritized work list of ports needing content attention, enabling systematic content quality improvement. Sections approved by a human update <code>qaStatus</code> on the section doc and are cleared for use.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Generate Port Content</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Uses OpenAI to automatically draft one or more port guide sections for a selected port, using existing port data as context.</div>
+    <div class="label who">Who</div><div class="def">Admin, on the Content Health page.</div>
+    <div class="label result">Result</div><div class="def">Draft content created and available for admin review, editing, and publishing to the live database.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Fact-Check Content</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Submits existing port guide content to OpenAI for accuracy review, returning a structured list of potential errors or outdated information with suggested corrections.</div>
+    <div class="label who">Who</div><div class="def">Admin, on the Content Health page.</div>
+    <div class="label result">Result</div><div class="def">A set of flagged content issues with AI-suggested alternatives for the admin to review and approve.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Apply Fact-Check Suggestions</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Applies a specific AI-suggested correction to live port guide content after admin review and approval.</div>
+    <div class="label who">Who</div><div class="def">Admin, on the Content Health page.</div>
+    <div class="label result">Result</div><div class="def">Port guide content updated with the verified correction; change is live for travelers immediately.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">QA Review — Review AI-Generated Sections</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">The <strong>QA Review</strong> tab on the Content Health page surfaces all port guide sections flagged by the automated QA validator during AI generation runs. Each result shows: disposition (Needs Review / Advisory / Approved / Rejected), blocking and advisory rule violations, grounding score, usefulness score, and any contradictions or missing material identified by the grounding evaluator. Admin can submit a reviewer decision — Approved, Approved with Correction, Rejected, or Evaluator Finding Incorrect — with optional notes. Decisions propagate to the section's <code class="path">qaStatus</code> in Firestore. A "Download Fixture" button exports a golden fixture scaffold for regression testing.</div>
+    <div class="label who">Who</div><div class="def">Admin, on the Content Health page — QA Review tab.</div>
+    <div class="label result">Result</div><div class="def">Human reviewer confirms or overrides AI evaluator decisions; sections approved by a human are cleared for use; rejected sections are flagged for regeneration. Reviewer decisions are recorded for auditing and calibration of the QA pipeline.</div>
+  </div>
+</div>
+
+</div>
+
+<h3 class="subsection-title">Data Maintenance (M)</h3>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Data Maintenance Hub</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A tabbed hub providing access to all data editors: port guides, ports, ships, cruise lines, extras, currency, alerts, Viator, weather, API pipelines, feedback, and DOCK diagnostics.</div>
+    <div class="label who">Who</div><div class="def">Admin or maintenance role, at <code class="path">/admin/maintenance</code>.</div>
+    <div class="label result">Result</div><div class="def">Central workspace for all content and data management tasks.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Port Guide Editor</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Full create/edit interface for a port's guide content, organized into named sections — snapshot, transport, food, safety contacts, budget, and "In the Know" — with rich text editing and section-level configuration.</div>
+    <div class="label who">Who</div><div class="def">Admin or maintenance, via the Port Guides tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Port guide content updated and immediately live for all travelers whose DOCKGuide includes that port.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Port Editor</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Edit interface for port metadata — display name, UN/LOCODE, region classification, GPS coordinates, and country association.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Ports tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Port record updated; all guides, DockScores, and lookups referencing that port reflect the changes.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Ship Editor</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages ship records — ship name, cruise line association, and vessel attributes.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Ships tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Ship data updated; cruise lookups referencing that ship reflect the corrected record.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Cruise Line Editor</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages cruise line master records including display name, ID slug, and platform configuration settings.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Cruise Lines tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Cruise line data updated across all cruise records that reference it.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Extras Editor</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages port "extras" — the curated local tips and "In the Know" items that appear in the In the Know section of each port guide.</div>
+    <div class="label who">Who</div><div class="def">Admin or maintenance, via the Extras tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">In the Know content updated for the relevant ports; visible to travelers immediately.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Currency Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages the currency configuration for each port country — ISO currency code, display name, and conversion settings used by the currency converter.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Currency tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">The currency converter in travelers' DOCKGuides uses the updated currency for the affected country.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Alerts Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages travel alert records by country — source, severity level, and display text. Supports manual creation, override, and suppression of alerts independent of the automated fetch pipeline.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Alerts tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Travel alerts shown to travelers in the affected port countries are updated immediately.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Viator Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages the mapping between DockBound port records and Viator destination IDs, and provides an on-demand trigger for syncing the full Viator destination list.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Viator tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Tour search in DOCKGuides returns accurate Viator results for all ports using current destination mappings.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Weather Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays the operational status of the weather API integration — last successful fetch time, error states, and port coverage.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Weather tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Admin can confirm weather data is flowing correctly into DOCKGuides or diagnose and escalate failures.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">API Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Provides on-demand triggers for the Apify web scraping pipeline and the Cruisemapper data sync, alongside live status indicators showing the last run time and result for each.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the API tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Data pipelines can be run manually outside their scheduled windows — useful for testing, after known data changes, or to recover from a missed scheduled run.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Feedback Viewer</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays all user feedback submissions — port-level ratings and free-text comments submitted by travelers and advisors through the platform.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Feedback tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Admin can review product and content feedback and prioritize improvements based on user input.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">DOCK Diagnostics</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Interactive tool for inspecting DockScore calculations for any port — displays raw inputs, driver weights, and computed scores for both static (baseline) and dynamic (live) modes.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the DOCK Diagnostics tab in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Admin can verify scoring accuracy, audit why a port received a specific score, and diagnose unexpected score values.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Port Guide Config</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages the platform-wide default templates for port guide display — which sections appear by default, their display order, and their tier assignments (free vs. premium). These defaults apply to all clients not under an advisor's custom Guide Settings.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Port Guide Config page.</div>
+    <div class="label result">Result</div><div class="def">Platform defaults updated; all clients without advisor-level overrides see the new default section configuration.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Port Utilization Chart</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Visualizes port usage frequency across all cruise sailings in the DockBound database, showing which ports appear most often and in what seasons.</div>
+    <div class="label who">Who</div><div class="def">Admin, in the Maintenance hub.</div>
+    <div class="label result">Result</div><div class="def">Admin has demand-based data to inform content prioritization — which ports deserve the most thorough guide content.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Sales Revenue Projection</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Analytics view showing sales performance, revenue trends, and projected revenue lift from current conversion rates. Access is restricted to authorized admins.</div>
+    <div class="label who">Who</div><div class="def">Authorized admin, at <code class="path">/sales/revenue-lift-projection</code>.</div>
+    <div class="label result">Result</div><div class="def">Business intelligence on platform revenue performance for internal planning.</div>
+  </div>
+</div>
+
+</div>
+
+<h3 class="subsection-title">Agency &amp; Agent Administration</h3>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">All-Advisor Roster</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A searchable, filterable table of every advisor account on DockBound. Columns: email, name, agency, advisor type (<code>travefyadvisor</code> / <code>independentAdvisor</code> / slot-based), plan tier, plan status (active / trialing / past_due / canceled), trial end date, Travefy connected (✓/—), and created date. Supports free-text search (email, name, agency) and filter dropdowns for advisor type and plan status.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/advisors</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can quickly locate any advisor, assess platform adoption (Travefy connections), identify accounts in bad states (past_due, canceled), and filter by advisor type — without Firestore console access.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">List All Agencies</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Displays a searchable, sortable list of all agencies registered on DockBound with key metrics per agency (agent count, status, referral code).</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/agencies</code>.</div>
+    <div class="label result">Result</div><div class="def">Platform-wide view of every registered agency account.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Agency Detail View</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Shows the full profile of a single agency — advisor roster, referral code, active/invited/suspended counts, and usage metrics — for admin inspection.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/agencies/:id</code>.</div>
+    <div class="label result">Result</div><div class="def">Deep visibility into a specific agency's account, team composition, and platform engagement.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Provision New Agency</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manually creates a new agency record in Firestore and assigns the <code class="path">agencyhost</code> role to a specified user — used when onboarding agencies outside the self-service flow.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the Agency admin tools.</div>
+    <div class="label result">Result</div><div class="def">New agency created and linked to the designated host user; host can immediately access the Agency Hub.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Manage Agents</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Administrative console for advisor accounts — link a Travefy email to a DockBound UID when account emails don't match, and promote any user to an advisor role (<code class="path">independentAdvisor</code> or <code class="path">travefyadvisor</code>) via a UID + role picker. Used to onboard advisors outside the self-service flow or to recover mismatched accounts.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/agents</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can manually link Travefy accounts and promote users to advisor roles — resolving account issues that cannot be handled through self-service.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Cross-Agency Reports</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Analytics dashboard aggregating activity and performance metrics across all agencies on the platform — advisor counts, referral volume, enrichment activity.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/agencies-reports</code>.</div>
+    <div class="label result">Result</div><div class="def">Platform-wide intelligence on agency health, growth trends, and engagement.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Manage API Keys</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Interface for managing DockBound's external developer API keys — the <code class="path">dbk_</code> format keys issued to third-party integrators. Admin can create new sandbox or paid-plan keys (key hash stored; full key shown once on creation), revoke, restore, and delete keys. Key records are stored in <code class="path">api_keys/{8hexId}</code> with fields: <code class="path">active</code>, <code class="path">plan</code> (sandbox | paid), <code class="path">keyHash</code>, <code class="path">label</code>, <code class="path">owner</code>.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/api-keys</code>.</div>
+    <div class="label result">Result</div><div class="def">Third-party developer access granted or revoked; key activity is traceable via the stored hash.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Manage Invite Codes</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Generates and manages one-use invite codes that allow advisors to sign up for DockBound without being on an agency roster. Each code has a <code class="path">DOCK-XXXX-XXXX</code> format, an optional label, and can be revoked at any time. Once redeemed, the code stores the redeemer's UID and email. Codes are stored in the <code class="path">invite_codes</code> Firestore collection. Codes can also be auto-generated via the keyword SMS flow — when someone texts <code>JOIN</code> to the DockBound Twilio number, a code is generated automatically and sent back by SMS reply; these codes carry <code class="path">source: 'sms'</code> and <code class="path">sourcePhone</code> fields. Repeat texts from the same number are idempotent — the same code is resent rather than creating a new one.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/invite-codes</code>; or auto-generated by <code class="path">twilioInboundWebhook</code> on <code>JOIN</code> keyword SMS.</div>
+    <div class="label result">Result</div><div class="def">Admin can control advisor access precisely — invite specific individuals without opening general self-service sign-up; revoke unused codes at any time. Prospective advisors can also self-serve an invite code via SMS without admin involvement.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Reminders</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages a list of recurring operational reminders for the DockBound team — tasks like FAQ review, copyright checks, policy updates, and content audits. Each reminder has a title, description, cadence (annual / quarterly / monthly), and a next-due date. Admins mark reminders complete, which auto-advances the next-due date by one cadence period. Records stored in the <code class="path">admin_reminders</code> Firestore collection.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/reminders</code>.</div>
+    <div class="label result">Result</div><div class="def">Team stays on top of recurring compliance and content hygiene tasks without relying on calendar reminders outside the platform.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Make User Admin</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Promotes a specified user account to the <code class="path">admin</code> role. The action is written as an immutable entry in the Firestore <code class="path">logs</code> audit collection with the promoting admin's UID and timestamp.</div>
+    <div class="label who">Who</div><div class="def">Super-admin, via Agent Tools.</div>
+    <div class="label result">Result</div><div class="def">Target user gains full admin access; the promotion is permanently audited and cannot be silently undone.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Make User Maintenance</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Promotes a specified user to the <code class="path">maintenance</code> role, granting access to all data editors and pipeline tools but not to agency/agent administration.</div>
+    <div class="label who">Who</div><div class="def">Admin, via Agent Tools.</div>
+    <div class="label result">Result</div><div class="def">Target user gains maintenance-scoped access; action written to the audit log.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Audit Log</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Reads the Firestore <code class="path">logs</code> collection to display a chronological history of all privileged admin actions — role changes, agency provisioning, plan overrides — with the performing admin's UID and a timestamp for each.</div>
+    <div class="label who">Who</div><div class="def">Admin, via Firestore console or a dedicated admin view.</div>
+    <div class="label result">Result</div><div class="def">Full traceability of every administrative action taken on the platform.</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     8. DATA PIPELINE FUNCTIONS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="pipeline-functions">8. Data Pipeline Functions</h2>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:1rem;">These are backend Cloud Functions. Most run on a schedule; some can be triggered on demand by admins via the API Maintenance page.</p>
+
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Cruisemapper Scheduled Sync</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A scheduled Cloud Function that ingests fresh cruise itinerary data from the Cruisemapper API and saves it to the DockBound database.</div>
+    <div class="label who">Who</div><div class="def">System-triggered on schedule.</div>
+    <div class="label result">Result</div><div class="def">Cruise database updated with the latest sailing data; the future cruises list stays current for travelers browsing.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Cruisemapper Run Now</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">On-demand trigger for the Cruisemapper data ingestion pipeline, bypassing the scheduled window.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the API Maintenance page.</div>
+    <div class="label result">Result</div><div class="def">Cruisemapper sync runs immediately — useful after a known upstream data update or for troubleshooting.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Apify Scheduled Scrape</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A scheduled Cloud Function that runs Apify web scraping actors to collect supplemental cruise and port data from external sources.</div>
+    <div class="label who">Who</div><div class="def">System-triggered on schedule.</div>
+    <div class="label result">Result</div><div class="def">Raw scraped data saved to Firestore; available for change detection and content enrichment downstream.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Apify Trigger Scrape</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">On-demand trigger for the Apify scraping pipeline, for use outside the scheduled window.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the API Maintenance page.</div>
+    <div class="label result">Result</div><div class="def">Apify scrape runs immediately; useful for testing or recovering from a missed scheduled run.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Detect Cruise Raw Changes</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Compares newly ingested cruise data against the current live database to identify itinerary modifications — port swaps, time shifts, added or removed ports.</div>
+    <div class="label who">Who</div><div class="def">Cloud Function triggered automatically on each data write from the ingestion pipeline.</div>
+    <div class="label result">Result</div><div class="def">Change records created in Firestore for every detected modification; feeds directly into the Apply Cruise Changes function.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Apply Cruise Changes</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Takes validated change records produced by the detection step and writes them to the live cruise database, updating itineraries that travelers and advisors are actively viewing.</div>
+    <div class="label who">Who</div><div class="def">Cloud Function triggered after the change detection step completes.</div>
+    <div class="label result">Result</div><div class="def">Live cruise data updated; travelers with affected itineraries see the itinerary change alert modal on their next dashboard visit.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Viator Destinations Sync</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Syncs the Viator destination ID list against DockBound's port database to keep the port-to-Viator-destination mapping accurate and complete.</div>
+    <div class="label who">Who</div><div class="def">Scheduled Cloud Function.</div>
+    <div class="label result">Result</div><div class="def">Viator tour search in DOCKGuides returns correct activity results for all ports.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Alerts Scheduled Fetch</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Periodically retrieves the latest government travel advisories from the source API and updates the DockBound alerts database for each country.</div>
+    <div class="label who">Who</div><div class="def">Scheduled Cloud Function.</div>
+    <div class="label result">Result</div><div class="def">Travel alerts displayed in DOCKGuides always reflect the most recent government guidance.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Alerts Invalidate Scores</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">When a new or updated travel alert is written to Firestore, this function identifies all ports in the affected country and flags their DockScores for recalculation.</div>
+    <div class="label who">Who</div><div class="def">Cloud Function triggered on Firestore document update (alert write).</div>
+    <div class="label result">Result</div><div class="def">DockScores for all affected ports are queued for refresh — no manual intervention needed for alert-driven score changes.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Calculate Adjusted DOCK</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Recomputes the dynamic DockScore for a specified port by re-evaluating all live signals — weather, travel alerts, congestion data — against the static baseline score.</div>
+    <div class="label who">Who</div><div class="def">Cloud Function called on demand or after alert invalidation.</div>
+    <div class="label result">Result</div><div class="def">Updated dynamic score stored in <code class="path">dock_scores_adjusted</code>; advisors and travelers see the refreshed score on next dashboard load.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Scheduled Travefy Sync</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Nightly Cloud Function (<code class="path">scheduledTravefyTripSync</code>) that re-fetches trips from all connected advisors' Travefy accounts and updates each advisor's <code class="path">agents/{uid}/trips</code> Firestore subcollection. Runs at 2am ET.</div>
+    <div class="label who">Who</div><div class="def">System-triggered nightly; no user action required.</div>
+    <div class="label result">Result</div><div class="def">All connected advisors' intelligence dashboards reflect current Travefy data at the start of each business day.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Travefy Platform Echo</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Admin diagnostic function that sends a test call to the Travefy API using DockBound's platform credentials to verify the platform-level connection is healthy and returning expected responses.</div>
+    <div class="label who">Who</div><div class="def">Admin, via a direct Cloud Function invocation.</div>
+    <div class="label result">Result</div><div class="def">Confirmation that the Travefy platform integration is operational; used to troubleshoot connection or credential issues.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Travefy Authorized Users</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Admin function that queries the Travefy API to return a list of all users who have authorized DockBound platform access, along with each user's connection status.</div>
+    <div class="label who">Who</div><div class="def">Admin, via a direct Cloud Function invocation.</div>
+    <div class="label result">Result</div><div class="def">Complete visibility into which advisors have active Travefy connections through DockBound's platform authorization.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Resolve Node Permissions</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Calculates the effective section-level permissions for a user based on their role, subscription tier, and advisor configuration — then caches the computed permission map directly on the user's Firestore document for fast dashboard rendering.</div>
+    <div class="label who">Who</div><div class="def">Cloud Function triggered on user login.</div>
+    <div class="label result">Result</div><div class="def">Cached permission map available on the user doc; the <code class="path">useEffectivePermissions</code> hook reads it instantly to show or hide guide sections without an additional network call.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send Traveler SMS</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Authenticated Cloud Function (<code class="path">sendTravelerSms</code>) that accepts an advisor's ID token, a thread ID, and a message body. Verifies the caller is the thread's owning advisor, sends the SMS via the Twilio REST API from the DockBound platform number, and writes the outbound message record to Firestore.</div>
+    <div class="label who">Who</div><div class="def">Called by the advisor's browser when sending an outbound SMS from the communication thread drawer.</div>
+    <div class="label result">Result</div><div class="def">SMS delivered to the traveler's phone; outbound message logged to <code class="path">agentCommunications/{threadId}/messages</code>.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Twilio Inbound Webhook</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Public Cloud Function (<code class="path">twilioInboundWebhook</code>) registered as the Twilio messaging webhook URL. Validates the <code class="path">X-Twilio-Signature</code> header (HMAC-SHA1) — rejects all requests if the auth token is not configured (fail-safe). Handles two inbound message types: (1) <strong>Keyword SMS</strong> — if the message body is the word <code>JOIN</code> (case-insensitive), the function auto-generates a <code class="path">DOCK-XXXX-XXXX</code> invite code (or resends the existing code if the phone already has one — idempotent), stores it in <code class="path">invite_codes</code> with <code class="path">source: 'sms'</code> and <code class="path">sourcePhone</code> fields, and replies via TwiML with the code and signup URL. (2) <strong>Thread replies</strong> — for all other messages, matches the sender's phone number to a traveler's communication thread in Firestore and writes the inbound message as a new record with <code class="path">senderRole: traveler</code>.</div>
+    <div class="label who">Who</div><div class="def">Called by Twilio when any inbound SMS arrives at the DockBound platform number. No user action required.</div>
+    <div class="label result">Result</div><div class="def">For keyword <code>JOIN</code>: prospective advisor receives an invite code by SMS reply. For traveler replies: message appears in the advisor's communication thread in real time; thread's unread count increments by 1.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send Advisor Alert Digest</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Scheduled Cloud Function (<code class="path">sendAdvisorAlerts</code>) that runs daily at 8am ET. Queries all advisors with email alerts enabled, matches changes since each advisor's <code class="path">lastAlertSentAt</code> to their tracked ports via <code class="path">travefyEnrichments</code>, and sends a per-port grouped HTML email via SendGrid. Updates <code class="path">alertSettings.lastAlertSentAt</code> on each agent document after sending.</div>
+    <div class="label who">Who</div><div class="def">System-triggered on schedule at 8am ET. No user action required.</div>
+    <div class="label result">Result</div><div class="def">Each subscribed advisor receives a morning digest of overnight cruise changes at their tracked ports, matched by port code to their Travefy enrichment records.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Trigger Advisor Alerts (Admin)</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Admin-only HTTP Cloud Function (<code class="path">triggerAdvisorAlerts</code>) that manually invokes the same advisor alert logic as the daily scheduled run — for testing the alert pipeline without waiting for 8am ET. Requires an admin or super-admin Firebase ID token.</div>
+    <div class="label who">Who</div><div class="def">Admin, via a direct Cloud Function invocation or an admin-facing test button.</div>
+    <div class="label result">Result</div><div class="def">Alert emails sent as if it were the daily scheduled run — useful for verifying the SendGrid integration, email templates, and port-matching logic after any changes.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">QA Section Trigger (<code>onSectionWriteQA</code>)</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Firestore document trigger on <code class="path">locations/{locationId}/sections/{sectionKey}</code> writes. When new content arrives (and inline QA was not already run), validates the section against <code class="path">shared/portGuideValidator.js</code> rules, writes a result doc to <code class="path">content_qa_results</code>, and stamps <code class="path">qaStatus</code> (<code>approved</code> | <code>approved_with_advisories</code> | <code>human_review_required</code>) back onto the section doc. Skips deletions and re-fires on its own writes via the <code class="path">qaValidation</code> guard.</div>
+    <div class="label who">Who</div><div class="def">System-triggered on each section write. No user action required.</div>
+    <div class="label result">Result</div><div class="def">Every section written to Firestore is automatically validated; sections with critical issues are immediately flagged for human review in the QA Review tab.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Export Regression Fixture (<code>adminGetRegressionFixture</code>)</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Admin Cloud Function that fetches a QA result and its associated section content, packaging them as a downloadable golden fixture scaffold (JSON) for use in the regression test suite. The fixture includes a <code class="path">_meta</code> block with <code class="path">humanApproved: false</code> — admin must manually review and set to <code class="path">true</code> before adding to <code class="path">src/test/fixtures/portGuides/</code>. Admin-only via Firebase ID token.</div>
+    <div class="label who">Who</div><div class="def">Admin, via the "Download Fixture" button in the QA Review tab.</div>
+    <div class="label result">Result</div><div class="def">A JSON fixture scaffold downloaded to the admin's browser, ready to be reviewed and added to the regression test suite.</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     9. FEATURE GLOSSARY
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="glossary">9. Feature Glossary (Marketing)</h2>
+<p style="font-size:0.82rem;color:#6b7280;margin-bottom:1rem;">Use these descriptions for website copy, sales decks, and feature comparison tables. Each entry is a distinct, customer-facing capability.</p>
+
+<h3 class="subsection-title">For Travelers</h3>
+<table class="data-table">
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>DOCKGuide</strong></td><td>A complete port-by-port guide for your cruise: what to do, where to eat, how to get around, what to budget, and what to watch out for — for every port on your itinerary.</td></tr>
+    <tr><td><strong>DockScore</strong></td><td>A proprietary port accessibility score (0–10, lower = better) so you know before you dock whether a port will be smooth or stressful.</td></tr>
+    <tr><td><strong>Dynamic DockScore</strong></td><td>A live DockScore that adjusts for real-time signals — flagged in red when conditions are significantly worse than the normal baseline.</td></tr>
+    <tr><td><strong>DOCK Diagnostics</strong></td><td>A transparent breakdown of every factor behind a port's score, so you understand exactly why it rates the way it does.</td></tr>
+    <tr><td><strong>Live Weather</strong></td><td>Current conditions and a multi-day forecast for each port day on your itinerary — so you know what to pack.</td></tr>
+    <tr><td><strong>Travel Alerts</strong></td><td>Government-issued safety advisories surfaced for every country your cruise visits, displayed right in your port guide.</td></tr>
+    <tr><td><strong>Currency Converter</strong></td><td>Live exchange rates and a built-in converter for the local currency at each stop — plan your spending before you go ashore.</td></tr>
+    <tr><td><strong>Viator Tours</strong></td><td>Curated tours and activities for each port, bookable in one click — all inside your DOCKGuide, no separate app needed.</td></tr>
+    <tr><td><strong>Itinerary Change Alerts</strong></td><td>Automatic notification when your cruise itinerary changes — port swaps, time shifts, or cancellations — so you're never caught off guard.</td></tr>
+    <tr><td><strong>Print-Ready Guide</strong></td><td>A printable version of your full cruise guide — bring it onboard and use it without needing ship Wi-Fi.</td></tr>
+    <tr><td><strong>Freemium Access</strong></td><td>Preview your port guide content before committing to a purchase — see what you're getting before you buy.</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">For Travel Advisors</h3>
+<table class="data-table">
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Agent Intelligence Dashboard</strong></td><td>A single screen showing the live state of your entire cruise book: who's sailing, what's at risk, and what needs your attention today.</td></tr>
+    <tr><td><strong>Act Now Queue</strong></td><td>A prioritized triage list of the most urgent actions across all your active client trips — so you always know what to do first.</td></tr>
+    <tr><td><strong>Today's Ports Widget</strong></td><td>At-a-glance view of every port call happening today across all your client sailings.</td></tr>
+    <tr><td><strong>Next 3 Days View</strong></td><td>Upcoming port calls bucketed by date — plan your client outreach a few days ahead of arrival.</td></tr>
+    <tr><td><strong>At-Risk Itineraries</strong></td><td>Automatic flagging of any port where live conditions are significantly worse than baseline — surface problems before your clients feel them.</td></tr>
+    <tr><td><strong>Itinerary Timeline</strong></td><td>A grouped table of all cruise sailings across your client roster, sorted by urgency — sailing now and this week highlighted at the top, then organized by month. Each row shows cruise, sail date, status, and client count.</td></tr>
+    <tr><td><strong>Who's Sailing Timeline</strong></td><td>Your client roster organized by sailing status: Sailing Now, This Week, This Month, Upcoming, and Recently Returned.</td></tr>
+    <tr><td><strong>Port Day at a Glance</strong></td><td>The opening section of every V4 port guide — a badge row of critical planning signals: activity depth, major experience transfer time, return complexity, and the one action the traveler must take to have a great port day.</td></tr>
+    <tr><td><strong>Port Congestion Calendar</strong></td><td>A heatmap of port congestion across all your tracked sailings — see busy port days at a glance and set client expectations early.</td></tr>
+    <tr><td><strong>Traveler Roster Management</strong></td><td>Add, import, and track all your cruise clients in one place, with slot-based plans scaled to fit teams of 25 to 750 travelers.</td></tr>
+    <tr><td><strong>Travefy Integration</strong></td><td>Connect your Travefy account and DockBound automatically syncs your trip data — no manual entry, no duplicate work.</td></tr>
+    <tr><td><strong>Nightly Travefy Sync</strong></td><td>Your Travefy trips are automatically refreshed every night at 2am, so your dashboard is always current by morning.</td></tr>
+    <tr><td><strong>Trip Enrichment</strong></td><td>DockBound writes its intelligence — DockScores and port summaries — back into your Travefy trips as TripEvents, so clients see it in Travefy too.</td></tr>
+    <tr><td><strong>Port Guide Customization</strong></td><td>Control which guide sections your clients see and in what order — match the DOCKGuide to your agency's brand and service style.</td></tr>
+    <tr><td><strong>CSV Bulk Import</strong></td><td>Add your entire client list in one file upload — DockBound validates cruise IDs before importing so you don't get bad data.</td></tr>
+    <tr><td><strong>Advisor-Traveler Communications</strong></td><td>A built-in messaging hub on every advisor's roster: log emails, calls, texts, and notes against a traveler's record, or send a real SMS directly from DockBound — all threaded in one place so nothing gets lost across channels.</td></tr>
+    <tr><td><strong>Cruise Change Feed</strong></td><td>A live feed of cruise itinerary changes detected by DockBound's data pipeline — new sailings, itinerary updates, port swaps, and cancellations. Changes matching your tracked ports surface first so you always see what matters most.</td></tr>
+    <tr><td><strong>Port Activity Monitor</strong></td><td>A port-centric view of recent cruise changes grouped by each of your tracked ports — see how volatile each destination has been in the last 30 days and spot patterns before your clients feel them.</td></tr>
+    <tr><td><strong>Advisor Alert Digest</strong></td><td>A daily morning email summarizing overnight cruise changes at your tracked ports — opt in, choose which change types trigger a notification, and add a custom delivery address.</td></tr>
+    <tr><td><strong>One-Click Port Guide Delivery</strong><span class="roadmap-badge">Coming Soon</span></td><td>Send a client their port guide for tomorrow's destination in a single click — proactive service, zero effort.</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">For Agencies</h3>
+<table class="data-table">
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Agency Hub</strong></td><td>A central command center for managing your entire team of travel advisors on DockBound.</td></tr>
+    <tr><td><strong>Advisor Attention Dashboard</strong></td><td>An exception-first dashboard that auto-detects advisor issues — inactivity, missing Travefy connections, expiring authorizations — and surfaces them as prioritized attention items. No manual roster scanning required; problems come to you.</td></tr>
+    <tr><td><strong>Attention Items</strong></td><td>Auto-generated work queue entries for advisor situations that need follow-up — sorted by urgency, with inline acknowledge and dismiss actions. Each item is deduplicated so the same issue only appears once, and every action is audited.</td></tr>
+    <tr><td><strong>Agent Roster Management</strong></td><td>Import advisors via CSV, track invite status, and activate or suspend team members as your roster evolves.</td></tr>
+    <tr><td><strong>Agency Referral Code</strong></td><td>A unique code your advisors use at sign-up to automatically link to your agency — no manual linking, no admin overhead.</td></tr>
+    <tr><td><strong>Advisor Activity Reports</strong></td><td>Analytics on how each advisor is using DockBound — client volume, syncs, enrichments, and platform engagement.</td></tr>
+    <tr><td><strong>Referral Attribution Reports</strong></td><td>Track which travelers came through your advisors' referrals and credit the right team member.</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     10. TIERS & ACCESS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="tiers">10. Tiers &amp; Access</h2>
+
+<h3 class="subsection-title">Traveler Access</h3>
+<table class="data-table">
+  <thead><tr><th>Level</th><th>How Obtained</th><th>Content</th></tr></thead>
+  <tbody>
+    <tr><td>Freemium</td><td>Sign-up without purchase, or advisor referral</td><td>Limited sections visible — node-permission gated via FeatureGate component</td></tr>
+    <tr><td>Paid</td><td>Stripe purchase at <code>/payment-checkout</code></td><td>Full DOCKGuide for one itinerary — all sections unlocked</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Advisor Tiers — Slot-Based Plans (Independent &amp; Agency)</h3>
+<table class="data-table">
+  <thead><tr><th>Plan Name</th><th>Traveler Slots</th><th>Price</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Starter</td><td>25</td><td>$149/mo</td><td>Entry tier</td></tr>
+    <tr><td>Professional</td><td>100</td><td>$499/mo</td><td>Growth tier</td></tr>
+    <tr><td>Agency</td><td>300</td><td>$1,199/mo</td><td>Pro tier</td></tr>
+    <tr><td>Enterprise</td><td>750</td><td>$2,499/mo</td><td>Enterprise tier</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Advisor Tiers — Travefy Advisor &amp; Independent Advisor Plans</h3>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Advisors who sign up via the Travefy Advisor path (<code class="path">advisorType: travefyadvisor</code>) or the independent advisor path (<code class="path">advisorType: independentAdvisor</code>) both start with a 60-day free trial, after which they choose one of the three monthly plans below. Both types use the same <code class="path">TRAVEFY_TIERS</code> pricing structure — pricing may diverge in the future via <code class="path">INDEPENDENT_ADVISOR_TIERS</code> without code changes to the checkout flow. Note: the <code class="path">independentAdvisor</code> path requires a credit card at signup (Stripe trial); the <code class="path">travefyadvisor</code> path does not.</p>
+<table class="data-table">
+  <thead><tr><th>Plan Name</th><th>Price</th><th>Key Features</th></tr></thead>
+  <tbody>
+    <tr><td>Basic</td><td>$199/mo</td><td>Port intelligence in Travefy, daily refresh, critical safety notifications to advisor, opportunity &amp; referral reporting, critical alerts only.</td></tr>
+    <tr><td>Professional</td><td>$699/mo</td><td>All Basic features + active-traveler dashboard, prioritized condition changes &amp; affected travelers, daily digest &amp; 7-day look-ahead, agency-wide roster view, replaceable affiliate links.</td></tr>
+    <tr><td>Engage</td><td>$1,499/mo</td><td>All Professional features + all configurable advisor alerts, email/SMS to affected travelers, drafts, templates &amp; message history.</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Admin Roles</h3>
+<table class="data-table">
+  <thead><tr><th>Role</th><th>Access Scope</th></tr></thead>
+  <tbody>
+    <tr><td><code>maintenance</code></td><td>Data editors, API pipelines, content tools only</td></tr>
+    <tr><td><code>admin</code></td><td>All maintenance access + agency/agent management + user role changes</td></tr>
+    <tr><td><code>super-admin</code></td><td>All admin access + can promote any user to any role</td></tr>
+  </tbody>
+</table>
+
+<p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e5e7eb;font-size:0.75rem;color:#9ca3af;text-align:center;">
+  DockBound Product Specification &nbsp;·&nbsp; Last updated 2026-09-02 &nbsp;·&nbsp; Maintained via <code>/update-spec</code>
+</p>
+
+</div><!-- /content -->
+</body>
+</html>

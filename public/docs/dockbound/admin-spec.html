@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Internal Admin Specification</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    background: #fff;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    color: #fff;
+    padding: 3rem 2.5rem 2.5rem;
+  }
+  .cover .logo-mark { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+  .cover .logo-mark span { color: #c9920b; }
+  .cover h1 { font-size: 1.5rem; font-weight: 600; color: rgba(255,255,255,0.85); margin: 0.25rem 0 0.4rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .cover .internal-badge {
+    display: inline-block;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+  }
+  .cover .meta { font-size: 0.8rem; color: rgba(255,255,255,0.45); }
+  .cover .meta span { margin-right: 1.5rem; }
+
+  /* ── TOC ── */
+  .toc { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 1.5rem 2.5rem; }
+  .toc h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #0f3460; font-weight: 700; margin-bottom: 0.75rem; }
+  .toc ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.2rem 2rem; padding-left: 1.25rem; }
+  .toc li { font-size: 0.8rem; color: #374151; }
+  .toc a { color: #0f3460; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Layout ── */
+  .content { max-width: 980px; margin: 0 auto; padding: 2rem 2.5rem; }
+
+  /* ── Section headers ── */
+  .section-title {
+    font-size: 1.3rem; font-weight: 800; color: #1a1a2e;
+    border-bottom: 3px solid #0f3460;
+    padding-bottom: 0.4rem; margin: 2.5rem 0 1.25rem;
+  }
+  .section-title.first { margin-top: 0; }
+  .subsection-title {
+    font-size: 1rem; font-weight: 700; color: #0f3460;
+    margin: 1.75rem 0 0.75rem; padding-left: 0.75rem;
+    border-left: 4px solid #c9920b;
+  }
+
+  /* ── Status badges ── */
+  .status { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 999px; vertical-align: middle; margin-left: 6px; }
+  .status.built   { background: #d1fae5; color: #065f46; }
+  .status.partial { background: #fef3c7; color: #92400e; }
+  .status.gap     { background: #fee2e2; color: #991b1b; }
+  .status.p1      { background: #fee2e2; color: #991b1b; }
+  .status.p2      { background: #fef3c7; color: #92400e; }
+  .status.p3      { background: #e0f2fe; color: #075985; }
+
+  /* ── Prose ── */
+  p { margin-bottom: 0.75rem; color: #374151; }
+  .callout {
+    background: #fff7ed; border-left: 3px solid #c9920b;
+    padding: 0.6rem 0.875rem; border-radius: 0 4px 4px 0;
+    font-size: 0.82rem; color: #7c2d12; margin: 0.75rem 0 1rem;
+  }
+
+  /* ── Observability table ── */
+  table.obs-table {
+    width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 1.25rem;
+  }
+  table.obs-table th {
+    background: #1a1a2e; color: #fff; text-align: left;
+    padding: 0.5rem 0.75rem; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  table.obs-table td {
+    padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e7eb; vertical-align: top;
+  }
+  table.obs-table tr:nth-child(even) td { background: #f9fafb; }
+  table.obs-table td:first-child { font-weight: 600; color: #1a1a2e; width: 35%; }
+  table.obs-table td code {
+    background: #f1f5f9; color: #0f3460; font-size: 0.78rem;
+    padding: 1px 5px; border-radius: 3px;
+  }
+
+  /* ── Gap table ── */
+  table.gap-table {
+    width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 1.5rem;
+  }
+  table.gap-table th {
+    background: #1a1a2e; color: #fff; text-align: left;
+    padding: 0.5rem 0.75rem; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  table.gap-table td {
+    padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e7eb; vertical-align: top;
+  }
+  table.gap-table tr:nth-child(even) td { background: #f9fafb; }
+  table.gap-table td:first-child { white-space: nowrap; }
+  table.gap-table td:nth-child(2) { font-weight: 600; color: #1a1a2e; }
+
+  /* ── Function cards ── */
+  .function-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .fn { border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; }
+  .fn-name {
+    background: #f1f5f9; padding: 0.45rem 0.875rem;
+    font-weight: 700; font-size: 0.875rem; color: #1a1a2e;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .fn-body { display: grid; grid-template-columns: 60px 1fr; font-size: 0.8rem; }
+  .fn-body .label {
+    padding: 0.35rem 0.5rem 0.35rem 0.875rem; font-weight: 700;
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em;
+    color: #fff; display: flex; align-items: flex-start; padding-top: 0.45rem;
+  }
+  .fn-body .label.what   { background: #0f3460; }
+  .fn-body .label.who    { background: #c9920b; }
+  .fn-body .label.result { background: #0d9488; }
+  .fn-body .def {
+    padding: 0.35rem 0.875rem; color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .fn-body .def:last-child { border-bottom: none; }
+  code.path {
+    background: #f1f5f9; color: #0f3460; font-size: 0.75rem;
+    padding: 1px 4px; border-radius: 3px;
+    font-family: 'SF Mono','Fira Code',monospace;
+  }
+
+  /* ── Journey cards ── */
+  .journey {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+  }
+  .journey h3 { font-size: 0.95rem; font-weight: 700; color: #0f3460; margin-bottom: 0.4rem; }
+  .journey .journey-meta { font-size: 0.78rem; color: #6b7280; margin-bottom: 0.6rem; }
+  .journey ol { padding-left: 1.25rem; font-size: 0.81rem; color: #374151; margin-bottom: 0.75rem; }
+  .journey ol li { margin-bottom: 0.3rem; }
+  .journey ol li strong { color: #1a1a2e; }
+  .journey .gap-note {
+    font-size: 0.76rem; background: #fff7ed; border: 1px solid #fed7aa;
+    border-radius: 4px; padding: 0.4rem 0.75rem; color: #7c2d12; margin-top: 0.5rem;
+  }
+
+  /* ── Financial section ── */
+  .metric-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem; margin-bottom: 1.25rem;
+  }
+  .metric-card {
+    border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem;
+  }
+  .metric-card .metric-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 0.25rem; }
+  .metric-card .metric-value { font-size: 1.4rem; font-weight: 800; color: #1a1a2e; }
+  .metric-card .metric-source { font-size: 0.7rem; color: #9ca3af; margin-top: 0.25rem; }
+  .metric-card.gap { border-color: #fca5a5; background: #fff5f5; }
+  .metric-card.gap .metric-value { color: #dc2626; }
+  .metric-card.gap .metric-label { color: #991b1b; }
+
+  /* ── Print ── */
+  @media print {
+    body { font-size: 11px; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .toc { page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .fn { page-break-inside: avoid; }
+    .journey { page-break-inside: avoid; }
+    .fn-body .label { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    a { color: inherit; text-decoration: none; }
+    .status { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Cover ── -->
+<div class="cover">
+  <div class="logo-mark">DOCK<span>Bound</span></div>
+  <div class="internal-badge">Internal Use Only</div>
+  <h1>Platform Administration Specification</h1>
+  <div class="meta">
+    <span>Last updated: 2026-09-05</span>
+    <span>Not for distribution outside DockBound team</span>
+  </div>
+</div>
+
+<!-- ── TOC ── -->
+<div class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#purpose">Purpose &amp; Scope</a></li>
+    <li><a href="#observability">Platform Observability</a></li>
+    <li><a href="#advisor-visibility">Advisor Connection Status</a></li>
+    <li><a href="#journeys">Admin Journeys</a></li>
+    <li><a href="#financial">Financial &amp; Order Management</a></li>
+    <li><a href="#current-tools">Current Admin Tools (as built)</a></li>
+    <li><a href="#gaps">Gap Analysis &amp; Priorities</a></li>
+  </ol>
+</div>
+
+<div class="content">
+
+<!-- ══════════════════════════════════════════════
+     1. PURPOSE
+════════════════════════════════════════════════ -->
+<h2 class="section-title first" id="purpose">1. Purpose &amp; Scope</h2>
+<p>This document defines what the DockBound platform administration layer <em>should</em> be able to do — including capabilities that do not yet exist. It is meant to serve as a product roadmap for internal tooling and to make the gap between current state and ideal state explicit.</p>
+<div class="callout">
+  <strong>How to read this doc:</strong> Each section contains a mix of what is already built
+  <span class="status built">Built</span>, what is partially built <span class="status partial">Partial</span>,
+  and what is missing <span class="status gap">Gap</span>. The gap analysis in section 7 prioritizes everything missing into P1/P2/P3 tiers.
+</div>
+<p>The admin role in DockBound has two distinct jobs: <strong>platform operations</strong> (keeping data pipelines running, content quality high, and accounts healthy) and <strong>business intelligence</strong> (understanding how the platform is being used, by whom, and how it is performing financially). This spec covers both.</p>
+
+<!-- ══════════════════════════════════════════════
+     2. PLATFORM OBSERVABILITY
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="observability">2. Platform Observability — What Admins Should See</h2>
+<p>A platform admin opening DockBound for the first time each morning should be able to answer the following questions without going to the Firestore console, Stripe dashboard, or reading log files.</p>
+
+<h3 class="subsection-title">User &amp; Account Counts</h3>
+<table class="obs-table">
+  <thead><tr><th>Metric</th><th>Description</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Total registered users</td>
+      <td>Count of all accounts in the <code>users</code> collection, broken down by role: travelers, advisors, agency hosts, admins.</td>
+      <td><span class="status partial">Partial</span> — Admin Portal hub KPI strip shows paid travelers, freemium travelers, advisor count, agency count; no role breakdown beyond traveler/advisor/agency</td>
+    </tr>
+    <tr>
+      <td>Travelers: paid vs. freemium</td>
+      <td>Of all travelers, how many have <code>hasPurchasedCompass: true</code> vs. freemium/unverified access.</td>
+      <td><span class="status built">Built</span> — Admin Portal hub KPI strip shows both counts live</td>
+    </tr>
+    <tr>
+      <td>New users this week / month</td>
+      <td>Sign-up trend by role over rolling 7- and 30-day windows.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Total advisors</td>
+      <td>Count of all accounts with role <code>agent</code>, broken down by tier (25/100/300/750 slots).</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Solo advisors vs. agency-linked</td>
+      <td>Of all advisors, how many are independent vs. linked to an agency via the agency roster.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Travefy-connected advisors</td>
+      <td>Count of advisors with a stored <code>travefyConnection</code> — i.e., who have actively linked their Travefy account.</td>
+      <td><span class="status partial">Partial</span> — Usage &amp; Costs page shows per-advisor Travefy connection status (✓ / —) but no aggregate connected count</td>
+    </tr>
+    <tr>
+      <td>Active vs. dormant advisors</td>
+      <td>Advisors who have logged in or synced within the last 30 days vs. those who have not.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Total agencies</td>
+      <td>Count of all active agency accounts on the platform.</td>
+      <td><span class="status built">Built</span> — cross-agency reports page</td>
+    </tr>
+    <tr>
+      <td>Total referrals (all agencies)</td>
+      <td>Total referral events fired across all agencies.</td>
+      <td><span class="status built">Built</span> — cross-agency reports page</td>
+    </tr>
+    <tr>
+      <td>Invite acceptance rate</td>
+      <td>Of all roster invites sent, what % have been accepted (status changed from <code>invited</code> to <code>active</code>)?</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Advisor communication activity</td>
+      <td>Count of active <code>agentCommunications</code> threads; total messages logged (in-app, SMS, call, email, note); advisors with unread traveler replies. Useful for measuring feature adoption and identifying stuck conversations.</td>
+      <td><span class="status gap">Gap</span> — collection exists and is written to, but no admin visibility into thread activity</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Content Coverage</h3>
+<table class="obs-table">
+  <thead><tr><th>Metric</th><th>Description</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Total ports in database</td>
+      <td>Count of all port records, broken down by region.</td>
+      <td><span class="status partial">Partial</span> — content health shows ports but no aggregate count</td>
+    </tr>
+    <tr>
+      <td>% ports with complete port guides</td>
+      <td>Ports where all configured guide sections have content, as a percentage of total ports. Broken down by region.</td>
+      <td><span class="status partial">Partial</span> — content health shows per-port completeness but no aggregate %</td>
+    </tr>
+    <tr>
+      <td>Ports missing DockScore</td>
+      <td>Count of ports that have no static baseline DockScore in <code>dock_scores_baseline</code>.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Stale content (not updated &gt;90 days)</td>
+      <td>Port guides that have not been edited in 90+ days. Relevant for high-traffic ports.</td>
+      <td><span class="status partial">Partial</span> — content health has staleness logic but no filtered count</td>
+    </tr>
+    <tr>
+      <td>Top 20 ports by cruise frequency</td>
+      <td>The most frequently appearing ports across all active sailings in the database — used to prioritize content work.</td>
+      <td><span class="status partial">Partial</span> — port utilization chart exists on agent dashboard; admin version not available</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Pipeline Health</h3>
+<table class="obs-table">
+  <thead><tr><th>Pipeline</th><th>What to Show</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Cruisemapper sync</td>
+      <td>Last run time, result (success/failure), records updated, next scheduled run.</td>
+      <td><span class="status partial">Partial</span> — can trigger from API maintenance; no status display</td>
+    </tr>
+    <tr>
+      <td>Apify scrape</td>
+      <td>Last run time, result, records scraped, next scheduled run.</td>
+      <td><span class="status partial">Partial</span> — trigger exists; no status display</td>
+    </tr>
+    <tr>
+      <td>Viator destinations sync</td>
+      <td>Last sync time, ports without a Viator destination ID.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Alerts fetch</td>
+      <td>Last fetch time, active alerts count by severity, any fetch errors.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Travefy nightly sync</td>
+      <td>Last run time, advisors synced, trips updated, any failures per advisor.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>DockScore recalculation</td>
+      <td>Ports with stale or pending dynamic score recalculations.</td>
+      <td><span class="status gap">Gap</span></td>
+    </tr>
+    <tr>
+      <td>Weather API</td>
+      <td>Last successful weather fetch, error rate, coverage.</td>
+      <td><span class="status partial">Partial</span> — weather maintenance page shows status but limited detail</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     3. ADVISOR CONNECTION STATUS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="advisor-visibility">3. Advisor Connection Status</h2>
+<p>A key admin capability is understanding, at a glance, how every advisor is connected to the platform.</p>
+<div class="callout">
+  <span class="status built">Built</span> — The <strong>All-Advisor Roster</strong> at <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>) is now live. It is a searchable, filterable table of all advisor accounts, distinct from the Agent Tools page (which is a single diagnostic tool). The table below documents the ideal column set; the shipped version includes email, name, agency, advisor type, plan tier, plan status, trial end date, Travefy connection, and created date. Per-advisor detail and tier override remain gaps.
+</div>
+
+<table class="obs-table">
+  <thead><tr><th>Column</th><th>Description</th><th>Data Source</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Advisor email</td>
+      <td>Primary email from Firebase Auth / users record.</td>
+      <td><code>users/{uid}.email</code></td>
+    </tr>
+    <tr>
+      <td>Agency</td>
+      <td>Which agency the advisor belongs to, if any. "Solo" if independent.</td>
+      <td><code>agencies/{agencyId}/agentRoster</code></td>
+    </tr>
+    <tr>
+      <td>Plan tier</td>
+      <td>Current Stripe subscription tier: 25 / 100 / 300 / 750 slots.</td>
+      <td><code>agents/{uid}.tier</code></td>
+    </tr>
+    <tr>
+      <td>Slots used / cap</td>
+      <td>Current roster size vs. plan capacity (e.g., "47 / 100").</td>
+      <td><code>agentRoster</code> count vs. <code>agents/{uid}.slotsUsed</code></td>
+    </tr>
+    <tr>
+      <td>Travefy connected</td>
+      <td>Yes/No — whether the advisor has a stored Travefy AccessToken.</td>
+      <td><code>agents/{uid}.travefyConnection</code></td>
+    </tr>
+    <tr>
+      <td>Last Travefy sync</td>
+      <td>Timestamp of most recent successful Travefy trip sync.</td>
+      <td><code>agents/{uid}.lastTravefySync</code> — needs to be written on sync</td>
+    </tr>
+    <tr>
+      <td>Trips synced</td>
+      <td>Count of trips currently in <code>agents/{uid}/trips</code>.</td>
+      <td>Subcollection count</td>
+    </tr>
+    <tr>
+      <td>Last login</td>
+      <td>Most recent authenticated session, from Firebase Auth metadata.</td>
+      <td>Firebase Auth — <code>user.metadata.lastSignInTime</code></td>
+    </tr>
+    <tr>
+      <td>Account status</td>
+      <td>Active / Suspended / Invited (pending first login).</td>
+      <td><code>users/{uid}.role</code> + agency roster status</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     4. ADMIN JOURNEYS
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="journeys">4. Admin Journeys</h2>
+<p>Each journey below is an end-to-end admin task. Where steps are not yet possible due to missing tooling, a gap note is included.</p>
+
+<div class="journey">
+  <h3>Journey A — Rebuild / Regenerate a DOCKGuide</h3>
+  <div class="journey-meta">Trigger: A port guide has stale, missing, or incorrect content. Goal: Get it to publishable quality.</div>
+  <ol>
+    <li><strong>Identify the gap</strong> — Open Content Health (<code class="path">/admin/content-health</code>); filter to find the port with incomplete or stale sections. Or start from a user feedback report (Feedback Viewer) that flagged a specific port.</li>
+    <li><strong>Review existing content</strong> — Open the Port Guide Editor for the port; review each section to determine what is missing vs. just outdated.</li>
+    <li><strong>Generate missing sections</strong> — Use "Generate Port Content" to draft any empty or thin sections via OpenAI. Review the generated draft carefully — AI content should always be verified.</li>
+    <li><strong>Fact-check existing sections</strong> — Run "Fact-Check Content" on sections that have content but may be outdated. Review each flag and use "Apply Fact-Check Suggestion" to accept corrections.</li>
+    <li><strong>Manual edit</strong> — Open the Port Guide Editor and make any final edits — local knowledge, formatting, tone.</li>
+    <li><strong>Verify DockScore</strong> — Check DOCK Diagnostics for the port to confirm the score reflects the updated content correctly.</li>
+    <li><strong>Confirm live</strong> — Open a traveler-facing dashboard or preview for that port and confirm the updated content is visible.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> There is no "publish" workflow — all edits go live immediately on save. For a port receiving high traffic, this means potentially incomplete content is visible mid-edit. A draft/publish toggle would be useful (P2).</div>
+  <div class="gap-note">⚠️ <strong>V4 content gap:</strong> Port guides with <code>schemaVersion: 4</code> support new cruise-intelligence fields (<code>portAreaActivityDepth</code>, <code>returnComplexity</code>, <code>impactAction</code>, <code>majorExperienceTransferTime</code>, <code>returnDependencies</code>) that power the "Port Day at a Glance" section visible to advisors and travelers. These V4 fields are not yet included in the AI content generation prompts — the Port Guide Editor must be used to set them manually until the prompts are updated.</div>
+  <div class="gap-note">✅ <strong>Built (QA Review):</strong> After generating content, the <code>onSectionWriteQA</code> trigger automatically validates each written section. The <strong>QA Review tab</strong> on Content Health surfaces all sections with issues. Admin should review any "Needs Review" dispositions and submit a reviewer decision before considering the guide publishable. Use "Download Fixture" to add a golden regression fixture from any approved section.</div>
+</div>
+
+<div class="journey">
+  <h3>Journey B — Onboard a New Agency</h3>
+  <div class="journey-meta">Trigger: A host agency has agreed to join DockBound. Goal: Get the agency live and the host able to import their roster.</div>
+  <ol>
+    <li><strong>Create the agency</strong> — Navigate to Agencies (<code class="path">/admin/agencies</code>); click "Create Agency"; enter agency name, select the host user (must already have a DockBound account), and optionally add website and phone. Creating the agency also creates a corresponding <code>org</code> node in the Node system and writes <code>nodeId</code> to both the agency doc and the owner user doc — this is the canonical hierarchy record; do not add <code>parentAgencyId</code> or other hierarchy fields directly to the agency model.</li>
+    <li><strong>Verify host access</strong> — Confirm the host user's role was set to <code class="path">agencyhost</code> and that they can see the Agency Hub at <code class="path">/agency-hub</code>.</li>
+    <li><strong>Share referral code</strong> — The agency referral code is auto-generated on creation. Share it with the host so they can give it to advisors who sign up independently.</li>
+    <li><strong>Guide host through CSV import</strong> — Walk the host through importing their advisor roster at <code class="path">/agency-hub/import</code>; confirm invite emails are sent. Each activated advisor gets a <code>user</code> node created under the agency's org node; removing an advisor deletes their user node.</li>
+    <li><strong>Monitor invite acceptance</strong> — The Agency Hub dashboard auto-detects advisor issues on each load — including inactivity after 14 days — and surfaces them as Attention Items. Check the attention items panel on the host's Agency Hub rather than the detail page alone.</li>
+    <li><strong>Verify advisor onboarding</strong> — Confirm at least one advisor has completed sign-up and appears as active on the roster.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Step 5 still benefits from manually checking the agency detail page for counts. A "follow-up needed" flag for agencies with pending invites older than 7 days would complement the attention system (P2).</div>
+</div>
+
+<div class="journey">
+  <h3>Journey C — Investigate an Advisor Account</h3>
+  <div class="journey-meta">Trigger: An advisor reports a problem — wrong tier, Travefy not syncing, roster not loading. Goal: Diagnose and resolve the issue.</div>
+  <ol>
+    <li><strong>Look up the user</strong> — Currently requires going to Firebase Console → Authentication → search by email to find the UID. (No admin user-lookup UI exists yet.)</li>
+    <li><strong>Check role and tier</strong> — Query Firestore: <code class="path">users/{uid}</code> for role, <code class="path">agents/{uid}</code> for tier/slotsUsed/subscription status.</li>
+    <li><strong>Check Travefy connection</strong> — Look for <code class="path">agents/{uid}.travefyConnection</code> in Firestore. If missing, the advisor has not connected their Travefy account.</li>
+    <li><strong>Resolve Travefy email mismatch</strong> — If the advisor used a different email in Travefy than in DockBound, use the Travefy override tool in Agent Tools (<code class="path">/admin/agents</code>) to manually link by UID + Travefy email.</li>
+    <li><strong>Check roster</strong> — Query Firestore: <code class="path">agentRoster</code> collection filtered by <code class="path">agentId</code>. Count entries vs. tier cap.</li>
+    <li><strong>Resolve tier issue</strong> — If the advisor is on the wrong tier, update <code class="path">agents/{uid}.tier</code> directly in Firestore. (No UI for this yet.)</li>
+    <li><strong>Trigger manual sync</strong> — If Travefy trips are not syncing, call <code class="path">syncTravefyTrips</code> Cloud Function directly for the advisor's UID.</li>
+    <li><strong>Check communication threads</strong> — Query Firestore: <code class="path">agentCommunications</code> collection filtered by <code class="path">agentId</code> to see all threads and unread counts for the advisor. Review <code class="path">messages</code> subcollection if a specific correspondence record is disputed.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Steps 1, 2, 3, 5, 6, and 8 all require direct Firestore access — there is no admin UI for looking up and editing a specific advisor's account. An Advisor Detail page at <code>/admin/advisors/:uid</code> is the highest-priority admin gap (P1). Note: <code>twilioInboundWebhook</code> is built and handles both keyword SMS (<code>JOIN</code> → invite code reply) and traveler thread replies. Outbound SMS via <code>sendTravelerSms</code> requires Twilio secrets (<code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_PHONE_NUMBER</code>) and the inbound webhook registered in the Twilio Console — both require Twilio account activation before production use.</div>
+</div>
+
+<div class="journey">
+  <h3>Journey D — Grant Comped / Free DOCKGuide Access</h3>
+  <div class="journey-meta">Trigger: A traveler should receive free access — a partnership, a comp request, a customer service issue. Goal: Give them full DOCKGuide access without a Stripe payment.</div>
+  <ol>
+    <li><strong>Locate or create the user</strong> — Find the traveler's account by email in Firebase Auth.</li>
+    <li><strong>Identify the cruise</strong> — Determine the correct cruise ID from the <code class="path">cruises</code> Firestore collection or from the traveler.</li>
+    <li><strong>Create a comp order</strong> — Manually create a document in the <code class="path">orders</code> Firestore collection with status <code class="path">free</code> or <code class="path">completed</code>, the user's UID, and the cruise ID.</li>
+    <li><strong>Set purchase flag</strong> — Update <code class="path">users/{uid}.hasPurchasedCompass: true</code> and add the cruise instance to <code class="path">cruiseInstances</code>.</li>
+    <li><strong>Verify access</strong> — Have the traveler refresh their dashboard; confirm the DOCKGuide is accessible.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> All steps currently require direct Firestore writes. There is no admin UI for granting comped access. An "Issue Comp Access" tool is P1 for customer service operations.</div>
+</div>
+
+<div class="journey">
+  <h3>Journey E — Run a Full Data Refresh Cycle</h3>
+  <div class="journey-meta">Trigger: Scheduled pipelines have failed, data is stale, or a major cruise line has published schedule updates. Goal: Refresh all cruise and port data end-to-end.</div>
+  <ol>
+    <li><strong>Trigger Cruisemapper sync</strong> — Go to API Maintenance (<code class="path">/admin/maintenance</code>) and click "Run Now" for Cruisemapper. Wait for the Cloud Function to complete.</li>
+    <li><strong>Monitor change detection</strong> — The <code class="path">detectCruiseRawChanges</code> Cloud Function runs automatically after ingestion. Check Firestore <code class="path">cruiseChanges</code> collection for any detected modifications.</li>
+    <li><strong>Review and apply changes</strong> — If significant itinerary changes are detected, trigger <code class="path">applyCruiseChanges</code>. Travelers with affected itineraries will see the change alert modal on next login.</li>
+    <li><strong>Trigger Apify scrape</strong> — Run Apify on-demand for supplemental port data if needed.</li>
+    <li><strong>Refresh alerts</strong> — Trigger "Alerts Trigger Fetch" to pull the latest government advisories.</li>
+    <li><strong>Recalculate DockScores</strong> — If alerts changed, affected port DockScores are auto-invalidated. Trigger <code class="path">dockCalculateAdjusted</code> for any ports that need a manual recalculation.</li>
+    <li><strong>Verify</strong> — Spot-check a few high-traffic ports in the traveler-facing dashboard to confirm data looks correct.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Steps 2 and 3 require Firestore console access. There is no admin view showing the change detection queue or allowing review of detected changes before applying them. A "Pending Changes" review screen would be useful (P2).</div>
+</div>
+
+<div class="journey">
+  <h3>Journey F — Investigate a Pipeline Failure</h3>
+  <div class="journey-meta">Trigger: Data is noticeably stale, a traveler reports missing weather or alerts, or a scheduled function failed silently. Goal: Diagnose the failure and restore the pipeline.</div>
+  <ol>
+    <li><strong>Check Firebase Functions logs</strong> — Open Firebase Console → Functions → Logs. Filter by function name and time window to find error messages.</li>
+    <li><strong>Identify the failure type</strong> — Common causes: API key expiry (check API Keys page), Travefy rate limiting, Cruisemapper response change, network timeout.</li>
+    <li><strong>Fix the root cause</strong> — For key expiry: rotate in API Keys page. For Travefy issues: check <code class="path">travefyEcho</code> admin function to verify platform connection. For schema changes: inspect raw data and update the parser.</li>
+    <li><strong>Trigger a manual run</strong> — Once the root cause is fixed, use API Maintenance to trigger the affected pipeline manually.</li>
+    <li><strong>Verify</strong> — Confirm data has updated (check a specific port or cruise record in Firestore).</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> All pipeline health information currently lives in Firebase Console logs — there is no admin UI for monitoring pipeline status. A Pipeline Health Dashboard showing last run time, success/fail, and error summaries for each pipeline would significantly reduce the time to detect and diagnose failures (P1).</div>
+</div>
+
+<div class="journey">
+  <h3>Journey G — Audit and Fix Content Gaps for a Region</h3>
+  <div class="journey-meta">Trigger: Preparing for a new cruise season, or a region's content quality review. Goal: Ensure all high-traffic ports in a region have complete, current guides.</div>
+  <ol>
+    <li><strong>Open Content Health</strong> — Navigate to <code class="path">/admin/content-health</code>; filter by region.</li>
+    <li><strong>Prioritize by port traffic</strong> — Cross-reference with port utilization data to identify which incomplete ports see the most sailings. (Currently requires manual cross-referencing — no integrated view.)</li>
+    <li><strong>Generate content in batch</strong> — For each incomplete port, use "Generate Port Content" section by section. Review each draft before moving to the next port.</li>
+    <li><strong>Fact-check existing content</strong> — For ports with existing content flagged as stale, run fact-check and apply corrections.</li>
+    <li><strong>Track progress</strong> — Re-run Content Health report to verify the region's completeness % has improved.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> There is no batch content generation — each port requires individual navigation. A "Generate for all incomplete ports in region X" bulk operation would dramatically speed up content work (P2). There is also no completeness % metric by region (P1).</div>
+</div>
+
+<div class="journey">
+  <h3>Journey H — Manage a Traveler Order (Refund or Issue)</h3>
+  <div class="journey-meta">Trigger: A traveler contacts support requesting a refund, a duplicate charge, or reports their purchase is not showing up. Goal: Resolve the order issue.</div>
+  <ol>
+    <li><strong>Find the traveler</strong> — Search by email in Firebase Auth to get the UID.</li>
+    <li><strong>Look up their orders</strong> — Query <code class="path">orders</code> Firestore collection filtered by UID. Review order status, amount, Stripe session ID, and timestamp.</li>
+    <li><strong>Issue a refund</strong> — Use Stripe Dashboard to refund via the session ID from step 2.</li>
+    <li><strong>Update access</strong> — If the refund removes access, set <code class="path">users/{uid}.hasPurchasedCompass: false</code> and remove the cruise from <code class="path">cruiseInstances</code>.</li>
+    <li><strong>Confirm resolution</strong> — Verify the traveler's dashboard reflects the updated access state.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Steps 1–4 all require direct Firestore or Stripe console access — there is no integrated order management UI. An Order Lookup page where admins can search by email, view order history, and trigger refunds via Stripe API is P1 for customer service.</div>
+</div>
+
+<div class="journey">
+  <h3>Journey I — Deactivate or Reactivate an Agency</h3>
+  <div class="journey-meta">Trigger: An agency has stopped paying, is being offboarded, or a previously inactive agency is being re-activated. Goal: Update the agency's active status cleanly.</div>
+  <ol>
+    <li><strong>Find the agency</strong> — Navigate to <code class="path">/admin/agencies</code> and locate the agency by name or owner email.</li>
+    <li><strong>Open agency detail</strong> — Click "View →" to open <code class="path">/admin/agencies/:id</code>.</li>
+    <li><strong>Toggle active status</strong> — Click "Deactivate Agency" or "Activate Agency". This updates <code class="path">agencies/{agencyId}.isActive</code> in Firestore.</li>
+    <li><strong>Notify advisors</strong> — If deactivating, communicate to the agency host and advisors. (No automated notification is triggered by the status change.)</li>
+    <li><strong>Handle advisor access</strong> — Currently, deactivating an agency does not automatically suspend the agency's advisors. Each advisor's access must be managed separately via the agency roster.</li>
+  </ol>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Deactivating an agency does not cascade to suspend affiliated advisors. A "Deactivate agency + suspend all agents" option would prevent overlooked access after an offboarding (P2). There is also no automated notification to the agency host (P2).</div>
+</div>
+
+<div class="journey">
+  <h3>Journey J — Manually Fix a Travefy Connection</h3>
+  <div class="journey-meta">Trigger: An advisor used a different email address in Travefy than in DockBound, so auto-linking failed. Goal: Manually link the correct Travefy account to the advisor's DockBound UID.</div>
+  <ol>
+    <li><strong>Confirm the advisor has authorized DockBound in Travefy</strong> — The advisor must have visited travefy.com/account/authorize/dockbound and approved access. If not, direct them there first.</li>
+    <li><strong>Get the advisor's Firebase UID</strong> — Find it in Firebase Console → Authentication by searching their DockBound email. Or ask the advisor to share it from their profile URL.</li>
+    <li><strong>Get the advisor's Travefy email</strong> — The email they use to log into Travefy (may be a different address).</li>
+    <li><strong>Run the link tool</strong> — Navigate to Agent Tools (<code class="path">/admin/agents</code>); enter the UID and Travefy email; click "Link Travefy Account".</li>
+    <li><strong>Verify</strong> — Ask the advisor to attempt a Travefy sync from their dashboard and confirm trips appear.</li>
+  </ol>
+  <div class="gap-note">✅ <strong>Built</strong> — The Link Travefy Account tool in Agent Tools is the only fully functional advisor management tool currently available in the admin portal.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     5. FINANCIAL & ORDER MANAGEMENT
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="financial">5. Financial &amp; Order Management</h2>
+<p>DockBound generates revenue from two sources: traveler DOCKGuide purchases (one-time Stripe payments) and advisor subscriptions (recurring Stripe billing). Currently, all financial data lives in the Stripe dashboard — there is no integrated financial view inside DockBound itself.</p>
+<div class="callout">
+  <strong>All items in this section are gaps.</strong> The Sales Revenue Lift Projection page (<code>/sales/revenue-lift-projection</code>) is a <em>prospecting tool</em> for modeling potential value for agency clients — it does not show actual platform revenue.
+</div>
+
+<h3 class="subsection-title">What the Financial Dashboard Should Show</h3>
+
+<div class="metric-grid">
+  <div class="metric-card gap">
+    <div class="metric-label">Monthly Recurring Revenue (MRR)</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Source: Stripe subscriptions — advisor plan billing</div>
+  </div>
+  <div class="metric-card gap">
+    <div class="metric-label">One-Time Revenue (MTD)</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Source: Stripe — traveler DOCKGuide purchases this month</div>
+  </div>
+  <div class="metric-card gap">
+    <div class="metric-label">Active Subscriptions</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Source: Stripe — active advisor subscription count by tier</div>
+  </div>
+  <div class="metric-card gap">
+    <div class="metric-label">DOCKGuide Purchases (MTD)</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Source: Firestore <code>orders</code> collection — status: completed</div>
+  </div>
+  <div class="metric-card gap">
+    <div class="metric-label">Freemium Conversion Rate</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Travelers who purchased after sign-up without purchase</div>
+  </div>
+  <div class="metric-card gap">
+    <div class="metric-label">Churn (Advisor)</div>
+    <div class="metric-value">—</div>
+    <div class="metric-source">Source: Stripe — canceled subscriptions in rolling 30 days</div>
+  </div>
+</div>
+
+<h3 class="subsection-title">Order Management Functions Needed</h3>
+<div class="function-list">
+
+<div class="fn">
+  <div class="fn-name">Order Lookup <span class="status gap">Gap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Search for a traveler's orders by email address. Returns all orders with status, cruise, amount, Stripe session ID, and purchase timestamp.</div>
+    <div class="label who">Who</div><div class="def">Admin, from a new Order Management page (not yet built).</div>
+    <div class="label result">Result</div><div class="def">Admin can quickly locate a specific order for a customer service issue without opening Firestore or Stripe directly.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Issue Refund <span class="status gap">Gap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Initiates a Stripe refund for a specific order by calling the Stripe API with the session or payment intent ID, then updates the Firestore order status to <code class="path">refunded</code>.</div>
+    <div class="label who">Who</div><div class="def">Admin, from the Order Management page.</div>
+    <div class="label result">Result</div><div class="def">Refund issued in Stripe; order status updated; traveler's DOCKGuide access revoked if appropriate.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Issue Comp / Free Access <span class="status gap">Gap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Grants a specific traveler full DOCKGuide access for a specific cruise without a Stripe payment — for partnerships, customer service resolutions, or internal testing. Creates a Firestore order record with status <code class="path">free</code>.</div>
+    <div class="label who">Who</div><div class="def">Admin, from the Order Management page.</div>
+    <div class="label result">Result</div><div class="def">Traveler gains full DOCKGuide access; order is recorded for tracking; no Stripe transaction created.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Revenue Dashboard <span class="status gap">Gap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Aggregated view of platform revenue: MRR from advisor subscriptions (pulled from Stripe), one-time DOCKGuide revenue (from Firestore orders), revenue by tier, and month-over-month trends.</div>
+    <div class="label who">Who</div><div class="def">Admin, from a new Revenue page (not yet built). Access should be restricted to <code class="path">super-admin</code>.</div>
+    <div class="label result">Result</div><div class="def">Single-screen financial picture of the platform without requiring Stripe dashboard access.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Override Advisor Tier <span class="status gap">Gap</span></div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Changes an advisor's subscription tier in Firestore independently of Stripe — for manual corrections, pilot programs, or comped plan upgrades. Logs the change to the audit collection.</div>
+    <div class="label who">Who</div><div class="def">Admin, from the Advisor Detail page (not yet built).</div>
+    <div class="label result">Result</div><div class="def">Advisor's slot cap updated immediately; change audited with the performing admin's UID and reason.</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     6. CURRENT ADMIN TOOLS (AS BUILT)
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="current-tools">6. Current Admin Tools — What Is Actually Built Today</h2>
+<p>An honest inventory of what exists vs. what the admin portal hub links suggest. Knowing the real current state is the starting point for the gap analysis.</p>
+
+<table class="obs-table">
+  <thead><tr><th>Tool / Page</th><th>What It Actually Does Today</th><th>What's Missing From It</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Admin Portal Hub<br><code>/admin</code></td>
+      <td>10 navigation tiles: Advisors, Content Health, Data Maintenance, Agencies, API Keys, Invite Codes, Cruise Changes, Usage &amp; Costs, Test Results, Reminders. KPI strip at top shows live counts: paid travelers, freemium travelers, advisors, agencies (loaded via <code>getAllUsers</code>, <code>getAllAgents</code>, <code>getAllAgencies</code> on render).</td>
+      <td>No pipeline health status. Agent Tools (<code>/admin/agents</code>) is still not linked from the main portal — it exists but is not a hub tile. No platform health summary beyond the KPI counts.</td>
+    </tr>
+    <tr>
+      <td>All-Advisor Roster<br><code>/admin/advisors</code></td>
+      <td>Searchable, filterable table of all advisor accounts. Columns: email, name, agency, advisor type (<code>travefyadvisor</code> / <code>independentAdvisor</code> / slot-based), plan tier, plan status (color-coded: active/trialing/past_due/canceled), trial end date, Travefy connected (✓/—), created date. Supports text search and type/status filter dropdowns.</td>
+      <td>No per-advisor drill-down or actions from this page. No tier override. No ability to trigger sync or suspend from here. Per-advisor admin detail page (<code>/admin/advisors/:uid</code>) remains a gap.</td>
+    </tr>
+    <tr>
+      <td>Agency List<br><code>/admin/agencies</code></td>
+      <td>Lists all agencies with name, owner email, referral code, and active/inactive status. "Create Agency" form (name, owner user selector, website, phone). Click-through to agency detail.</td>
+      <td>No agent counts per agency in the list. No filtering or search. No total agencies KPI. No sort by size or activity.</td>
+    </tr>
+    <tr>
+      <td>Agency Detail<br><code>/admin/agencies/:id</code></td>
+      <td>Shows agency name, owner email, referral code, website, phone. Active/invited/suspended agent counts. "Activate / Deactivate Agency" toggle. Lists agents in the roster with their status.</td>
+      <td>No Travefy connection status per advisor. No roster size or slot utilization. No advisor-level actions (suspend, promote). No financial info. No activity history. Deactivation does not cascade to suspend advisors.</td>
+    </tr>
+    <tr>
+      <td>Agent Tools<br><code>/admin/agents</code></td>
+      <td>Two tools: (1) <strong>Link Travefy Account</strong> — manually links a Travefy email to a DockBound UID when advisor emails don't match between systems; (2) <strong>Promote to Advisor</strong> — accepts a UID + role picker (<code>independentAdvisor</code> or <code>travefyadvisor</code>) and calls the appropriate CF to set the agent role and create an agent record. Used to onboard advisors who cannot complete self-service flow.</td>
+      <td>No general advisor lookup. No tier management. No roster view. No activity or sync history. This page is one diagnostic tool, not a full agent management console.</td>
+    </tr>
+    <tr>
+      <td>Cross-Agency Reports<br><code>/admin/agencies-reports</code></td>
+      <td>Shows total agency count, total referrals across all agencies, and a per-agency referral count ranked by activity.</td>
+      <td>Referral count is the only metric shown. No advisor counts, no active trip counts, no revenue, no content contribution, no trend data.</td>
+    </tr>
+    <tr>
+      <td>Content Health<br><code>/admin/content-health</code></td>
+      <td>Two-tab interface: <strong>Port Guides</strong> (per-port section completeness in local Firestore <code>port_guides</code> collection; AI content generation, fact-checking, and fact-check suggestion application; V4 fields visible and editable), and <strong>QA Review</strong> (lists all sections flagged by the automated QA validator; shows disposition, blocking/advisory issues, grounding score, usefulness score; admin submits reviewer decisions: Approved / Approved w/ Correction / Rejected / Evaluator Finding Incorrect; approved sections update <code>qaStatus</code> on the section doc; "Download Fixture" button exports a regression test scaffold). Note: The PlatformCore proxy tab has been removed — port guides are now served from the local <code>port_guides</code> Firestore collection directly; <code>getPlatformCorePortGuide</code>, <code>listDockGuides</code>, and <code>registerMissingPort</code> Cloud Functions have been removed.</td>
+      <td>No aggregate % complete by region. No "ports missing DockScore" filter. No bulk operations. No draft/publish workflow — edits go live immediately. No traffic weighting (high-traffic ports not prioritized). V4 fields not yet in the AI generation prompts — generated content will not include Port Day at a Glance unless prompts are updated. QA Review tab shows up to 200 results — no pagination for larger volumes.</td>
+    </tr>
+    <tr>
+      <td>Data Maintenance<br><code>/admin/maintenance</code></td>
+      <td>Tabbed hub: Port Guides, Ports, Ships, Cruise Lines, Extras, Currency, Alerts, Viator, Weather, API (pipeline triggers), Feedback, DOCK Diagnostics, Port Guide Config.</td>
+      <td>API tab has trigger buttons but no status display (last run, success/fail, next run). No pipeline health dashboard. No version history for port guide edits.</td>
+    </tr>
+    <tr>
+      <td>Cruise Changes<br><code>/admin/cruise-changes</code></td>
+      <td>Filterable, read-only log of all cruise itinerary changes detected by the CruiseMapper pipeline. Filters: date range, change type (new/updated/deleted/reappeared), cruise line, status. Each row is expandable to show a before-and-after diff of mapped fields.</td>
+      <td>Read-only view only — no approve/reject workflow. Cannot reject or revert a detected change from this UI. No bulk operations.</td>
+    </tr>
+    <tr>
+      <td>API Keys<br><code>/admin/api-keys</code></td>
+      <td>DockBound developer API key manager. Creates <code>dbk_</code> format keys (sandbox or paid plan) using Web Crypto keygen; stores SHA-256 hash, shows full key once on creation. Admin can revoke, restore, and delete keys. Records stored in <code>api_keys/{8hexId}</code>.</td>
+      <td>No per-key usage analytics. No rate-limit configuration. No expiry/rotation reminders.</td>
+    </tr>
+    <tr>
+      <td>Invite Codes<br><code>/admin/invite-codes</code></td>
+      <td>Generates and manages one-use advisor signup codes in <code>DOCK-XXXX-XXXX</code> format. Admin creates codes with optional labels, views all codes (active / redeemed / revoked), copies codes to clipboard, and revokes unused codes. Once redeemed, stores the redeemer's UID and email on the code record. Codes can also be auto-generated via keyword SMS — texting <code>JOIN</code> to the DockBound Twilio number triggers <code>twilioInboundWebhook</code> to create a code (idempotent per phone number) with <code>source: 'sms'</code> and <code>sourcePhone</code> fields, and reply with the code + signup URL via TwiML.</td>
+      <td>No expiry date per code. No bulk-generate for event-based invite batches. No audit log of which admin created each code. SMS-sourced codes visible in the admin list but not labeled as SMS-sourced in the UI.</td>
+    </tr>
+    <tr>
+      <td>Reminders<br><code>/admin/reminders</code></td>
+      <td>Recurring operational checklist for the DockBound team. Admins view tasks sorted by urgency (overdue first, then by next-due date), mark them complete (auto-advances next-due by cadence), create new reminders, and delete ones no longer needed. Cadences: annual, quarterly, monthly. Pre-seeded with tasks for FAQ review, copyright checks, policy updates, and content audits.</td>
+      <td>No email notifications when a reminder becomes due. No assignee field — all reminders are team-wide. No reminder history (only tracks last-completed date and who completed it).</td>
+    </tr>
+    <tr>
+      <td>Usage &amp; Costs<br><code>/admin/usage</code></td>
+      <td>Month-over-month cost dashboard. Shows: total platform cost vs. prior month, OpenAI token spend broken down by Cloud Function, SendGrid email counts (total + alert digest volume), active advisor count vs. total agents. Per-advisor table shows Travefy connection status, enrichment count, alert send count, and estimated monthly cost. Recent-calls log (last 25 entries). Cost calculator slider for modeling per-advisor monthly cost based on trip volume, ports, alert subscriptions, and SMS.</td>
+      <td>Does not track Twilio SMS costs in the log (only models them in the calculator). No export. OpenAI cost does not include content generation if it's logged separately. No alerting on cost spikes.</td>
+    </tr>
+    <tr>
+      <td>Sales Revenue Lift<br><code>/sales/revenue-lift-projection</code></td>
+      <td>A prospecting/sales tool that models projected revenue lift for a potential agency client based on input assumptions (advisors, bookings/month, excursion spend, etc.). Not a real-revenue view.</td>
+      <td>This is entirely a prospecting tool and does not show actual platform revenue. A separate revenue dashboard is needed for platform financials.</td>
+    </tr>
+    <tr>
+      <td>Order / Financial Data</td>
+      <td>No admin UI exists. Order data lives in Firestore <code>orders</code> collection. Revenue data lives in Stripe.</td>
+      <td>Everything: order lookup, refunds, comp access, revenue dashboard, MRR, churn.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     7. GAP ANALYSIS & PRIORITIES
+════════════════════════════════════════════════ -->
+<h2 class="section-title" id="gaps">7. Gap Analysis &amp; Priorities</h2>
+<p>Items are ranked <span class="status p1">P1</span> (build soon — blocks basic operations), <span class="status p2">P2</span> (important — meaningfully improves operations), or <span class="status p3">P3</span> (nice to have — worth building when the platform matures).</p>
+<div class="callout">P1 items represent gaps where admins currently cannot do their job without direct Firestore or Stripe console access. These are the highest-leverage items to build next.</div>
+
+<h3 class="subsection-title">Recently Built — August 23, 2026</h3>
+<table class="gap-table">
+  <thead><tr><th>Item</th><th>What Was Built</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status built">Built</span> Agency Host Dashboard</td>
+      <td>Rebuilt from a nav-card placeholder to an exception-first layout. Primary panel is now the Attention Items feed, sorted by priority (urgent → action needed → monitor → informational). Summary strip shows urgent count, action-needed count, active advisor count, invited count. Inline "Mark Viewed" / "Dismiss" actions on each item. Nav cards to Roster, Import, Reports below. Agency details + referral code at bottom.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Attention Item Data Model &amp; Phase 1 Detection</td>
+      <td><code>src/services/attentionService.ts</code> — full type system (<code>AttentionTriggerType</code>, <code>AttentionPriority</code>, <code>AttentionStatus</code>, <code>AttentionHistoryEntry</code>, <code>AttentionItem</code>), CRUD functions (<code>getAttentionItems</code>, <code>getOpenAttentionItems</code>, <code>updateAttentionStatus</code>, <code>updateAttentionPriority</code>, <code>reassignAttentionItem</code>, <code>reopenAttentionItem</code>), and <code>runPhase1Detection</code> — detects <code>advisorNotActive</code> (14-day threshold) and <code>travefyAuthMissing</code> / <code>travefyAuthExpired</code> triggers. Deduplicates — only one open item per advisor+trigger. Items stored in <code>attention_items</code> Firestore collection.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> SMS Opt-In (TCPA-Compliant)</td>
+      <td><code>AgentAlertSettingsTab</code> Settings tab now has a full SMS opt-in form — mobile number field, change-type checkboxes, mandatory unchecked consent checkbox, and full STOP/HELP disclosures. Submit button disabled until consent is checked and phone is entered. Enrolled state shows current number, change-type preferences, "Save preferences" and "Remove SMS alerts" actions.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Keyword SMS Invite (<code>JOIN</code>)</td>
+      <td><code>twilioInboundWebhook</code> now handles the <code>JOIN</code> keyword. When a prospective advisor texts <code>JOIN</code> to the DockBound number, the function auto-generates a <code>DOCK-XXXX-XXXX</code> invite code (idempotent per phone — resends if one already exists), stores it with <code>source: 'sms'</code> and <code>sourcePhone</code>, and replies via TwiML with the code + signup URL. Non-keyword messages continue to route to traveler communication threads.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Node System Integration (Agency/Advisor Creation)</td>
+      <td><code>createAgency()</code> creates an <code>org</code> node and writes <code>nodeId</code> to the agency doc and owner user doc. <code>activateAgencyAgent()</code> creates a <code>user</code> node under the org node and writes <code>nodeId</code> to the advisor's user doc. <code>removeAgencyAgent()</code> deletes the user node. Backfill script (<code>scripts/backfill-agency-nodes.cjs</code>) run against dev and prod. Hierarchy lives exclusively in the Node system — no <code>parentAgencyId</code> or other hierarchy fields on the Agency model.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> 60-Day Trial at Onboarding (Both Advisor Types — Different Mechanics)</td>
+      <td>Both <code>travefyadvisor</code> and <code>independentAdvisor</code> sign-up paths provision a 60-day free trial. <strong>Travefy Advisor path</strong>: no Stripe payment required at signup — trial is held via a local <code>trialEndsAt</code> timestamp. <strong>Independent Advisor path</strong>: Stripe checkout with <code>trial_period_days: 60</code> is required at onboarding; credit card is collected but billing starts at day 61. <code>hasPaidAdvisorAccess()</code> checks <code>plan.status === 'trialing'</code> and whether <code>trialEndsAt</code> is in the future.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Advisor Detail Page (Agency Host–Facing)</td>
+      <td>New page at <code>/agency-hub/advisor/:agentDocId</code> accessible to agency hosts. Shows advisor name, email, account status (active / invited / suspended with color coding), last meaningful platform activity (relative timestamp via <code>getLastAdvisorMeaningfulActivity</code>), and all open attention items for that advisor (priority color + trigger label). Built in <code>src/pages/agency/AdvisorDetailPage.tsx</code>. Note: the previously identified P1 gap for an <em>admin</em>-facing advisor detail page at <code>/admin/advisors/:uid</code> remains open — this is the agency-host view, not the admin diagnostic tool.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Recently Built — September 2, 2026</h3>
+<table class="gap-table">
+  <thead><tr><th>Item</th><th>What Was Built</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status built">Built</span> All-Advisor Roster (<code>/admin/advisors</code>)</td>
+      <td>New <code>AdminAdvisorsPage</code> at <code>/admin/advisors</code> (linked from Admin Portal hub as the first tile). Searchable, filterable table of all advisor accounts. Supports text search (email, name, agency), advisor type filter, and plan status filter. Shows: email, name, agency, advisor type, plan tier, plan status (color-coded chip), trial end date, Travefy connection (✓/—), created date. Resolves the P1 "Advisor Roster View" gap.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Agency Hub Settings Tab</td>
+      <td>New Settings tab on the Agency Hub dashboard (<code>/agency-hub</code>). Agency host can upload a logo (stored at <code>agency-logos/{agencyId}/</code> in Firebase Storage; URL saved to Firestore) and configure an agency disclaimer textarea. Uploaded logo is displayed in the Agency Hub header. Logo upload and disclaimer save are independent operations with separate loading/saved states.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> PlatformCore Removed as Port Guide Source</td>
+      <td>Port guides now served directly from the local <code>port_guides</code> Firestore collection. <code>getPlatformCorePortGuide</code>, <code>listDockGuides</code>, and <code>registerMissingPort</code> Cloud Functions removed. <code>getPortGuide()</code> in <code>portGuideService.ts</code> reads directly from Firestore. Content Health page no longer has a PlatformCore tab. <code>fetchDockGuide</code> from <code>shared/platformcore.js</code> is retained only for <code>adminGeneratePortContent</code> AI evidence grounding.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Landing Pages for Advisor Audiences</td>
+      <td>Replaced <code>ComingSoonPage</code> placeholders at <code>/for-advisors</code>, <code>/for-agencies</code>, and <code>/for-travefy</code> with full content landing pages (<code>ForAdvisorsPage</code>, <code>ForAgenciesPage</code>, <code>ForTravefyPage</code>). Each has audience-tailored content, navigation, and CTAs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">P1 — Critical Gaps (Build Soon)</h3>
+<table class="gap-table">
+  <thead><tr><th>Priority</th><th>Gap</th><th>Why It Matters</th><th>Suggested Solution</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status p1">P1</span></td>
+      <td>Advisor Detail Page</td>
+      <td>Every advisor account issue (wrong tier, Travefy not linked, roster problems) requires Firestore console access. This will become unsustainable as advisor count grows.</td>
+      <td>New page at <code>/admin/advisors/:uid</code> showing: email, agency, tier, slot usage, Travefy connection status, last sync, last login, and actions: override tier, trigger sync, suspend.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span></td>
+      <td>Advisor Roster View <em>(was P1)</em></td>
+      <td><span class="status built">Built 2026-09-02</span> — <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>): searchable, filterable table by email/name/agency, type filter (travefyadvisor / independentAdvisor), and status filter (active / trialing / past_due / canceled). Shows tier, plan status, Travefy connection, trial end date, created date. Per-advisor detail/action drill-down remains a gap (see Advisor Detail Page row above).</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><span class="status p1">P1</span></td>
+      <td>Order Lookup &amp; Comp Access</td>
+      <td>Any customer service request involving a purchase (missing access, refund needed, comp request) requires Firestore + Stripe console access. There is no admin UI for this at all.</td>
+      <td>Order Management page: search by traveler email, view order history, issue comp, trigger Stripe refund via admin Cloud Function.</td>
+    </tr>
+    <tr>
+      <td><span class="status partial">Partial</span></td>
+      <td>Platform User Count KPIs <em>(was P1)</em></td>
+      <td>The Admin Portal hub now shows a live KPI strip: paid travelers, freemium travelers, advisor count, agency count. Per-tier advisor breakdown, new-user trends, and solo vs. agency-linked advisor split are still invisible without Firestore access.</td>
+      <td>Extend the KPI strip with: advisors by tier, new users this week/month, solo vs. agency-linked split. Add a "Travefy-connected advisors" KPI card.</td>
+    </tr>
+    <tr>
+      <td><span class="status p1">P1</span></td>
+      <td>Pipeline Health Dashboard</td>
+      <td>Pipeline failures are currently silent — you find out when data is stale, not when the function fails. There is no consolidated view of sync status across all pipelines.</td>
+      <td>Pipeline status section in Admin Portal or Data Maintenance: last run, success/fail icon, next scheduled run, and error summary for each pipeline (Cruisemapper, Apify, Travefy, Viator, Alerts).</td>
+    </tr>
+    <tr>
+      <td><span class="status p1">P1</span></td>
+      <td>Content Coverage % by Region</td>
+      <td>Content Health shows per-port detail but no aggregate view. You cannot answer "what % of Caribbean ports have complete guides?" without manually counting.</td>
+      <td>Add a summary table at the top of Content Health: ports by region, % complete, count incomplete. Clickable to filter the detail view below.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">P2 — Important Improvements</h3>
+<table class="gap-table">
+  <thead><tr><th>Priority</th><th>Gap</th><th>Why It Matters</th><th>Suggested Solution</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Revenue Dashboard</td>
+      <td>MRR, advisor subscription revenue, and DOCKGuide purchase revenue all live in Stripe — there is no integrated view inside DockBound. Business performance is opaque without Stripe access.</td>
+      <td>New page at <code>/admin/revenue</code> (super-admin only): MRR from Stripe subscriptions, one-time purchase revenue from Firestore orders, revenue by tier, month-over-month trend. Pull via Stripe API calls from a Cloud Function.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Travefy Connection Status Table <span class="status partial">Partial</span></td>
+      <td>The Usage &amp; Costs page now shows a per-advisor row with a Travefy connection indicator (✓ / —). However, there is still no aggregate count ("X of Y connected") and no filtering or dedicated roster view for this metric. Connection status is buried in a cost-tracking page, not surfaced as a product adoption KPI.</td>
+      <td>Include Travefy connection status in the Advisor Roster View (P1 above). Add a KPI card to the hub: "X of Y advisors Travefy-connected."</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Audit Log Viewer</td>
+      <td>Audit logs are written to Firestore <code>logs</code> collection but there is no UI to view them. Verifying who made a role change or why an account was modified requires Firestore console.</td>
+      <td>Simple log viewer in the Admin Portal: searchable by UID, action type, and date range. Read-only display of the existing <code>logs</code> collection.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Cascade Deactivation for Agencies</td>
+      <td>Deactivating an agency does not suspend its advisors, creating a window where advisors retain access after an offboarding.</td>
+      <td>Add a "Deactivate agency + suspend all affiliated agents" option in the Agency Detail page. Show the count of agents who will be affected before confirming.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Pending Changes Review Screen <span class="status partial">Partial</span></td>
+      <td>The change detection pipeline writes detected itinerary changes to Firestore. The new <code>/admin/cruise-changes</code> page provides a read-only log with filters and before/after diffs, but there is still no approve/reject workflow before changes are applied. An incorrect change could affect many travelers.</td>
+      <td>Add approve/reject actions to the cruise changes log: admin can reject a change (mark suppressed) or manually trigger re-apply for a previously skipped change. Consider a "pending" status for changes awaiting admin review before being applied to live data.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Invite Acceptance Monitoring</td>
+      <td>After an agency imports a roster, there is no alert if advisors are slow to accept invites. The host has to manually check the roster page.</td>
+      <td>A "follow-up needed" indicator on the Agency Detail page for agencies with invites older than 7 days not yet accepted. Optional: automated follow-up email after 7 days.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Batch Content Generation</td>
+      <td>Generating content for a region requires navigating to each port individually. A Caribbean content push across 30 ports takes hours.</td>
+      <td>A "Generate for region" batch operation on Content Health: select a region and sections, then queue AI generation for all incomplete ports in that region. Show progress and allow review before publishing.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>V4 Fields in AI Generation Prompts</td>
+      <td>The "Port Day at a Glance" section (visible to all advisors and travelers in the port guide) requires V4 doc-level fields that are not yet included in the AI content generation prompts used by Content Health. Ports without these fields show no "Port Day at a Glance" section, reducing the utility of the feature for un-upgraded ports.</td>
+      <td>Update the <code>adminGeneratePortContent</code> Cloud Function prompts to include generation rules for <code>portAreaActivityDepth</code>, <code>returnComplexity</code>, <code>impactAction</code>, <code>majorExperienceTransferTime</code>, and <code>returnDependencies</code>. Add these fields to the Port Guide Editor UI so admins can review and edit them directly.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Ports Missing DockScore Filter</td>
+      <td>Ports without a static baseline DockScore have no scoring at all — travelers see nothing useful. There is no way to identify these without querying Firestore.</td>
+      <td>Add a "Missing DockScore" filter to Content Health. Count displayed in the region summary table (P1 above).</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Cross-Agency Attention Item View</td>
+      <td>The Attention Items system is built and works for individual agency hosts (Phase 1: advisor inactivity, Travefy auth issues). But admins have no cross-agency view — you cannot see which agencies have the most open attention items, or filter by trigger type across all agencies. The <code>attention_items</code> Firestore collection has data but no admin UI surfaces it.</td>
+      <td>Add an "Attention" section to the Agency List or Cross-Agency Reports page: count of open attention items per agency broken down by priority. A drill-down to see specific items per agency (read-only for admins, since resolution actions belong to the agency host) would also be useful.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
+      <td>Attention Item SMS Source Label in Invite Codes UI</td>
+      <td>Invite codes generated via keyword SMS have <code>source: 'sms'</code> and <code>sourcePhone</code> on the Firestore doc, but the <code>/admin/invite-codes</code> UI does not display these fields. Admins cannot tell at a glance which codes came from SMS vs. manual creation.</td>
+      <td>Add a "Source" column to the invite codes table: "Admin" for manually created codes, "SMS (<em>phone</em>)" for keyword-generated codes.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">P3 — Nice to Have (Build When Platform Matures)</h3>
+<table class="gap-table">
+  <thead><tr><th>Priority</th><th>Gap</th><th>Why It Matters</th><th>Suggested Solution</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>User Impersonation / Debug Mode</td>
+      <td>When an advisor reports a dashboard issue, it is hard to reproduce without seeing the exact state of their account. Currently requires recreating manually in a test account.</td>
+      <td>An "View as user" admin capability that renders the advisor or traveler dashboard using their permission set, without logging into their account. Read-only.</td>
+    </tr>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>Content Version History</td>
+      <td>When a port guide is edited, the previous version is gone. If a bad edit is published, there is no rollback.</td>
+      <td>Write a snapshot of port guide content to a <code>portGuideHistory</code> subcollection before each save. Allow admins to view and restore previous versions.</td>
+    </tr>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>Manual DockScore Override</td>
+      <td>There is no way to manually set a DockScore for a port if the calculated score is incorrect or if a one-off event requires a temporary adjustment.</td>
+      <td>An "Override DockScore" field in the Port Guide Editor or DOCK Diagnostics page. A manual override would supersede the calculated score until explicitly cleared.</td>
+    </tr>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>Cohort Analytics</td>
+      <td>Understanding acquisition trends — advisors who joined this quarter, travelers converted from freemium in the last 30 days — requires manual Firestore queries.</td>
+      <td>A basic analytics page with cohort breakdowns: new users by role by week/month, freemium-to-paid conversion trend, advisor tier distribution over time.</td>
+    </tr>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>Platform Health Check Page</td>
+      <td>A single page that gives a green/amber/red status across all platform systems: each pipeline, API key validity, Firestore rule integrity, and test suite status.</td>
+      <td>Admin "Health" page that runs lightweight checks across all external integrations and shows a consolidated traffic-light status. Should be the first thing an on-call admin checks.</td>
+    </tr>
+    <tr>
+      <td><span class="status p3">P3</span></td>
+      <td>Admin Portal Link to Agent Tools</td>
+      <td>The Agent Tools page at <code>/admin/agents</code> is still not linked from the Admin Portal hub — it can only be reached by typing the URL directly. The hub now has 10 tiles (Advisors, Content Health, Data Maintenance, Agencies, API Keys, Invite Codes, Cruise Changes, Usage &amp; Costs, Test Results, Reminders), but Agent Tools (<code>/admin/agents</code> — the Travefy-link + promote-to-advisor diagnostic) remains unlisted.</td>
+      <td>Add an "Agent Tools" tile to the Admin Portal hub. Low effort, immediate discoverability improvement.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e2e8f0;font-size:0.75rem;color:#9ca3af;text-align:center;">
+  DockBound Internal Admin Specification &nbsp;·&nbsp; Last updated 2026-09-02 &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; Not for distribution
+</p>
+
+</div>
+</body>
+</html>

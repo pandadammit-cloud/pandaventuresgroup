@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForumJourney Product Specification</title>
+<style>
+body {
+  font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 56px;
+}
+.cover {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 3px solid #1e40af;
+  margin-bottom: 48px;
+  background: linear-gradient(135deg, #0c1a3a 0%, #1e40af 60%, #2563eb 100%);
+  border-radius: 8px;
+  margin-left: -56px;
+  margin-right: -56px;
+  margin-top: -48px;
+  padding-left: 56px;
+  padding-right: 56px;
+}
+.cover .logo { font-size: 13pt; font-weight: 700; color: #bfdbfe; letter-spacing: 0.08em; text-transform: uppercase; }
+.cover h1 { font-size: 28pt; font-weight: 700; margin: 12px 0 8px; color: #fff; }
+.cover .subtitle { font-size: 13pt; color: #bfdbfe; }
+.cover .meta { margin-top: 20px; font-size: 9.5pt; color: #93c5fd; }
+
+.toc { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 20px 28px; margin-bottom: 40px; }
+.toc h3 { margin: 0 0 12px; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.07em; color: #1e40af; }
+.toc ol { margin: 0; padding-left: 20px; column-count: 2; column-gap: 2em; }
+.toc li { margin: 5px 0; font-size: 10.5pt; break-inside: avoid; }
+.toc a { color: #1e40af; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+h1 { font-size: 20pt; color: #111; border-bottom: 2px solid #1e40af; padding-bottom: 6px; margin-top: 48px; }
+h2 { font-size: 14pt; color: #1a1a1a; margin-top: 32px; border-left: 4px solid #1e40af; padding-left: 10px; }
+h3 { font-size: 11.5pt; color: #333; margin-top: 24px; }
+
+.callout { background: #eff6ff; border-left: 4px solid #1e40af; padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 10.5pt; }
+.callout.warning { background: #fff8ed; border-color: #f59e0b; }
+.callout.danger  { background: #fef2f2; border-color: #ef4444; }
+.callout.info    { background: #f0fdf4; border-color: #22c55e; }
+
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 16px 0; }
+th { background: #1e40af; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+tr:hover td { background: #f9fafb; }
+
+code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+.cmd { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 9.5pt; padding: 14px 18px; border-radius: 6px; margin: 10px 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+
+.block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin: 14px 0; }
+.block h4 { margin: 0 0 8px; font-size: 11pt; color: #1e40af; font-family: 'Courier New', monospace; font-style: normal; }
+.block p  { margin: 4px 0; font-size: 10.5pt; }
+.block ul { margin: 8px 0 0; padding-left: 18px; }
+.block li { margin: 3px 0; font-size: 10pt; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; font-weight: 600; }
+.badge.green  { background: #dcfce7; color: #166534; }
+.badge.yellow { background: #fef9c3; color: #854d0e; }
+.badge.red    { background: #fee2e2; color: #991b1b; }
+.badge.blue   { background: #dbeafe; color: #1e40af; }
+.badge.gray   { background: #f3f4f6; color: #374151; }
+
+.value-prop { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.vp-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px 20px; }
+.vp-card h4 { margin: 0 0 6px; color: #1e40af; font-size: 11pt; }
+.vp-card p { margin: 0; font-size: 10pt; color: #374151; }
+
+.flow-steps { counter-reset: flow-counter; list-style: none; padding: 0; margin: 16px 0; }
+.flow-steps li { counter-increment: flow-counter; display: flex; align-items: flex-start; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.flow-steps li::before { content: counter(flow-counter); background: #1e40af; color: #fff; font-size: 9pt; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.flow-steps li:last-child { border-bottom: none; }
+
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 9pt; color: #9ca3af; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">ForumJourney</div>
+  <h1>Product Specification</h1>
+  <div class="subtitle">Event Readiness Platform — Partner &amp; Attendee Experience</div>
+  <div class="meta">Version 1.2 &nbsp;·&nbsp; Pilot: October 2026 &nbsp;·&nbsp; Generated: 2026-09-05</div>
+</div>
+
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#overview">Product Overview</a></li>
+    <li><a href="#integration">Integration Model</a></li>
+    <li><a href="#plan">The Attendee Plan</a></li>
+    <li><a href="#changes">Change Detection &amp; Notifications</a></li>
+    <li><a href="#partner-api">Partner API Summary</a></li>
+    <li><a href="#attendee-exp">Attendee Experience</a></li>
+    <li><a href="#portals">Role Portals</a></li>
+    <li><a href="#operator">Operator Dashboard</a></li>
+    <li><a href="#intelligence">Platform Intelligence</a></li>
+    <li><a href="#pilot">Pilot Readiness</a></li>
+  </ol>
+</div>
+
+<h1 id="overview">1. Product Overview</h1>
+
+<p>ForumJourney is a white-label event readiness API that helps attendees arrive prepared — on time, with the right information, zero last-minute surprises. Partners (event organizers) integrate once via API and ForumJourney automatically generates and maintains attendee plans for every event occurrence.</p>
+
+<div class="value-prop">
+  <div class="vp-card">
+    <h4>Zero friction for attendees</h4>
+    <p>A single link, no login, shows everything they need — from travel options to bag policy to live parking intelligence.</p>
+  </div>
+  <div class="vp-card">
+    <h4>Real-time sync</h4>
+    <p>When event details change, ForumJourney detects it automatically and notifies attendees through the partner.</p>
+  </div>
+  <div class="vp-card">
+    <h4>Personalized plans</h4>
+    <p>Stage-aware content adapts from early registration through day-of attendance — right information at the right time.</p>
+  </div>
+  <div class="vp-card">
+    <h4>Multi-role portals</h4>
+    <p>Organizers, venue staff, and speakers each get a dedicated warm portal — agenda management, guide edits, presentation upload, special requests.</p>
+  </div>
+</div>
+
+<h1 id="integration">2. Integration Model</h1>
+
+<p>Partners integrate once and ForumJourney handles ongoing plan generation and change detection automatically.</p>
+
+<ol class="flow-steps">
+  <li>Partner registers and receives an API key</li>
+  <li>Partner creates Events and Occurrences via the REST API</li>
+  <li>Partner adds Attendees to Occurrences</li>
+  <li>ForumJourney generates stage-aware plans and returns plan URLs</li>
+  <li>Attendees receive their plan URL (via partner's existing communication channel)</li>
+  <li>When event details change, partner POSTs an update to ForumJourney</li>
+  <li>ForumJourney detects material changes and fires a <code>forumjourney.plan.changed</code> webhook to the partner</li>
+  <li>Partner notifies attendees using the included pre-formatted notification strings</li>
+</ol>
+
+<h2>Two Integration Touchpoints</h2>
+
+<table>
+  <tr><th>Touchpoint</th><th>Direction</th><th>Purpose</th></tr>
+  <tr><td>REST API</td><td>Partner → ForumJourney</td><td>Create events, occurrences, attendees; generate and retrieve plans; post event updates</td></tr>
+  <tr><td>Webhook receiver</td><td>ForumJourney → Partner</td><td>ForumJourney POSTs <code>forumjourney.plan.changed</code> when material event details change</td></tr>
+</table>
+
+<h1 id="plan">3. The Attendee Plan</h1>
+
+<p>Plans are stage-aware — content adapts automatically based on how far away the event is. The stage is computed at plan generation time. Per-partner <code>stageThresholds</code> can override the global defaults.</p>
+
+<table>
+  <tr><th>Stage</th><th>Trigger</th><th>Content Focus</th></tr>
+  <tr><td><span class="badge blue">Registration</span></td><td>More than 30 days out</td><td>Event overview, city context, what to start thinking about</td></tr>
+  <tr><td><span class="badge blue">Plan</span></td><td>8–30 days out</td><td>Arrival planning, transit options, neighborhoods, parking</td></tr>
+  <tr><td><span class="badge yellow">Prepare</span></td><td>1–7 days out</td><td>Entry readiness, bag policy, what to bring, weather forecast</td></tr>
+  <tr><td><span class="badge green">Attend</span></td><td>Day-of or past</td><td>Doors time, entrance to use, last-mile directions, live weather</td></tr>
+  <tr><td><span class="badge red">Change</span></td><td>Material update detected</td><td>Change summary, updated guidance</td></tr>
+</table>
+
+<h2>Plan Content Sections</h2>
+
+<table>
+  <tr><th>Section</th><th>Stages</th><th>Source</th><th>Description</th></tr>
+  <tr><td>Event Snapshot</td><td>All</td><td>Partner / Firestore</td><td>Event name, venue, date and time, doors time, session count</td></tr>
+  <tr><td>Arrival Plan</td><td>Plan, Prepare, Attend</td><td>Generated</td><td>Leave-by time (attend stage), travel options (driving, transit, rideshare, walking), parking guidance from venue</td></tr>
+  <tr><td>Entry Readiness</td><td>Prepare, Attend</td><td>Partner / Overrides</td><td>Ticket presentation, ID requirements, bag policy, prohibited items, security process, re-entry policy, organizer-verified flag</td></tr>
+  <tr><td>Accessibility</td><td>Plan, Prepare, Attend</td><td>Venue Firestore</td><td>Accessible entrances, parking, restrooms, assistive listening, companion seating, request path</td></tr>
+  <tr><td>Weather &amp; Conditions</td><td>Prepare, Attend</td><td>OpenWeatherMap + NWS alerts</td><td>Summary, temperature, precipitation, NWS active alerts. Stale-marked if cache miss.</td></tr>
+  <tr><td>Venue Guide</td><td>All (public plan)</td><td>Firestore (<code>venues/{id}.guide</code>)</td><td>In-the-know tips, getting-there options, arrival advice. Hand-curated; edited via venue portal.</td></tr>
+  <tr><td>City Guide</td><td>All (public plan)</td><td>Firestore (<code>cities/{id}.guide</code>)</td><td>Local transit, neighborhoods, local tips, emergency contacts</td></tr>
+  <tr><td>Discoveries</td><td>Plan, Prepare, Attend</td><td>Data collection pipeline</td><td>Non-essential local finds sourced from <code>normalizedFacts</code>. Currently: nearby parking facilities (name, type, open-now, rating, EV charging) from Google Places adapter.</td></tr>
+</table>
+
+<h1 id="changes">4. Change Detection &amp; Notifications</h1>
+
+<p>When a partner POSTs an event update to ForumJourney, the platform automatically handles detection, notification generation, and delivery:</p>
+
+<ol class="flow-steps">
+  <li>ForumJourney diffs the incoming data against stored values using a field whitelist</li>
+  <li>Material changes (status, admission policy, session times, bag policy, etc.) create Change documents</li>
+  <li>Affected plans are marked stale immediately</li>
+  <li>ForumJourney fires a <code>forumjourney.plan.changed</code> webhook to the partner's registered URL</li>
+  <li>Each webhook payload includes <code>notificationContent</code> with two pre-formatted notification strings</li>
+</ol>
+
+<h2>Notification Content Variants</h2>
+
+<table>
+  <tr><th>Variant</th><th>Generation</th><th>Best For</th></tr>
+  <tr><td><strong>Factual</strong></td><td>Rule-based, deterministic</td><td>SMS, push notifications — precise and safe</td></tr>
+  <tr><td><strong>Conversational</strong></td><td>Claude <code>claude-haiku-4-5</code> generated</td><td>Email, in-app — warm and human-sounding</td></tr>
+</table>
+
+<p>Partners control when and how to surface notifications to attendees. ForumJourney stores per-attendee <code>notificationPreference</code> (off / factual / conversational) as a hint for partners.</p>
+
+<h1 id="partner-api">5. Partner API Summary</h1>
+
+<p>Authenticated with API key (<code>X-Api-Key</code> header or <code>Authorization: Bearer</code>). All resources are scoped to the authenticated partner — queries always filter by <code>partnerId</code>.</p>
+
+<table>
+  <tr><th>Resource</th><th>Operations</th><th>Notes</th></tr>
+  <tr><td>Events</td><td>Create, update, list, get</td><td>Linked to partner; keyed <code>{partnerId}_{externalEventId}</code></td></tr>
+  <tr><td>Occurrences</td><td>Create, list, get</td><td>Links event + venue + city; holds date and timezone</td></tr>
+  <tr><td>Plans</td><td>Generate, list, get</td><td>Deterministic doc ID: <code>{occurrenceId}_{attendeeId|anonymous}_{stage}</code></td></tr>
+  <tr><td>Attendees</td><td>Add, list</td><td>Email, plan URL, notification preference</td></tr>
+  <tr><td>Webhooks</td><td>POST event updates (inbound)</td><td>Requires <code>X-ForumJourney-Signature</code> header</td></tr>
+  <tr><td>Venues</td><td>List, get</td><td>Read-only from partner perspective</td></tr>
+  <tr><td>Cities</td><td>List, get</td><td>Read-only from partner perspective</td></tr>
+  <tr><td>Changes</td><td>List detected changes</td><td>Audit trail of what ForumJourney detected</td></tr>
+  <tr><td>Overrides</td><td>Record manual corrections</td><td>Field-level corrections with audit trail</td></tr>
+  <tr><td>Feedback</td><td>Submit attendee plan rating</td><td>1–5 star rating with optional reason</td></tr>
+  <tr><td>Lookup</td><td>Find by external ID</td><td>Map partner's external occurrence ID to ForumJourney ID</td></tr>
+  <tr><td>Source Registry</td><td>List</td><td>View active data sources for the partner's occurrences</td></tr>
+  <tr><td>Collection</td><td>Trigger, list jobs, get job, retry</td><td>Trigger data collection runs; monitor job status</td></tr>
+</table>
+
+<h2>Inbound Webhook Security</h2>
+<p>Partner-sent updates to <code>POST /v1/webhooks/partner-events</code> must include:</p>
+<ul>
+  <li><code>X-ForumJourney-Signature</code> — HMAC-SHA256 of the raw request body using the shared <code>inboundWebhookSecret</code></li>
+  <li>Timestamp in payload — validated within ±5 minutes (replay protection)</li>
+  <li>Idempotency key — prevents duplicate processing on retries</li>
+</ul>
+
+<h1 id="attendee-exp">6. Attendee Experience</h1>
+
+<p>Attendees receive a URL of the form <code>[domain]/plan/{occurrenceId}</code>. No login or account required.</p>
+
+<div class="block">
+  <h4>Plan Page — What Attendees See</h4>
+  <ul>
+    <li>ForumJourney logo and event header with key details</li>
+    <li>Stage-appropriate content sections (auto-selected based on days until event)</li>
+    <li>Venue guide sourced from Firestore: in-the-know tips, getting-there options, arrival advice</li>
+    <li>City guide: transit, neighborhoods, local tips (Firestore)</li>
+    <li>Discoveries: nearby parking facilities with open-now status, ratings, EV charging info (when collected)</li>
+    <li>Weather summary with NWS alerts (prepare and attend stages)</li>
+    <li>All content is read-only; no attendee account or login</li>
+  </ul>
+</div>
+
+<h2>Join Flow</h2>
+<p>Attendees can self-register by entering a join code (distributed by organizer) at <code>/join</code>. The 5-state flow handles: new registration, linking an existing account, duplicate registration, full events, and invalid codes. On success, the attendee gets a Firebase Auth account and is redirected to their portal.</p>
+
+<div class="callout">
+  <strong>Plan URL:</strong> Plans are accessible at <code>forumjourney.app/plan/{occurrenceId}</code> (production) and <code>eventbound-dev.web.app/plan/{occurrenceId}</code> (development).
+</div>
+
+<h1 id="portals">7. Role Portals</h1>
+
+<p>Attendees, organizers, venue staff, and speakers each have a dedicated portal — all using the same warm portal theme (<code>portal.css</code>) and Firebase Auth.</p>
+
+<table>
+  <tr><th>Role</th><th>Route</th><th>Key Capabilities</th></tr>
+  <tr><td>Attendee</td><td><code>/attendee/:occurrenceId</code></td><td>Leave-by card, agenda (favorite sessions), personal notes, venue map. Favorites and notes in localStorage.</td></tr>
+  <tr><td>Organizer</td><td><code>/organizer/*</code></td><td>Dashboard, live agenda CRUD (Firestore-backed sessions), attendee list, happenings, requests, venue map, settings</td></tr>
+  <tr><td>Venue</td><td><code>/venue/:occurrenceId</code></td><td>Dashboard, venue data editor (guide fields via <code>PATCH /venue/data</code>), conference notes (private)</td></tr>
+  <tr><td>Speaker</td><td><code>/speaker/:occurrenceId</code></td><td>Session detail, presentation URL upload (file upload stubbed), special requests</td></tr>
+</table>
+
+<p><strong>Auth claims</strong> on the Firebase ID token: <code>role</code>, <code>occurrenceId</code>, <code>firstName</code>, <code>partnerId</code>, <code>venueId</code>. Set via <code>scripts/set-claims.js</code> or through the join flow.</p>
+
+<h1 id="operator">8. Operator Dashboard</h1>
+
+<p>Internal ForumJourney operators access a dashboard at <code>/operator</code> (requires Firebase login with <code>operator</code> or <code>apiadmin</code> role).</p>
+
+<table>
+  <tr><th>Capability</th><th>Detail</th></tr>
+  <tr><td>Health dashboard</td><td>Webhook delivery counts, stale plan counts, missing-data field frequency breakdown</td></tr>
+  <tr><td>Occurrence list</td><td>All non-cancelled occurrences sorted by date; shows event name, venue, date/time, days until, attendee count</td></tr>
+  <tr><td>Attendee management</td><td>List attendees, add attendee by email, update notification preference per attendee</td></tr>
+  <tr><td>Dead-letter retry</td><td>View failed webhook deliveries; manually retry individual changes</td></tr>
+  <tr><td>Leads tab</td><td>View and manage landing page lead submissions (name, email, org, use case, status)</td></tr>
+  <tr><td>Admin sources tab</td><td>View, propose, approve/reject, configure data sources in the sourceRegistry</td></tr>
+  <tr><td>Event + venue detail</td><td>Full event data including admission policy, sessions, status; venue information and guides</td></tr>
+</table>
+
+<h1 id="intelligence">9. Platform Intelligence</h1>
+
+<p>ForumJourney enriches partner-supplied event data with multiple layers of external intelligence:</p>
+
+<table>
+  <tr><th>Source</th><th>Content</th><th>Surfaced In</th></tr>
+  <tr><td>Venue guide (Firestore)</td><td>Hand-curated: getting-there options, in-the-know tips, arrival calm factor, building layout. Edited by venue staff via portal.</td><td>Public plan page, all stages</td></tr>
+  <tr><td>City guide (Firestore)</td><td>Hand-curated: transit, neighborhoods, local tips, emergency contacts. 11 cities seeded.</td><td>Public plan page, all stages</td></tr>
+  <tr><td>OpenWeatherMap</td><td>Current conditions (attend stage) + 5-day forecast (prepare stage). NWS active alert overlay.</td><td>Plan content <code>weatherAndConditions</code></td></tr>
+  <tr><td>Data collection pipeline</td><td>Google Places parking adapter: nearby parking facilities with open-now, rating, EV charging. Stored as <code>normalizedFacts</code>.</td><td>Plan content <code>discoveries[]</code> (plan/prepare/attend stages)</td></tr>
+  <tr><td>OpenStreetMap adapter</td><td>Venue and city enrichment from OSM data.</td><td>Venue + city Firestore records (background enrichment)</td></tr>
+</table>
+
+<div class="callout">
+  <strong>Data collection pipeline architecture:</strong> The Collect → Surface → Manage model separates data gathering (adapters → normalizedFacts) from consumption (plan generator reads facts → discoveries[]). Parking is the first fully end-to-end category. Additional categories (transit, dining, activities, etc.) follow the same pattern — add an adapter, add a normalizer, and facts flow automatically into plans.
+</div>
+
+<h1 id="pilot">10. Pilot Readiness</h1>
+
+<table>
+  <tr><th>Item</th><th>Status</th><th>Notes</th></tr>
+  <tr><td>Backend API</td><td><span class="badge green">Complete</span></td><td>All routes implemented, 132 tests passing</td></tr>
+  <tr><td>Multi-role portals</td><td><span class="badge green">Live</span></td><td>Attendee, Organizer, Venue, Speaker portals shipped</td></tr>
+  <tr><td>Landing page + lead capture</td><td><span class="badge green">Live</span></td><td>Leads go to Firestore, visible in operator dashboard</td></tr>
+  <tr><td>Join flow</td><td><span class="badge green">Live</span></td><td>Attendee and venue join codes; self-registration with Firebase Auth</td></tr>
+  <tr><td>Legal pages</td><td><span class="badge green">Live</span></td><td>Privacy policy, ToS, disclaimers — required for Twilio SMS approval</td></tr>
+  <tr><td>Data collection (parking)</td><td><span class="badge green">Live</span></td><td>Google Places parking adapter → normalizedFacts → plan discoveries</td></tr>
+  <tr><td>Weather sourcing</td><td><span class="badge green">Live</span></td><td>OpenWeatherMap + NWS alerts, stage-aware caching</td></tr>
+  <tr><td>Venue guide editing</td><td><span class="badge green">Live</span></td><td>Venue staff can edit guide fields via portal; plan picks up changes immediately</td></tr>
+  <tr><td>Organizer agenda CRUD</td><td><span class="badge green">Live</span></td><td>Live Firestore-backed sessions replacing static array</td></tr>
+  <tr><td>E2E smoke suite</td><td><span class="badge green">Live</span></td><td>23 Playwright tests against production</td></tr>
+  <tr><td>Custom domain</td><td><span class="badge green">Live</span></td><td><code>forumjourney.app</code> in ALLOWED_ORIGINS; DNS configuration verified</td></tr>
+  <tr><td>SEO + social metadata</td><td><span class="badge yellow">Blocked</span></td><td>Blocked on D010 (marketing copy) and D001 (canonical URL) decisions</td></tr>
+  <tr><td>Partner creation UI</td><td><span class="badge red">Gap</span></td><td>Done via Firestore console / Admin SDK scripts only — admin-only by decision</td></tr>
+  <tr><td>Speaker file upload</td><td><span class="badge gray">Hold</span></td><td>URL-only (OD-19 closed). File upload is a scoped future task.</td></tr>
+</table>
+
+<p><strong>Target pilot date:</strong> October 2026 (DisruptHR Pittsburgh)</p>
+
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+
+</body>
+</html>

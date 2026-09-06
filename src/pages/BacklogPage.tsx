@@ -7,7 +7,7 @@ import { BACKLOG, type BacklogItem, type HistoryEntry, type ItemStatus } from '.
 type ProductFilter  = 'all' | 'dockbound' | 'forumjourney';
 type CategoryFilter = 'all' | string;
 
-interface Release { name: string; hidden: boolean; order: number; project: string; }
+interface Release { name: string; hidden: boolean; order: number; project: string; milestone?: boolean | string; }
 
 const DEFAULT_RELEASES: Release[] = [
   { name: 'V1.0.0', hidden: false, order: 1, project: '' },
@@ -203,13 +203,19 @@ export default function BacklogPage() {
 
   useEffect(() => { load(); }, []);
 
+  const milestoneNames = new Set(
+    releases
+      .filter(r => r.milestone === true || r.milestone === 'true' || r.milestone === 'TRUE')
+      .map(r => r.name)
+  );
+
   function kpi(subset: BacklogItem[]) {
     return {
       open:       subset.filter(i => i.status === 'open').length,
       inProgress: subset.filter(i => i.status === 'in-progress').length,
       done:       subset.filter(i => i.status === 'done').length,
       blocked:    subset.filter(i => !!i.blockedReason).length,
-      mvp:        subset.filter(i => i.userCategory === 'V1.0.0' && i.status !== 'done').length,
+      mvp:        subset.filter(i => milestoneNames.has(i.userCategory) && i.status !== 'done').length,
     };
   }
   const allKpi = kpi(items);
@@ -282,7 +288,7 @@ export default function BacklogPage() {
                 <th className="backlog-kpi__th">In Progress</th>
                 <th className="backlog-kpi__th">Done</th>
                 <th className="backlog-kpi__th">Blocked</th>
-                <th className="backlog-kpi__th">V1.0.0 Left</th>
+                <th className="backlog-kpi__th">V1 Left</th>
               </tr>
             </thead>
             <tbody>

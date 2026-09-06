@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection, getDocs, getDoc, writeBatch, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, writeBatch, doc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { BACKLOG, type BacklogItem, type HistoryEntry, type ItemStatus } from '../data/backlog';
 
 type ProductFilter  = 'all' | 'dockbound' | 'forumjourney';
 type CategoryFilter = 'all' | string;
 
-const DEFAULT_RELEASES = ['V1.0.0', 'V1.0.1', 'V1.0.2', 'V2.0.0', 'V.TBD'];
+interface Release { name: string; hidden: boolean; order: number; project: string; }
+
+const DEFAULT_RELEASES: Release[] = [
+  { name: 'V1.0.0', hidden: false, order: 1, project: '' },
+  { name: 'V1.0.1', hidden: false, order: 2, project: '' },
+  { name: 'V2.0.0', hidden: false, order: 3, project: '' },
+  { name: 'V.TBD',  hidden: false, order: 4, project: '' },
+];
 
 const CATEGORY_STYLE: Record<string, { background: string; color: string }> = {
   'V1.0.0': { background: 'var(--color-brand-light)',        color: 'var(--color-brand)'         },
@@ -101,7 +108,7 @@ export default function BacklogPage() {
   const [historyData,    setHistoryData]    = useState<Record<string, HistoryEntry[]>>({});
   const [historyLoading, setHistoryLoading] = useState<Record<string, boolean>>({});
 
-  const [releases,        setReleases]        = useState<string[]>(DEFAULT_RELEASES);
+  const [releases,        setReleases]        = useState<Release[]>(DEFAULT_RELEASES);
 
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [saving,          setSaving]          = useState<Set<string>>(new Set());
@@ -110,14 +117,17 @@ export default function BacklogPage() {
     setLoading(true);
     setError('');
     try {
-      const [snap, configSnap] = await Promise.all([
+      const [backlogSnap, releaseSnap] = await Promise.all([
         getDocs(collection(db, 'backlog')),
-        getDoc(doc(db, 'config', 'backlog')),
+        getDocs(collection(db, 'config', 'backlog', 'release')),
       ]);
-      setItems(snap.docs.map(d => d.data() as BacklogItem));
-      const cfg = configSnap.data();
-      if (cfg?.releases && Array.isArray(cfg.releases) && cfg.releases.length > 0) {
-        setReleases(cfg.releases as string[]);
+      setItems(backlogSnap.docs.map(d => d.data() as BacklogItem));
+      if (!releaseSnap.empty) {
+        const loaded = releaseSnap.docs
+          .map(d => ({ name: d.id, ...d.data() } as Release))
+          .filter(r => !r.hidden)
+          .sort((a, b) => a.order - b.order);
+        if (loaded.length > 0) setReleases(loaded);
       }
     } catch (e) {
       setError((e as Error).message);
@@ -401,9 +411,11 @@ export default function BacklogPage() {
                             onChange={e => saveCategory(item, e.target.value)}
                             onBlur={() => setEditingCategory(null)}
                           >
-                            {releases.map(c => (
-                              <option key={c} value={c}>{c}</option>
-                            ))}
+                            {releases
+                              .filter(r => !r.project || r.project === PRODUCT_LABEL[item.product])
+                              .map(r => (
+                                <option key={r.name} value={r.name}>{r.name}</option>
+                              ))}
                           </select>
                         ) : (
                           <CategoryBadge

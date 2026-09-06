@@ -186,7 +186,7 @@ export default function BacklogPage() {
         changedAt:  now,
         changedBy:  updatedBy,
         changeNote: `Category changed: ${item.userCategory} → ${newCategory}`,
-        snapshot: { ...item, id: undefined, userCategory: newCategory, updatedAt: now, updatedBy },
+        snapshot: (({ id: _id, ...rest }) => ({ ...rest, userCategory: newCategory, updatedAt: now, updatedBy }))(item),
       });
       await batch.commit();
       setItems(prev => prev.map(i => i.id === item.id

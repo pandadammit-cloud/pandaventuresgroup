@@ -203,10 +203,8 @@ export default function BacklogPage() {
 
   useEffect(() => { load(); }, []);
 
-  const milestoneNames = new Set(
-    releases
-      .filter(r => r.milestone === true || r.milestone === 'true' || r.milestone === 'TRUE')
-      .map(r => r.name)
+  const milestoneReleases = releases.filter(
+    r => r.milestone === true || r.milestone === 'true' || r.milestone === 'TRUE'
   );
 
   function kpi(subset: BacklogItem[]) {
@@ -215,12 +213,14 @@ export default function BacklogPage() {
       inProgress: subset.filter(i => i.status === 'in-progress').length,
       done:       subset.filter(i => i.status === 'done').length,
       blocked:    subset.filter(i => !!i.blockedReason).length,
-      mvp:        subset.filter(i => milestoneNames.has(i.userCategory) && i.status !== 'done').length,
     };
   }
-  const allKpi = kpi(items);
-  const dbKpi  = kpi(items.filter(i => i.product === 'dockbound'));
-  const fjKpi  = kpi(items.filter(i => i.product === 'forumjourney'));
+
+  const kpiRows = [
+    { label: 'Overall',      logo: null,                     subset: items },
+    { label: 'DockBound',    logo: '/logo-dockbound.png',    subset: items.filter(i => i.product === 'dockbound') },
+    { label: 'ForumJourney', logo: '/logo-forumjourney.png', subset: items.filter(i => i.product === 'forumjourney') },
+  ];
 
   const allCategories = Array.from(new Set(items.map(i => i.userCategory))).sort();
 
@@ -288,15 +288,15 @@ export default function BacklogPage() {
                 <th className="backlog-kpi__th">In Progress</th>
                 <th className="backlog-kpi__th">Done</th>
                 <th className="backlog-kpi__th">Blocked</th>
-                <th className="backlog-kpi__th">V1 Left</th>
+                {milestoneReleases.map(r => (
+                  <th key={r.name} className="backlog-kpi__th">{r.name} Left</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {([
-                { label: 'Overall',      logo: null,                    k: allKpi },
-                { label: 'DockBound',    logo: '/logo-dockbound.png',   k: dbKpi  },
-                { label: 'ForumJourney', logo: '/logo-forumjourney.png',k: fjKpi  },
-              ] as const).map(({ label, logo, k }) => (
+              {kpiRows.map(({ label, logo, subset }) => {
+                const k = kpi(subset);
+                return (
                 <tr key={label} className="backlog-kpi__row">
                   <td className="backlog-kpi__td backlog-kpi__td--label">
                     {logo && <img src={logo} alt={label} className="backlog-kpi__logo" />}
@@ -306,9 +306,14 @@ export default function BacklogPage() {
                   <td className="backlog-kpi__td backlog-kpi__td--progress">{k.inProgress}</td>
                   <td className="backlog-kpi__td backlog-kpi__td--done">{k.done}</td>
                   <td className={`backlog-kpi__td${k.blocked > 0 ? ' backlog-kpi__td--blocked' : ''}`}>{k.blocked}</td>
-                  <td className="backlog-kpi__td">{k.mvp}</td>
+                  {milestoneReleases.map(r => (
+                    <td key={r.name} className="backlog-kpi__td">
+                      {subset.filter(i => i.userCategory === r.name && i.status !== 'done').length}
+                    </td>
+                  ))}
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

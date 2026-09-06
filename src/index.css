@@ -604,6 +604,25 @@ button { cursor: pointer; font-family: var(--sans); }
 }
 .backlog-refresh:hover { background: var(--color-surface-secondary); }
 
+.backlog-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+.backlog-summary__stat         { font-weight: 600; color: var(--color-text-secondary); }
+.backlog-summary__stat--open   { color: var(--color-text-primary); }
+.backlog-summary__stat--progress { color: var(--color-info); }
+.backlog-summary__stat--done   { color: var(--color-success); }
+.backlog-summary__stat--blocked { color: var(--color-warning); }
+.backlog-summary__dot          { color: var(--color-border); font-weight: 400; }
+.backlog-summary__divider      { width: 1px; height: 14px; background: var(--color-border); margin: 0 4px; }
+.backlog-summary__logo         { height: 14px; width: auto; object-fit: contain; opacity: 0.7; vertical-align: middle; }
+
 .backlog-main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 28px; max-width: 1280px; }
 
 .backlog-group {

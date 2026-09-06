@@ -138,6 +138,14 @@ export default function BacklogPage() {
 
   useEffect(() => { load(); }, []);
 
+  const open       = items.filter(i => i.status === 'open').length;
+  const inProgress = items.filter(i => i.status === 'in-progress').length;
+  const done       = items.filter(i => i.status === 'done').length;
+  const blocked    = items.filter(i => i.blockedReason).length;
+  const mvp        = items.filter(i => i.userCategory === 'MVP' && i.status !== 'done').length;
+  const dbOpen     = items.filter(i => i.product === 'dockbound'    && i.status !== 'done').length;
+  const fjOpen     = items.filter(i => i.product === 'forumjourney' && i.status !== 'done').length;
+
   const allCategories = Array.from(new Set(items.map(i => i.userCategory))).sort();
 
   let visible = items;
@@ -191,6 +199,28 @@ export default function BacklogPage() {
           </label>
 
           <button className="backlog-refresh" onClick={load}>Refresh</button>
+        </div>
+      )}
+
+      {!loading && !error && items.length > 0 && (
+        <div className="backlog-summary">
+          <span className="backlog-summary__stat backlog-summary__stat--open">{open + inProgress} open</span>
+          <span className="backlog-summary__dot">·</span>
+          <span className="backlog-summary__stat backlog-summary__stat--progress">{inProgress} in progress</span>
+          <span className="backlog-summary__dot">·</span>
+          <span className="backlog-summary__stat backlog-summary__stat--done">{done} done</span>
+          {blocked > 0 && <>
+            <span className="backlog-summary__dot">·</span>
+            <span className="backlog-summary__stat backlog-summary__stat--blocked">{blocked} blocked</span>
+          </>}
+          <span className="backlog-summary__divider" />
+          <span className="backlog-summary__stat">{mvp} MVP remaining</span>
+          <span className="backlog-summary__dot">·</span>
+          <img src="/logo-dockbound.png"    alt="DockBound"    className="backlog-summary__logo" />
+          <span className="backlog-summary__stat">{dbOpen}</span>
+          <span className="backlog-summary__dot">·</span>
+          <img src="/logo-forumjourney.png" alt="ForumJourney" className="backlog-summary__logo" />
+          <span className="backlog-summary__stat">{fjOpen}</span>
         </div>
       )}
 

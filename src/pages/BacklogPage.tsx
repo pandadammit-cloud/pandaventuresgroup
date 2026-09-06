@@ -409,7 +409,7 @@ export default function BacklogPage() {
                             defaultValue={item.userCategory}
                             autoFocus
                             onChange={e => saveCategory(item, e.target.value)}
-                            onBlur={() => setEditingCategory(null)}
+                            onBlur={() => setTimeout(() => setEditingCategory(null), 150)}
                           >
                             {releases
                               .filter(r => !r.project || r.project === PRODUCT_LABEL[item.product])

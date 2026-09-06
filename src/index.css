@@ -717,6 +717,17 @@ button { cursor: pointer; font-family: var(--sans); }
   display: inline-block; font-size: 0.75rem; font-weight: 600;
   padding: 2px 9px; border-radius: 999px; white-space: nowrap;
 }
+.backlog-cat-badge--editable { cursor: pointer; }
+.backlog-cat-badge--editable:hover { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+.backlog-cat-badge--saving   { opacity: 0.5; cursor: default; }
+
+.backlog-cat-select {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 2px 6px; border-radius: var(--radius-sm);
+  border: 2px solid var(--color-brand);
+  background: var(--color-surface); color: var(--color-text-primary);
+  outline: none; cursor: pointer;
+}
 .backlog-size-badge {
   display: inline-block; font-size: 0.7rem; font-weight: 700;
   font-family: var(--mono); padding: 1px 6px;

@@ -33,12 +33,21 @@ function fmtDate(iso?: string): string {
   }
 }
 
-function CategoryBadge({ value }: { value: string }) {
+function CategoryBadge({ value, onClick, saving }: { value: string; onClick?: () => void; saving?: boolean }) {
   const style = CATEGORY_STYLE[value] ?? {
     background: 'var(--color-info-background)',
     color:      'var(--color-info)',
   };
-  return <span className="backlog-cat-badge" style={style}>{value}</span>;
+  return (
+    <span
+      className={['backlog-cat-badge', onClick ? 'backlog-cat-badge--editable' : '', saving ? 'backlog-cat-badge--saving' : ''].filter(Boolean).join(' ')}
+      style={style}
+      onClick={saving ? undefined : onClick}
+      title={onClick && !saving ? 'Click to change category' : undefined}
+    >
+      {saving ? '…' : value}
+    </span>
+  );
 }
 
 function StatusBadge({ status }: { status: ItemStatus }) {
@@ -88,6 +97,9 @@ export default function BacklogPage() {
   const [historyData,    setHistoryData]    = useState<Record<string, HistoryEntry[]>>({});
   const [historyLoading, setHistoryLoading] = useState<Record<string, boolean>>({});
 
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [saving,          setSaving]          = useState<Set<string>>(new Set());
+
   async function load() {
     setLoading(true);
     setError('');
@@ -133,6 +145,36 @@ export default function BacklogPage() {
       setHistoryData(prev => ({ ...prev, [itemId]: [] }));
     } finally {
       setHistoryLoading(prev => ({ ...prev, [itemId]: false }));
+    }
+  }
+
+  async function saveCategory(item: BacklogItem, newCategory: string) {
+    setEditingCategory(null);
+    if (newCategory === item.userCategory) return;
+    setSaving(prev => new Set(prev).add(item.id));
+    try {
+      const now       = new Date().toISOString();
+      const updatedBy = auth.currentUser?.email ?? 'admin';
+      const itemRef   = doc(db, 'backlog', item.id);
+      const histRef   = doc(collection(db, 'backlog', item.id, 'history'));
+      const batch     = writeBatch(db);
+      batch.update(itemRef, { userCategory: newCategory, updatedAt: now, updatedBy });
+      batch.set(histRef, {
+        changedAt:  now,
+        changedBy:  updatedBy,
+        changeNote: `Category changed: ${item.userCategory} → ${newCategory}`,
+        snapshot: { ...item, id: undefined, userCategory: newCategory, updatedAt: now, updatedBy },
+      });
+      await batch.commit();
+      setItems(prev => prev.map(i => i.id === item.id
+        ? { ...i, userCategory: newCategory, updatedAt: now, updatedBy }
+        : i,
+      ));
+      setHistoryData(prev => { const n = { ...prev }; delete n[item.id]; return n; });
+    } catch (e) {
+      setError(`Save failed: ${(e as Error).message}`);
+    } finally {
+      setSaving(prev => { const n = new Set(prev); n.delete(item.id); return n; });
     }
   }
 
@@ -313,7 +355,27 @@ export default function BacklogPage() {
                         )}
                       </td>
                       <td className="backlog-table__td"><SizeBadge size={item.size} /></td>
-                      <td className="backlog-table__td"><CategoryBadge value={item.userCategory} /></td>
+                      <td className="backlog-table__td">
+                        {editingCategory === item.id ? (
+                          <select
+                            className="backlog-cat-select"
+                            defaultValue={item.userCategory}
+                            autoFocus
+                            onChange={e => saveCategory(item, e.target.value)}
+                            onBlur={() => setEditingCategory(null)}
+                          >
+                            {Array.from(new Set(['MVP', 'Later', 'Future', ...items.map(i => i.userCategory)])).sort().map(c => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <CategoryBadge
+                            value={item.userCategory}
+                            saving={saving.has(item.id)}
+                            onClick={() => setEditingCategory(item.id)}
+                          />
+                        )}
+                      </td>
                       <td className="backlog-table__td"><StatusBadge status={item.status} /></td>
                       <td className="backlog-table__td backlog-table__td--updated">
                         {item.updatedBy && <div className="backlog-updated-by">{item.updatedBy}</div>}

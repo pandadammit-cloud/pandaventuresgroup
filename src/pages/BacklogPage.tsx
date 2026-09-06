@@ -119,13 +119,13 @@ export default function BacklogPage() {
     try {
       const [backlogSnap, releaseSnap] = await Promise.all([
         getDocs(collection(db, 'backlog')),
-        getDocs(collection(db, 'config', 'backlog', 'release')),
+        getDocs(collection(db, 'config', 'backlog', 'releases')),
       ]);
       setItems(backlogSnap.docs.map(d => d.data() as BacklogItem));
       if (!releaseSnap.empty) {
         const loaded = releaseSnap.docs
           .map(d => ({ name: d.id, ...d.data() } as Release))
-          .filter(r => !r.hidden)
+          .filter(r => String(r.hidden).toLowerCase() !== 'true')
           .sort((a, b) => a.order - b.order);
         if (loaded.length > 0) setReleases(loaded);
       }

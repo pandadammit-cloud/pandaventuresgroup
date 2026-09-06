@@ -13,7 +13,7 @@ export default function LoginPage() {
     setError('');
     try {
       await signInWithPopup(auth, provider);
-      navigate('/platformcore/admin');
+      navigate('/backlog');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Sign-in failed');
     } finally {

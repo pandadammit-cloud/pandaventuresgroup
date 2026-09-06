@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection, getDocs, writeBatch, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, getDoc, writeBatch, doc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { BACKLOG, type BacklogItem, type HistoryEntry, type ItemStatus } from '../data/backlog';
 
 type ProductFilter  = 'all' | 'dockbound' | 'forumjourney';
 type CategoryFilter = 'all' | string;
 
+const DEFAULT_RELEASES = ['V1.0.0', 'V1.0.1', 'V1.0.2', 'V2.0.0', 'V.TBD'];
+
 const CATEGORY_STYLE: Record<string, { background: string; color: string }> = {
-  MVP:    { background: 'var(--color-brand-light)',        color: 'var(--color-brand)'         },
-  Later:  { background: 'var(--color-warning-background)', color: 'var(--color-warning)'        },
-  Future: { background: 'var(--color-surface-secondary)',  color: 'var(--color-text-secondary)' },
+  'V1.0.0': { background: 'var(--color-brand-light)',        color: 'var(--color-brand)'         },
+  'V1.0.1': { background: 'var(--color-warning-background)', color: 'var(--color-warning)'        },
+  'V1.0.2': { background: 'var(--color-warning-background)', color: 'var(--color-warning)'        },
+  'V2.0.0': { background: 'var(--color-surface-secondary)',  color: 'var(--color-text-secondary)' },
+  'V.TBD':  { background: 'var(--color-surface-secondary)',  color: 'var(--color-text-secondary)' },
 };
 
 const STATUS_CLASS: Record<ItemStatus, string> = {
@@ -43,7 +47,7 @@ function CategoryBadge({ value, onClick, saving }: { value: string; onClick?: ()
       className={['backlog-cat-badge', onClick ? 'backlog-cat-badge--editable' : '', saving ? 'backlog-cat-badge--saving' : ''].filter(Boolean).join(' ')}
       style={style}
       onClick={saving ? undefined : onClick}
-      title={onClick && !saving ? 'Click to change category' : undefined}
+      title={onClick && !saving ? 'Click to change planned release' : undefined}
     >
       {saving ? '…' : value}
     </span>
@@ -97,6 +101,8 @@ export default function BacklogPage() {
   const [historyData,    setHistoryData]    = useState<Record<string, HistoryEntry[]>>({});
   const [historyLoading, setHistoryLoading] = useState<Record<string, boolean>>({});
 
+  const [releases,        setReleases]        = useState<string[]>(DEFAULT_RELEASES);
+
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [saving,          setSaving]          = useState<Set<string>>(new Set());
 
@@ -104,8 +110,15 @@ export default function BacklogPage() {
     setLoading(true);
     setError('');
     try {
-      const snap = await getDocs(collection(db, 'backlog'));
+      const [snap, configSnap] = await Promise.all([
+        getDocs(collection(db, 'backlog')),
+        getDoc(doc(db, 'config', 'backlog')),
+      ]);
       setItems(snap.docs.map(d => d.data() as BacklogItem));
+      const cfg = configSnap.data();
+      if (cfg?.releases && Array.isArray(cfg.releases) && cfg.releases.length > 0) {
+        setReleases(cfg.releases as string[]);
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -186,7 +199,7 @@ export default function BacklogPage() {
       inProgress: subset.filter(i => i.status === 'in-progress').length,
       done:       subset.filter(i => i.status === 'done').length,
       blocked:    subset.filter(i => !!i.blockedReason).length,
-      mvp:        subset.filter(i => i.userCategory === 'MVP' && i.status !== 'done').length,
+      mvp:        subset.filter(i => i.userCategory === 'V1.0.0' && i.status !== 'done').length,
     };
   }
   const allKpi = kpi(items);
@@ -228,7 +241,7 @@ export default function BacklogPage() {
           </div>
 
           <div className="backlog-filter-group">
-            <span className="backlog-filter-label">Category</span>
+            <span className="backlog-filter-label">Planned Release</span>
             {(['all', ...allCategories] as CategoryFilter[]).map(c => (
               <button
                 key={c}
@@ -259,7 +272,7 @@ export default function BacklogPage() {
                 <th className="backlog-kpi__th">In Progress</th>
                 <th className="backlog-kpi__th">Done</th>
                 <th className="backlog-kpi__th">Blocked</th>
-                <th className="backlog-kpi__th">MVP Left</th>
+                <th className="backlog-kpi__th">V1.0.0 Left</th>
               </tr>
             </thead>
             <tbody>
@@ -346,7 +359,7 @@ export default function BacklogPage() {
                   <th className="backlog-table__th backlog-table__th--order">#</th>
                   <th className="backlog-table__th backlog-table__th--title">Item</th>
                   <th className="backlog-table__th backlog-table__th--size">Size</th>
-                  <th className="backlog-table__th backlog-table__th--cat">Category</th>
+                  <th className="backlog-table__th backlog-table__th--cat">Planned Release</th>
                   <th className="backlog-table__th backlog-table__th--status">Status</th>
                   <th className="backlog-table__th backlog-table__th--updated">Last Updated</th>
                   <th className="backlog-table__th backlog-table__th--hist">Hist</th>
@@ -388,7 +401,7 @@ export default function BacklogPage() {
                             onChange={e => saveCategory(item, e.target.value)}
                             onBlur={() => setEditingCategory(null)}
                           >
-                            {Array.from(new Set(['MVP', 'Later', 'Future', ...items.map(i => i.userCategory)])).sort().map(c => (
+                            {releases.map(c => (
                               <option key={c} value={c}>{c}</option>
                             ))}
                           </select>

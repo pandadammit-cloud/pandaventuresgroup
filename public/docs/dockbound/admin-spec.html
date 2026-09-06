@@ -335,27 +335,27 @@
     <tr>
       <td>Cruisemapper sync</td>
       <td>Last run time, result (success/failure), records updated, next scheduled run.</td>
-      <td><span class="status partial">Partial</span> — can trigger from API maintenance; no status display</td>
+      <td><span class="status partial">Partial</span> — can trigger from API maintenance; <code>/admin/pipeline-health</code> shows last-run time and ok/error status</td>
     </tr>
     <tr>
       <td>Apify scrape</td>
       <td>Last run time, result, records scraped, next scheduled run.</td>
-      <td><span class="status partial">Partial</span> — trigger exists; no status display</td>
+      <td><span class="status partial">Partial</span> — trigger exists; <code>/admin/pipeline-health</code> shows last-run time and ok/error status</td>
     </tr>
     <tr>
       <td>Viator destinations sync</td>
       <td>Last sync time, ports without a Viator destination ID.</td>
-      <td><span class="status gap">Gap</span></td>
+      <td><span class="status partial">Partial</span> — <code>/admin/pipeline-health</code> shows last-run time; no per-port gap analysis</td>
     </tr>
     <tr>
       <td>Alerts fetch</td>
       <td>Last fetch time, active alerts count by severity, any fetch errors.</td>
-      <td><span class="status gap">Gap</span></td>
+      <td><span class="status partial">Partial</span> — <code>/admin/pipeline-health</code> shows last-run time and ok/error status</td>
     </tr>
     <tr>
       <td>Travefy nightly sync</td>
       <td>Last run time, advisors synced, trips updated, any failures per advisor.</td>
-      <td><span class="status gap">Gap</span></td>
+      <td><span class="status partial">Partial</span> — <code>/admin/pipeline-health</code> shows last-run time; no per-advisor failure detail</td>
     </tr>
     <tr>
       <td>DockScore recalculation</td>
@@ -376,7 +376,7 @@
 <h2 class="section-title" id="advisor-visibility">3. Advisor Connection Status</h2>
 <p>A key admin capability is understanding, at a glance, how every advisor is connected to the platform.</p>
 <div class="callout">
-  <span class="status built">Built</span> — The <strong>All-Advisor Roster</strong> at <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>) is now live. It is a searchable, filterable table of all advisor accounts, distinct from the Agent Tools page (which is a single diagnostic tool). The table below documents the ideal column set; the shipped version includes email, name, agency, advisor type, plan tier, plan status, trial end date, Travefy connection, and created date. Per-advisor detail and tier override remain gaps.
+  <span class="status built">Built</span> — The <strong>All-Advisor Roster</strong> at <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>) is now live. It is a searchable, filterable table of all advisor accounts, distinct from the Agent Tools page (which is a single diagnostic tool). The table below documents the ideal column set; the shipped version includes email, name, agency, advisor type, plan tier, plan status, trial end date, Travefy connection, and created date. <strong>Advisor Detail</strong> at <code>/admin/advisors/:uid</code> (<code>AdminAdvisorDetailPage</code>) provides per-advisor plan override and account suspension actions.
 </div>
 
 <table class="obs-table">
@@ -476,24 +476,22 @@
     <li><strong>Check Travefy connection</strong> — Look for <code class="path">agents/{uid}.travefyConnection</code> in Firestore. If missing, the advisor has not connected their Travefy account.</li>
     <li><strong>Resolve Travefy email mismatch</strong> — If the advisor used a different email in Travefy than in DockBound, use the Travefy override tool in Agent Tools (<code class="path">/admin/agents</code>) to manually link by UID + Travefy email.</li>
     <li><strong>Check roster</strong> — Query Firestore: <code class="path">agentRoster</code> collection filtered by <code class="path">agentId</code>. Count entries vs. tier cap.</li>
-    <li><strong>Resolve tier issue</strong> — If the advisor is on the wrong tier, update <code class="path">agents/{uid}.tier</code> directly in Firestore. (No UI for this yet.)</li>
+    <li><strong>Resolve tier issue</strong> — If the advisor is on the wrong tier, use the Plan Override form on the Advisor Detail page (<code class="path">/admin/advisors/:uid</code>). Override is written to the audit log.</li>
     <li><strong>Trigger manual sync</strong> — If Travefy trips are not syncing, call <code class="path">syncTravefyTrips</code> Cloud Function directly for the advisor's UID.</li>
     <li><strong>Check communication threads</strong> — Query Firestore: <code class="path">agentCommunications</code> collection filtered by <code class="path">agentId</code> to see all threads and unread counts for the advisor. Review <code class="path">messages</code> subcollection if a specific correspondence record is disputed.</li>
   </ol>
-  <div class="gap-note">⚠️ <strong>Gap:</strong> Steps 1, 2, 3, 5, 6, and 8 all require direct Firestore access — there is no admin UI for looking up and editing a specific advisor's account. An Advisor Detail page at <code>/admin/advisors/:uid</code> is the highest-priority admin gap (P1). Note: <code>twilioInboundWebhook</code> is built and handles both keyword SMS (<code>JOIN</code> → invite code reply) and traveler thread replies. Outbound SMS via <code>sendTravelerSms</code> requires Twilio secrets (<code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_PHONE_NUMBER</code>) and the inbound webhook registered in the Twilio Console — both require Twilio account activation before production use.</div>
+  <div class="gap-note">⚠️ <strong>Gap:</strong> Steps 1, 2, 3, 5, and 8 still require Firestore console access — no admin user-lookup UI exists. Step 6 (tier override) is now available via the Advisor Detail page at <code>/admin/advisors/:uid</code>. Note: <code>twilioInboundWebhook</code> is built and handles both keyword SMS (<code>JOIN</code> → invite code reply) and traveler thread replies. Outbound SMS via <code>sendTravelerSms</code> requires Twilio secrets (<code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_PHONE_NUMBER</code>) and the inbound webhook registered in the Twilio Console — both require Twilio account activation before production use.</div>
 </div>
 
 <div class="journey">
   <h3>Journey D — Grant Comped / Free DOCKGuide Access</h3>
   <div class="journey-meta">Trigger: A traveler should receive free access — a partnership, a comp request, a customer service issue. Goal: Give them full DOCKGuide access without a Stripe payment.</div>
   <ol>
-    <li><strong>Locate or create the user</strong> — Find the traveler's account by email in Firebase Auth.</li>
-    <li><strong>Identify the cruise</strong> — Determine the correct cruise ID from the <code class="path">cruises</code> Firestore collection or from the traveler.</li>
-    <li><strong>Create a comp order</strong> — Manually create a document in the <code class="path">orders</code> Firestore collection with status <code class="path">free</code> or <code class="path">completed</code>, the user's UID, and the cruise ID.</li>
-    <li><strong>Set purchase flag</strong> — Update <code class="path">users/{uid}.hasPurchasedCompass: true</code> and add the cruise instance to <code class="path">cruiseInstances</code>.</li>
+    <li><strong>Open Order Lookup</strong> — Navigate to <code class="path">/admin/orders</code>. Search by the traveler's email to confirm they have an account and to review any existing orders.</li>
+    <li><strong>Issue comp access</strong> — Use the Comp Access form on the Order Lookup page. Enter the traveler's email and select the cruise. The page calls the backend to look up the user by email, writes a Firestore <code class="path">orders</code> record with status <code class="path">free</code>, sets <code class="path">users/{uid}.hasPurchasedCompass: true</code>, and logs the action in the audit collection.</li>
     <li><strong>Verify access</strong> — Have the traveler refresh their dashboard; confirm the DOCKGuide is accessible.</li>
   </ol>
-  <div class="gap-note">⚠️ <strong>Gap:</strong> All steps currently require direct Firestore writes. There is no admin UI for granting comped access. An "Issue Comp Access" tool is P1 for customer service operations.</div>
+  <div class="gap-note">ℹ️ <strong>Built</strong> — The Order Lookup page (<code>/admin/orders</code>) handles comp access without Firestore console access. Stripe refunds for paid orders still require the Stripe Dashboard.</div>
 </div>
 
 <div class="journey">
@@ -515,13 +513,14 @@
   <h3>Journey F — Investigate a Pipeline Failure</h3>
   <div class="journey-meta">Trigger: Data is noticeably stale, a traveler reports missing weather or alerts, or a scheduled function failed silently. Goal: Diagnose the failure and restore the pipeline.</div>
   <ol>
-    <li><strong>Check Firebase Functions logs</strong> — Open Firebase Console → Functions → Logs. Filter by function name and time window to find error messages.</li>
+    <li><strong>Check Pipeline Health</strong> — Navigate to <code class="path">/admin/pipeline-health</code> for an at-a-glance status of all 9 scheduled pipelines. Error status and last-run timestamps are shown for each. If a pipeline shows an error, note the error message displayed and the time of last failure.</li>
+    <li><strong>Dig into logs if needed</strong> — For detailed error traces, open Firebase Console → Functions → Logs. Filter by the failed function name and the time window from step 1.</li>
     <li><strong>Identify the failure type</strong> — Common causes: API key expiry (check API Keys page), Travefy rate limiting, Cruisemapper response change, network timeout.</li>
     <li><strong>Fix the root cause</strong> — For key expiry: rotate in API Keys page. For Travefy issues: check <code class="path">travefyEcho</code> admin function to verify platform connection. For schema changes: inspect raw data and update the parser.</li>
     <li><strong>Trigger a manual run</strong> — Once the root cause is fixed, use API Maintenance to trigger the affected pipeline manually.</li>
-    <li><strong>Verify</strong> — Confirm data has updated (check a specific port or cruise record in Firestore).</li>
+    <li><strong>Verify</strong> — Confirm data has updated and Pipeline Health shows OK for the pipeline.</li>
   </ol>
-  <div class="gap-note">⚠️ <strong>Gap:</strong> All pipeline health information currently lives in Firebase Console logs — there is no admin UI for monitoring pipeline status. A Pipeline Health Dashboard showing last run time, success/fail, and error summaries for each pipeline would significantly reduce the time to detect and diagnose failures (P1).</div>
+  <div class="gap-note">ℹ️ <strong>Partial</strong> — <code>/admin/pipeline-health</code> now provides last-run time and ok/error status per pipeline. Error message detail is available on the page. Per-pipeline detailed logs (records count breakdown, per-advisor Travefy failures) still require Firebase Console for full context.</div>
 </div>
 
 <div class="journey">
@@ -624,10 +623,10 @@
 <div class="function-list">
 
 <div class="fn">
-  <div class="fn-name">Order Lookup <span class="status gap">Gap</span></div>
+  <div class="fn-name">Order Lookup <span class="status built">Built</span></div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Search for a traveler's orders by email address. Returns all orders with status, cruise, amount, Stripe session ID, and purchase timestamp.</div>
-    <div class="label who">Who</div><div class="def">Admin, from a new Order Management page (not yet built).</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/orders</code>.</div>
     <div class="label result">Result</div><div class="def">Admin can quickly locate a specific order for a customer service issue without opening Firestore or Stripe directly.</div>
   </div>
 </div>
@@ -642,10 +641,10 @@
 </div>
 
 <div class="fn">
-  <div class="fn-name">Issue Comp / Free Access <span class="status gap">Gap</span></div>
+  <div class="fn-name">Issue Comp / Free Access <span class="status built">Built</span></div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Grants a specific traveler full DOCKGuide access for a specific cruise without a Stripe payment — for partnerships, customer service resolutions, or internal testing. Creates a Firestore order record with status <code class="path">free</code>.</div>
-    <div class="label who">Who</div><div class="def">Admin, from the Order Management page.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/orders</code> (Comp Access form alongside Order Search).</div>
     <div class="label result">Result</div><div class="def">Traveler gains full DOCKGuide access; order is recorded for tracking; no Stripe transaction created.</div>
   </div>
 </div>
@@ -660,11 +659,11 @@
 </div>
 
 <div class="fn">
-  <div class="fn-name">Override Advisor Tier <span class="status gap">Gap</span></div>
+  <div class="fn-name">Override Advisor Tier <span class="status built">Built</span></div>
   <div class="fn-body">
-    <div class="label what">What</div><div class="def">Changes an advisor's subscription tier in Firestore independently of Stripe — for manual corrections, pilot programs, or comped plan upgrades. Logs the change to the audit collection.</div>
-    <div class="label who">Who</div><div class="def">Admin, from the Advisor Detail page (not yet built).</div>
-    <div class="label result">Result</div><div class="def">Advisor's slot cap updated immediately; change audited with the performing admin's UID and reason.</div>
+    <div class="label what">What</div><div class="def">Changes an advisor's subscription tier and subscription status in Firestore independently of Stripe — for manual corrections, pilot programs, or comped plan upgrades. Logs the change to the audit collection.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/advisors/:uid</code> (Plan Override section on the Advisor Detail page).</div>
+    <div class="label result">Result</div><div class="def">Advisor's tier and slot cap updated immediately; change audited with the performing admin's UID.</div>
   </div>
 </div>
 
@@ -681,13 +680,38 @@
   <tbody>
     <tr>
       <td>Admin Portal Hub<br><code>/admin</code></td>
-      <td>10 navigation tiles: Advisors, Content Health, Data Maintenance, Agencies, API Keys, Invite Codes, Cruise Changes, Usage &amp; Costs, Test Results, Reminders. KPI strip at top shows live counts: paid travelers, freemium travelers, advisors, agencies (loaded via <code>getAllUsers</code>, <code>getAllAgents</code>, <code>getAllAgencies</code> on render).</td>
-      <td>No pipeline health status. Agent Tools (<code>/admin/agents</code>) is still not linked from the main portal — it exists but is not a hub tile. No platform health summary beyond the KPI counts.</td>
+      <td>16 navigation tiles in 4 groups: <strong>People &amp; Access</strong> (Advisors, Agencies, Cross-Agency Reports, Invite Codes, Agent Tools), <strong>Commerce</strong> (Order Lookup, Usage &amp; Costs, Host Contracts, API Keys), <strong>Content &amp; Data</strong> (Content Health, Data Maintenance, Cruise Changes), <strong>Platform Operations</strong> (Pipeline Health, Audit Log, Reminders, Test Results). KPI strip at top shows live counts: paid travelers, freemium travelers, advisors, agencies (loaded via <code>getAllUsers</code>, <code>getAllAgents</code>, <code>getAllAgencies</code> on render).</td>
+      <td>No platform health summary beyond the KPI counts. Pipeline status is on a separate page rather than surfaced on the hub itself.</td>
     </tr>
     <tr>
       <td>All-Advisor Roster<br><code>/admin/advisors</code></td>
       <td>Searchable, filterable table of all advisor accounts. Columns: email, name, agency, advisor type (<code>travefyadvisor</code> / <code>independentAdvisor</code> / slot-based), plan tier, plan status (color-coded: active/trialing/past_due/canceled), trial end date, Travefy connected (✓/—), created date. Supports text search and type/status filter dropdowns.</td>
-      <td>No per-advisor drill-down or actions from this page. No tier override. No ability to trigger sync or suspend from here. Per-advisor admin detail page (<code>/admin/advisors/:uid</code>) remains a gap.</td>
+      <td>No row-level actions from this list page — drill-down to <code>/admin/advisors/:uid</code> for per-advisor actions.</td>
+    </tr>
+    <tr>
+      <td>Advisor Detail<br><code>/admin/advisors/:uid</code></td>
+      <td>Per-advisor diagnostic page. Shows email, agency, role, current tier, slotsUsed, subscription status, Travefy connection status, and trial end date. Admin actions: override plan tier and subscription status (written to <code>agents/{uid}</code> via <code>updateAgentPlanFields</code>), suspend or reactivate the account (via <code>setAdvisorSuspended</code>). All overrides are logged to the <code>logs</code> Firestore audit collection.</td>
+      <td>No Travefy sync trigger from UI. No roster size view. No communication thread history. No link back from the All-Advisor Roster list — must navigate directly by UID.</td>
+    </tr>
+    <tr>
+      <td>Order Lookup &amp; Comp Access<br><code>/admin/orders</code></td>
+      <td>Two tools on one page: (1) <strong>Order Search</strong> — enter traveler email, calls <code>getUserOrderHistory</code> from <code>stripeService</code>, returns all orders with status, cruise, amount, Stripe session ID, and timestamp; (2) <strong>Issue Comp Access</strong> — enter traveler email and cruise ID, calls <code>getUserByEmail</code> to get the UID, writes a Firestore <code>orders</code> record with <code>status: 'free'</code>, sets <code>users/{uid}.hasPurchasedCompass: true</code>, and writes an audit log entry.</td>
+      <td>No refund initiation via Stripe API — refunds must still be issued in the Stripe Dashboard. No cruise search/picker — admin must know or look up the cruise ID externally.</td>
+    </tr>
+    <tr>
+      <td>Host Contracts<br><code>/admin/host-contracts</code></td>
+      <td>Manages commercial contracts for host agencies. Shows all agencies (via <code>getAllAgencies</code>) alongside their contract status (<code>host_contracts/{agencyId}</code>). Admin can view or create/edit a contract per agency — setting commercial model, eligible plans, platform fee, per-plan pricing (contracted/advisor/host split), volume bands, trial eligibility, billing frequency, invoice net-days, departure policy, and upgrade rules. Contracts saved via <code>upsertHostContract</code>.</td>
+      <td>No Stripe integration — contract terms are stored in Firestore but not automatically applied to Stripe billing or invoicing. No billing event history UI (events stored in <code>host_billing_events</code> but not displayed). No contract PDF export.</td>
+    </tr>
+    <tr>
+      <td>Pipeline Health<br><code>/admin/pipeline-health</code></td>
+      <td>Status dashboard for all 9 scheduled pipelines. Each pipeline reads from a <code>pipeline_health/{pipelineId}</code> Firestore document. Displays: status icon (ok ✓ / error ⚠ / never run ○), last-run timestamp (relative: "Xm ago / Xh ago / Xd ago"), duration (ms), records processed, scheduled cadence, and error message if status is error.</td>
+      <td>Read-only view — no manual pipeline trigger from this page (triggers are on the Data Maintenance API tab). Pipeline health docs are only written if the pipeline function itself writes them at completion — pipelines that lack a <code>writePipelineHealth()</code> call will show "No data yet".</td>
+    </tr>
+    <tr>
+      <td>Audit Log<br><code>/admin/audit-log</code></td>
+      <td>Searchable, read-only viewer for the Firestore <code>logs</code> collection. Displays admin actions in reverse chronological order: action type, performing admin UID, affected UID, timestamp, and any metadata (tier change, role change, etc.).</td>
+      <td>No date range filter beyond the 100-entry page limit. No export to CSV. No email-based search for the performing admin (UID only).</td>
     </tr>
     <tr>
       <td>Agency List<br><code>/admin/agencies</code></td>
@@ -750,9 +774,9 @@
       <td>This is entirely a prospecting tool and does not show actual platform revenue. A separate revenue dashboard is needed for platform financials.</td>
     </tr>
     <tr>
-      <td>Order / Financial Data</td>
-      <td>No admin UI exists. Order data lives in Firestore <code>orders</code> collection. Revenue data lives in Stripe.</td>
-      <td>Everything: order lookup, refunds, comp access, revenue dashboard, MRR, churn.</td>
+      <td>Order / Financial Data<br><code>/admin/orders</code></td>
+      <td>Order lookup and comp access now available at <code>/admin/orders</code>. Search by traveler email; view order history (status, cruise, amount, Stripe session ID, timestamp); issue comped DOCKGuide access without Stripe transaction. Revenue data still lives in Stripe.</td>
+      <td>No refund initiation via Stripe API. No revenue dashboard or MRR view. No churn metrics. Refunds must still be issued in the Stripe Dashboard.</td>
     </tr>
   </tbody>
 </table>
@@ -822,27 +846,58 @@
   </tbody>
 </table>
 
+<h3 class="subsection-title">Recently Built — September 5, 2026</h3>
+<table class="gap-table">
+  <thead><tr><th>Item</th><th>What Was Built</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status built">Built</span> Advisor Detail Page (Admin-Facing)</td>
+      <td>New page at <code>/admin/advisors/:uid</code> (<code>AdminAdvisorDetailPage</code>). Shows email, agency, role, tier, slotsUsed, subscription status (color-coded), trial end date, and Travefy connection status. Actions: override plan tier and subscription status (calls <code>updateAgentPlanFields</code>), suspend or reactivate the account (calls <code>setAdvisorSuspended</code>). All changes written to the <code>logs</code> audit collection. Resolves the P1 "Advisor Detail Page" gap.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Order Lookup &amp; Comp Access</td>
+      <td>New page at <code>/admin/orders</code> (<code>AdminOrderLookupPage</code>). Two functions: (1) Order Search — search by traveler email, returns full order history with status/cruise/amount/session ID/timestamp; (2) Comp Access — enter traveler email + cruise ID, writes a <code>status: 'free'</code> order record, sets <code>hasPurchasedCompass: true</code>, and logs the action. Resolves the P1 "Order Lookup &amp; Comp Access" gap.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Pipeline Health Dashboard</td>
+      <td>New page at <code>/admin/pipeline-health</code> (<code>PipelineHealthPage</code>). Shows ok/error status, last-run timestamp, duration, and records-processed for all 9 scheduled pipelines. Reads from <code>pipeline_health/{pipelineId}</code> Firestore docs. Resolves the P1 "Pipeline Health Dashboard" gap.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Audit Log Viewer</td>
+      <td>New page at <code>/admin/audit-log</code> (<code>AuditLogPage</code>). Searchable, read-only viewer for the <code>logs</code> Firestore collection. Shows action type, performing admin UID, affected UID, timestamp, and metadata. Resolves the P2 "Audit Log Viewer" gap.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Host Contracts Management</td>
+      <td>New page at <code>/admin/host-contracts</code> (<code>AdminHostContractsPage</code>). Full contract editor for host agency commercial terms: commercial model, eligible plans, platform fee, per-plan pricing, volume bands, billing frequency, invoice net-days, departure policy, and upgrade rules. Data stored in <code>host_contracts/{agencyId}</code>. No Stripe integration yet.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Agent Tools Now Linked from Hub</td>
+      <td>Agent Tools (<code>/admin/agents</code>) is now a tile in the Admin Portal hub under the People &amp; Access group — no longer reachable only by direct URL. Resolves the P3 gap.</td>
+    </tr>
+  </tbody>
+</table>
+
 <h3 class="subsection-title">P1 — Critical Gaps (Build Soon)</h3>
 <table class="gap-table">
   <thead><tr><th>Priority</th><th>Gap</th><th>Why It Matters</th><th>Suggested Solution</th></tr></thead>
   <tbody>
     <tr>
-      <td><span class="status p1">P1</span></td>
-      <td>Advisor Detail Page</td>
-      <td>Every advisor account issue (wrong tier, Travefy not linked, roster problems) requires Firestore console access. This will become unsustainable as advisor count grows.</td>
-      <td>New page at <code>/admin/advisors/:uid</code> showing: email, agency, tier, slot usage, Travefy connection status, last sync, last login, and actions: override tier, trigger sync, suspend.</td>
+      <td><span class="status built">Built</span></td>
+      <td>Advisor Detail Page <em>(was P1)</em></td>
+      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/advisors/:uid</code> (<code>AdminAdvisorDetailPage</code>): email, agency, tier, slotsUsed, subscription status, trial end date, Travefy connection. Actions: plan tier + status override (audit-logged), suspend/reactivate.</td>
+      <td></td>
     </tr>
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Advisor Roster View <em>(was P1)</em></td>
-      <td><span class="status built">Built 2026-09-02</span> — <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>): searchable, filterable table by email/name/agency, type filter (travefyadvisor / independentAdvisor), and status filter (active / trialing / past_due / canceled). Shows tier, plan status, Travefy connection, trial end date, created date. Per-advisor detail/action drill-down remains a gap (see Advisor Detail Page row above).</td>
+      <td><span class="status built">Built 2026-09-02</span> — <code>/admin/advisors</code> (<code>AdminAdvisorsPage</code>): searchable, filterable table by email/name/agency, type filter (travefyadvisor / independentAdvisor), and status filter (active / trialing / past_due / canceled). Shows tier, plan status, Travefy connection, trial end date, created date.</td>
       <td></td>
     </tr>
     <tr>
-      <td><span class="status p1">P1</span></td>
-      <td>Order Lookup &amp; Comp Access</td>
-      <td>Any customer service request involving a purchase (missing access, refund needed, comp request) requires Firestore + Stripe console access. There is no admin UI for this at all.</td>
-      <td>Order Management page: search by traveler email, view order history, issue comp, trigger Stripe refund via admin Cloud Function.</td>
+      <td><span class="status built">Built</span></td>
+      <td>Order Lookup &amp; Comp Access <em>(was P1)</em></td>
+      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/orders</code> (<code>AdminOrderLookupPage</code>): search by traveler email, view order history, issue comped DOCKGuide access. Refunds still require Stripe Dashboard.</td>
+      <td></td>
     </tr>
     <tr>
       <td><span class="status partial">Partial</span></td>
@@ -851,10 +906,10 @@
       <td>Extend the KPI strip with: advisors by tier, new users this week/month, solo vs. agency-linked split. Add a "Travefy-connected advisors" KPI card.</td>
     </tr>
     <tr>
-      <td><span class="status p1">P1</span></td>
-      <td>Pipeline Health Dashboard</td>
-      <td>Pipeline failures are currently silent — you find out when data is stale, not when the function fails. There is no consolidated view of sync status across all pipelines.</td>
-      <td>Pipeline status section in Admin Portal or Data Maintenance: last run, success/fail icon, next scheduled run, and error summary for each pipeline (Cruisemapper, Apify, Travefy, Viator, Alerts).</td>
+      <td><span class="status built">Built</span></td>
+      <td>Pipeline Health Dashboard <em>(was P1)</em></td>
+      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/pipeline-health</code> (<code>PipelineHealthPage</code>): ok/error status, last-run timestamp, duration, records-processed for all 9 scheduled pipelines. Per-pipeline failure detail (e.g. per-advisor Travefy errors) still requires Firebase Console logs.</td>
+      <td></td>
     </tr>
     <tr>
       <td><span class="status p1">P1</span></td>
@@ -871,6 +926,12 @@
   <tbody>
     <tr>
       <td><span class="status p2">P2</span></td>
+      <td>Host Contracts — Stripe Integration</td>
+      <td>The Host Contracts page stores commercial terms in Firestore but does not connect to Stripe. Agency billing is not automated — invoicing and payment collection must be handled externally. As the host agency count grows, manual billing becomes unsustainable.</td>
+      <td>Wire <code>host_contracts/{agencyId}</code> data to Stripe subscriptions or invoice API. Generate invoices based on advisor count, plan tier, and contracted pricing. Sync billing events back to <code>host_billing_events</code> Firestore collection.</td>
+    </tr>
+    <tr>
+      <td><span class="status p2">P2</span></td>
       <td>Revenue Dashboard</td>
       <td>MRR, advisor subscription revenue, and DOCKGuide purchase revenue all live in Stripe — there is no integrated view inside DockBound. Business performance is opaque without Stripe access.</td>
       <td>New page at <code>/admin/revenue</code> (super-admin only): MRR from Stripe subscriptions, one-time purchase revenue from Firestore orders, revenue by tier, month-over-month trend. Pull via Stripe API calls from a Cloud Function.</td>
@@ -882,10 +943,10 @@
       <td>Include Travefy connection status in the Advisor Roster View (P1 above). Add a KPI card to the hub: "X of Y advisors Travefy-connected."</td>
     </tr>
     <tr>
-      <td><span class="status p2">P2</span></td>
-      <td>Audit Log Viewer</td>
-      <td>Audit logs are written to Firestore <code>logs</code> collection but there is no UI to view them. Verifying who made a role change or why an account was modified requires Firestore console.</td>
-      <td>Simple log viewer in the Admin Portal: searchable by UID, action type, and date range. Read-only display of the existing <code>logs</code> collection.</td>
+      <td><span class="status built">Built</span></td>
+      <td>Audit Log Viewer <em>(was P2)</em></td>
+      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/audit-log</code> (<code>AuditLogPage</code>): searchable, read-only viewer for the <code>logs</code> Firestore collection. Shows action type, admin UID, affected UID, timestamp, and metadata.</td>
+      <td></td>
     </tr>
     <tr>
       <td><span class="status p2">P2</span></td>
@@ -973,16 +1034,16 @@
       <td>Admin "Health" page that runs lightweight checks across all external integrations and shows a consolidated traffic-light status. Should be the first thing an on-call admin checks.</td>
     </tr>
     <tr>
-      <td><span class="status p3">P3</span></td>
-      <td>Admin Portal Link to Agent Tools</td>
-      <td>The Agent Tools page at <code>/admin/agents</code> is still not linked from the Admin Portal hub — it can only be reached by typing the URL directly. The hub now has 10 tiles (Advisors, Content Health, Data Maintenance, Agencies, API Keys, Invite Codes, Cruise Changes, Usage &amp; Costs, Test Results, Reminders), but Agent Tools (<code>/admin/agents</code> — the Travefy-link + promote-to-advisor diagnostic) remains unlisted.</td>
-      <td>Add an "Agent Tools" tile to the Admin Portal hub. Low effort, immediate discoverability improvement.</td>
+      <td><span class="status built">Built</span></td>
+      <td>Admin Portal Link to Agent Tools <em>(was P3)</em></td>
+      <td><span class="status built">Built 2026-09-05</span> — Agent Tools (<code>/admin/agents</code>) is now a tile in the Admin Portal hub under the People &amp; Access group.</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
 
 <p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e2e8f0;font-size:0.75rem;color:#9ca3af;text-align:center;">
-  DockBound Internal Admin Specification &nbsp;·&nbsp; Last updated 2026-09-02 &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; Not for distribution
+  DockBound Internal Admin Specification &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; Not for distribution
 </p>
 
 </div>

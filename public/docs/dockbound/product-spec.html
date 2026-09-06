@@ -1227,7 +1227,7 @@
 <div class="fn">
   <div class="fn-name">Admin Portal Hub</div>
   <div class="fn-body">
-    <div class="label what">What</div><div class="def">The main admin landing page, providing navigation tiles to all administrative tools — advisors, content health, data maintenance, agencies, API key management, invite codes, cruise changes, usage &amp; costs, test results, and reminders. Displays a KPI strip (paid travelers, freemium travelers, advisor count, agency count) loaded live on page render.</div>
+    <div class="label what">What</div><div class="def">The main admin landing page, providing 16 navigation tiles organized into 4 groups: <strong>People &amp; Access</strong> (Advisors, Agencies, Cross-Agency Reports, Invite Codes, Agent Tools), <strong>Commerce</strong> (Order Lookup, Usage &amp; Costs, Host Contracts, API Keys), <strong>Content &amp; Data</strong> (Content Health, Data Maintenance, Cruise Changes), and <strong>Platform Operations</strong> (Pipeline Health, Audit Log, Reminders, Test Results). Displays a KPI strip (paid travelers, freemium travelers, advisor count, agency count) loaded live on page render.</div>
     <div class="label who">Who</div><div class="def">Admin or super-admin, at <code class="path">/admin</code>.</div>
     <div class="label result">Result</div><div class="def">Single entry point for all platform administration tasks.</div>
   </div>
@@ -1257,6 +1257,15 @@
     <div class="label what">What</div><div class="def">Runs the automated test suite and presents results in a readable dashboard interface.</div>
     <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/test-results</code>.</div>
     <div class="label result">Result</div><div class="def">Current platform health status based on automated checks across key functions.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">View Pipeline Health</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A status dashboard showing the last-run time, success/failure state, duration, and records-processed count for all 9 scheduled background pipelines: CruiseMapper sync, Apify scrape, Cruise Dates Refresh, Viator Destinations Sync, Travel Alerts Fetch, QA Queue Processor, Travefy Trip Sync, Advisor Alert Sender, and Stale Guide Digest. Each pipeline reads from a corresponding <code class="path">pipeline_health/{pipelineId}</code> Firestore document written at the end of each run.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/pipeline-health</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can verify all scheduled pipelines are running normally at a glance, without opening Firebase Functions logs.</div>
   </div>
 </div>
 
@@ -1469,6 +1478,15 @@
 </div>
 
 <div class="fn">
+  <div class="fn-name">Advisor Detail</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">A diagnostic page for a single advisor account — shows email, agency, role, current tier, slot usage, Travefy connection status, subscription status, and trial end date. Admin actions: override plan tier and status, suspend or reactivate the account. All tier and status overrides are written to the Firestore <code class="path">logs</code> audit collection with the performing admin's UID.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/advisors/:uid</code> (accessible by navigating directly or linking from the All-Advisor Roster).</div>
+    <div class="label result">Result</div><div class="def">Admin can diagnose and resolve advisor account issues — wrong tier, subscription state correction, account suspension — without direct Firestore access.</div>
+  </div>
+</div>
+
+<div class="fn">
   <div class="fn-name">List All Agencies</div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Displays a searchable, sortable list of all agencies registered on DockBound with key metrics per agency (agent count, status, referral code).</div>
@@ -1514,6 +1532,15 @@
 </div>
 
 <div class="fn">
+  <div class="fn-name">Host Contracts</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Manages commercial contracts, pricing terms, and billing configuration for host agencies. Displays all agencies with their contract status and commercial model (sponsored, revenue-share, flat-fee, or hybrid). Admin can create or edit a contract per agency, setting: commercial model, eligible advisor plans, platform fee, per-plan pricing (contracted cents, advisor share, host share), volume bands, trial eligibility, billing frequency, invoice net-days, minimum advisor commitment, departure policy, and upgrade rules. Contract data stored in <code class="path">host_contracts/{agencyId}</code> Firestore collection.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/host-contracts</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin has a single location to manage all agency commercial relationships and billing configuration.</div>
+  </div>
+</div>
+
+<div class="fn">
   <div class="fn-name">Manage API Keys</div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Interface for managing DockBound's external developer API keys — the <code class="path">dbk_</code> format keys issued to third-party integrators. Admin can create new sandbox or paid-plan keys (key hash stored; full key shown once on creation), revoke, restore, and delete keys. Key records are stored in <code class="path">api_keys/{8hexId}</code> with fields: <code class="path">active</code>, <code class="path">plan</code> (sandbox | paid), <code class="path">keyHash</code>, <code class="path">label</code>, <code class="path">owner</code>.</div>
@@ -1541,6 +1568,15 @@
 </div>
 
 <div class="fn">
+  <div class="fn-name">Order Lookup &amp; Comp Access</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">Searches for a traveler's order history by email address, returning all orders with status, cruise, amount, Stripe session ID, and purchase timestamp. Admin can also grant comped (free) DOCKGuide access for a specific traveler — selecting their user account, choosing a cruise, and writing a Firestore <code class="path">orders</code> record with status <code class="path">free</code> and setting <code class="path">hasPurchasedCompass: true</code> on the user doc, all without a Stripe transaction. Comp actions are written to the audit log.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/orders</code>.</div>
+    <div class="label result">Result</div><div class="def">Admin can locate any traveler's purchase history and grant comped access for customer service resolutions without direct Firestore or Stripe console access.</div>
+  </div>
+</div>
+
+<div class="fn">
   <div class="fn-name">Make User Admin</div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Promotes a specified user account to the <code class="path">admin</code> role. The action is written as an immutable entry in the Firestore <code class="path">logs</code> audit collection with the promoting admin's UID and timestamp.</div>
@@ -1562,7 +1598,7 @@
   <div class="fn-name">View Audit Log</div>
   <div class="fn-body">
     <div class="label what">What</div><div class="def">Reads the Firestore <code class="path">logs</code> collection to display a chronological history of all privileged admin actions — role changes, agency provisioning, plan overrides — with the performing admin's UID and a timestamp for each.</div>
-    <div class="label who">Who</div><div class="def">Admin, via Firestore console or a dedicated admin view.</div>
+    <div class="label who">Who</div><div class="def">Admin, at <code class="path">/admin/audit-log</code>.</div>
     <div class="label result">Result</div><div class="def">Full traceability of every administrative action taken on the platform.</div>
   </div>
 </div>
@@ -1871,7 +1907,7 @@
 </table>
 
 <p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e5e7eb;font-size:0.75rem;color:#9ca3af;text-align:center;">
-  DockBound Product Specification &nbsp;·&nbsp; Last updated 2026-09-02 &nbsp;·&nbsp; Maintained via <code>/update-spec</code>
+  DockBound Product Specification &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Maintained via <code>/update-spec</code>
 </p>
 
 </div><!-- /content -->

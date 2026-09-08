@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForumJourney — PM Report · Run #8</title>
+<title>ForumJourney — PM Report · Run #9</title>
 <style>
 body {
   font-family: 'Segoe UI', Calibri, Arial, sans-serif;
@@ -93,7 +93,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <div class="cover">
   <div class="logo">ForumJourney</div>
   <h1>PM Report</h1>
-  <div class="subtitle">Run #8 &nbsp;·&nbsp; 2026-09-05</div>
+  <div class="subtitle">Run #9 &nbsp;·&nbsp; 2026-09-08</div>
   <div class="meta">EventBound / ForumJourney &nbsp;·&nbsp; PandA Ventures &nbsp;·&nbsp; Branch: eventbound-dev</div>
 </div>
 
@@ -117,15 +117,15 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <div class="stat-grid">
   <div class="stat-card">
-    <div class="stat-num">132</div>
+    <div class="stat-num">138</div>
     <div class="stat-label">Tests Passing</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">5</div>
+    <div class="stat-num">13</div>
     <div class="stat-label">Commits This Run</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">2</div>
+    <div class="stat-num">1</div>
     <div class="stat-label">Lessons Added</div>
   </div>
   <div class="stat-card">
@@ -137,48 +137,55 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <h2>Commits This Run</h2>
 <table>
   <tr><th>Hash</th><th>Message</th></tr>
-  <tr><td><code>9d38d87</code></td><td>PM run 8: test fixes, new test stubs, CLAUDE.md refresh</td></tr>
-  <tr><td><code>07c0c52</code></td><td>Add scripts/seed-backlog.js — seeds ForumJourney items into shared pandaventuresgroup backlog</td></tr>
-  <tr><td><code>6537bcd</code></td><td>Roadmap: mark parking facts wire-up Done; health grid 118 done / 7 next</td></tr>
-  <tr><td><code>d41d61b</code></td><td>Wire parking normalized facts into plan content via discoveries[]</td></tr>
-  <tr><td><code>b494123</code></td><td>Roadmap: full backlog consistency pass — fix stale OD refs, statuses, missing items</td></tr>
+  <tr><td><code>c572953</code></td><td>feat(operator): role assignment UI, stale-plan drill-down, create event/occurrence forms</td></tr>
+  <tr><td><code>fdb04b1</code></td><td>Backlog: move fj-pilot-1 to hold — attendees join via /join link</td></tr>
+  <tr><td><code>ec9fc35</code></td><td>Backlog: mark fj-attendee-portal-1, fj-speaker-1/2, fj-organizer-1, fj-plan-3, fj-data-2, fj-pilot-2, fj-partner-1 as done</td></tr>
+  <tr><td><code>076cd48</code></td><td>fj-pilot-2, fj-partner-1: pilot runbook and partner integration guide</td></tr>
+  <tr><td><code>d98c027</code></td><td>fj-data-2: GET /v1/facts/:occurrenceId/:category endpoint</td></tr>
+  <tr><td><code>ccef082</code></td><td>fj-plan-3: mark plans stale on occurrence upsert update</td></tr>
+  <tr><td><code>a381c4b</code></td><td>fj-speaker-2: speaker promotion UI + backend</td></tr>
+  <tr><td><code>ea1fcf3</code></td><td>fj-organizer-1: speaker request approve/decline/flag</td></tr>
+  <tr><td><code>861258e</code></td><td>fj-attendee-portal-1, fj-speaker-1: wire live agenda to attendee and speaker portals</td></tr>
+  <tr><td><code>61a0d7c</code></td><td>Backlog: add missing done items for Data Collection Framework phases 2–6</td></tr>
+  <tr><td><code>19dca7c</code></td><td>Roadmap: add source scoring model (fj-data-7, Done)</td></tr>
+  <tr><td><code>7b3f80a</code></td><td>update-spec: add source scoring fields to architecture data model</td></tr>
+  <tr><td><code>820b045</code></td><td>Add accuracy field to SourceRegistry; stamp priority+accuracy onto NormalizedFacts</td></tr>
 </table>
 
 <h1 id="auto-fixed">2. Auto-Fixed</h1>
 
 <ul class="check-list">
-  <li><span class="check">+</span> <strong>Test fix — join.test.ts:</strong> "returns INVALID_CODE when join code matches no occurrence" was missing <code>password</code> in the request body. The route's missing-fields guard caught it first, returning <code>BAD_REQUEST</code> instead of <code>INVALID_CODE</code>. Fixed. 117→117 tests all passing (no net change, but now testing the correct code path).</li>
-  <li><span class="check">+</span> <strong>Code quality — leads.ts:</strong> <code>limit(200)</code> query cap lacked a comment explaining the basis. Added: "operator UI cap — pilot expects &lt; 100 leads total" per round-number query limit rule.</li>
-  <li><span class="check">+</span> <strong>Test stubs written:</strong> <code>geography.test.ts</code> (7 tests — pointInRule Haversine math + defaultRuleForCategory) and <code>normalizers/parking.test.ts</code> (8 tests — normalizeParkingFacts + inferFacilityType). Total: 132 passing / 16 files.</li>
-  <li><span class="check">+</span> <strong>CLAUDE.md refreshed:</strong> Test count 114/14 → 132/16. <code>scripts/seed-backlog.js</code> added to scripts section.</li>
-  <li><span class="check">+</span> <strong>Lessons learned:</strong> 2 new entries added (see <a href="#lessons">Section 9</a>).</li>
-  <li><span class="check">+</span> <strong>pm-report.html:</strong> Refreshed to Run #8.</li>
-  <li><span class="check">+</span> <strong>Cron:</strong> Weekly PM re-registered (Monday 9:23 AM local).</li>
-  <li><span class="skip-mark">—</span> <strong>CLAUDE.md:</strong> Updated test count only — architecture sections current, no drift found.</li>
+  <li><span class="check">+</span> <strong>CLAUDE.md refreshed:</strong> New routes documented — <code>GET /v1/facts/:occurrenceId/:category</code>, <code>GET /user/occurrences/:occurrenceId/agenda</code>, full operator route detail block (16 routes). <code>normalizedFacts</code> and <code>logs</code> added to Firestore collections list. OperatorDashboard sections updated.</li>
+  <li><span class="check">+</span> <strong>Test stubs written:</strong> <code>src/api/routes/facts.test.ts</code> (4 tests) and <code>src/api/routes/userAgenda.test.ts</code> (2 tests). Default arg bug (<code>opts = {}</code>) found and fixed on first run. Total: 138 passing / 18 files.</li>
+  <li><span class="check">+</span> <strong>Firestore indexes added:</strong> 3 missing composite indexes — <code>normalizedFacts [occurrenceId, category, retrievedAt DESC]</code>, <code>speakerRequests [occurrenceId, createdAt DESC]</code>, <code>plans [stale, partnerId]</code>.</li>
+  <li><span class="check">+</span> <strong>Lessons learned:</strong> 1 new entry — test helper opts must default to <code>{}</code> when all properties are optional.</li>
+  <li><span class="check">+</span> <strong>pm-report.html:</strong> Refreshed to Run #9.</li>
+  <li><span class="check">+</span> <strong>Cron:</strong> Weekly PM re-registered (Monday 8:23 AM local).</li>
   <li><span class="skip-mark">—</span> <strong>Security-review skill:</strong> Not present — skipped.</li>
   <li><span class="skip-mark">—</span> <strong>Simplify skill:</strong> Not present — skipped.</li>
-  <li><span class="skip-mark">—</span> <strong>Permission allowlist:</strong> Run #8 (8 % 4 = 0 — eligible), but <code>fewer-permission-prompts.md</code> not present — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Permission allowlist:</strong> Run #9 (9 % 4 ≠ 0) — skipped.</li>
   <li><span class="skip-mark">—</span> <strong>Project hooks:</strong> No <code>pm-hooks.md</code> found — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Roadmap currency:</strong> <code>docs/roadmap.html</code> deleted — phase skipped. Canonical roadmap is pandaventuresgroup Firestore backlog.</li>
 </ul>
 
 <h1 id="resolved">3. Previously Pending — Resolved</h1>
 
 <div class="callout info">
-  <strong>2 items resolved this run.</strong> 3 carry forward.
+  <strong>1 item resolved this run.</strong> 4 carry forward.
 </div>
 
 <ul class="check-list">
   <li>
     <span class="check">✓</span>
-    <div><strong>Frontend vitest config</strong> — <code>frontend/vitest.config.ts</code> was added (jsdom + React plugin). Frontend tests are now runnable. <strong>Resolved.</strong></div>
-  </li>
-  <li>
-    <span class="check">✓</span>
-    <div><strong>Dependencies upgrade session</strong> — All major gaps closed this sprint: typescript 5→7, uuid 11→14, @types/node 22→26, vitest 3→4, @anthropic-ai/sdk 0.116→0.122. <strong>Resolved.</strong></div>
+    <div><strong>GET /facts endpoint (fj-surface-1 / fj-data-2)</strong> — <code>GET /v1/facts/:occurrenceId/:category</code> shipped in commit <code>d98c027</code>. Portals can now query live normalized facts. <strong>Resolved.</strong></div>
   </li>
   <li>
     <span class="skip-mark">—</span>
-    <div><strong>D005 demo form</strong> — <code>LandingPage.tsx</code> still has <code>// TODO (D005): Connect to approved lead destination before launch.</code> Form simulates submission. Backend lead destination not connected. Carried forward.</div>
+    <div><strong>Uncommitted backend changes</strong> — <code>operator.ts</code> and <code>logs.ts</code> have unstaged modifications (stale-plans endpoint, set-role endpoint, create event/occurrence endpoints, + 'user'/'event' log target types). Carried forward — commit when ready.</div>
+  </li>
+  <li>
+    <span class="skip-mark">—</span>
+    <div><strong>D005 demo form</strong> — <code>LandingPage.tsx</code> still has <code>// TODO (D005)</code>. Form simulates submission. Backend lead destination not connected. Carried forward.</div>
   </li>
   <li>
     <span class="skip-mark">—</span>
@@ -186,26 +193,28 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   </li>
   <li>
     <span class="skip-mark">—</span>
-    <div><strong>Amy to fill in userCategory fields</strong> on the 47 ForumJourney backlog items seeded into pandaventuresgroup Firestore. Carried forward.</div>
+    <div><strong>Amy to fill in userCategory fields</strong> on the 47 ForumJourney backlog items. Carried forward.</div>
   </li>
 </ul>
 
 <h1 id="tests">4. Test Results</h1>
 
 <p>
-  <span class="pill pass">132 pass</span>
+  <span class="pill pass">138 pass</span>
   <span class="pill fail">0 fail</span>
   <span class="pill skip">0 skip</span>
 </p>
 
-<p><strong>16 test files</strong> — all passing. Up from 117 / 14 files — 2 new backend test stubs added this run covering the data collection normalizer and geography utilities.</p>
+<p><strong>18 test files</strong> — all passing. Up from 132 / 16 files — 2 new stubs added this run covering the facts and userAgenda routes.</p>
 
 <table>
   <tr><th>Test File</th><th>Status</th></tr>
-  <tr><td><code>src/sourcing/normalizers/parking.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 8 tests)</td></tr>
-  <tr><td><code>src/sourcing/geography.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 7 tests)</td></tr>
-  <tr><td><code>src/domain/plan/generator.test.ts</code></td><td><span class="badge green">Pass</span> (17 tests — includes 3 new parking facts tests from prior run)</td></tr>
-  <tr><td><code>src/api/routes/join.test.ts</code></td><td><span class="badge green">Pass</span> (fixed INVALID_CODE test this run)</td></tr>
+  <tr><td><code>src/api/routes/facts.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 4 tests)</td></tr>
+  <tr><td><code>src/api/routes/userAgenda.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 2 tests)</td></tr>
+  <tr><td><code>src/sourcing/normalizers/parking.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/sourcing/geography.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/domain/plan/generator.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/join.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/middleware/portalAuth.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/api/routes/venue.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/api/routes/speaker.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
@@ -256,28 +265,51 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <h1 id="roadmap">7. Roadmap Currency</h1>
 
 <div class="callout info">
-  <strong>Roadmap looks current.</strong> 1 item In Progress: "SEO + social metadata" — correctly blocked on D010/D001 decisions, not stale (has clear block documented). No uncatalogued shipped work detected — parking facts wire-up, backlog seed script, and associated roadmap commits are all properly captured. Done-toggle already present.
+  <strong>Phase skipped — <code>docs/roadmap.html</code> has been deleted.</strong> Canonical roadmap is the pandaventuresgroup Firestore backlog, seeded via <code>scripts/seed-backlog.js</code>. No HTML roadmap to check or maintain.
 </div>
 
+<h2>What's next (from Firestore backlog)</h2>
+
+<p>Items with no blockers and no "deferred" tag, as of 2026-09-08:</p>
+
+<table>
+  <tr><th>ID</th><th>Section</th><th>Title</th><th>Size</th></tr>
+  <tr><td><code>fj-speaker-3</code></td><td>Speaker Portal</td><td>Speaker marker in agenda and attendee views</td><td>XS</td></tr>
+  <tr><td><code>fj-marketing-2</code></td><td>Marketing Site</td><td>Accessibility QA — WCAG 2.2 Level AA</td><td>S</td></tr>
+  <tr><td><code>fj-marketing-3</code></td><td>Marketing Site</td><td>Performance audit — Core Web Vitals</td><td>S</td></tr>
+  <tr><td><code>fj-partner-2</code></td><td>Partner Integration</td><td>Hosted OpenAPI UI (Swagger/Redoc)</td><td>S</td></tr>
+  <tr><td><code>fj-operator-4</code></td><td>Operator Dashboard</td><td>City/venue data request with confirmation</td><td>M</td></tr>
+  <tr><td><code>fj-data-5</code></td><td>Data Collection</td><td>Phase 7 — AI source discovery</td><td>M</td></tr>
+  <tr><td><code>fj-data-1</code></td><td>Data Collection</td><td>Phase 1 — Master collection checklist (product decision)</td><td>M</td></tr>
+  <tr><td><code>fj-marketing-7</code></td><td>Marketing Site</td><td>Launch QA + stakeholder sign-off (14 criteria)</td><td>M</td></tr>
+</table>
+
+<p><em>Blocked on decisions: fj-marketing-1 (D010+D001), fj-auth-1/organizer-2/attendee-portal-2/venue-1 (OD-13 email delivery), fj-data-3/4/6 (need Phase 1 checklist first). October pilot: prioritize marketing audits + committing the in-flight operator backend work.</em></p>
+
 <h1 id="review">8. Needs Your Review</h1>
+
+<div class="callout warning">
+  <strong>Uncommitted backend changes.</strong> <code>functions/src/api/routes/operator.ts</code> and <code>functions/src/db/logs.ts</code> have unstaged modifications — stale-plans endpoint, set-role endpoint, create event/occurrence endpoints, and 'user'/'event' log target types. Commit these when the work is complete.
+</div>
 
 <div class="callout warning">
   <strong>D005 — Demo form backend destination unresolved.</strong> <code>LandingPage.tsx</code> has <code>// TODO (D005): Connect to approved lead destination before launch.</code> The form currently simulates a successful submission. Real leads will be lost. Needs a CRM webhook, Firestore endpoint, or approved automation platform before <code>forumjourney.app</code> is promoted to live traffic.
 </div>
 
 <div class="callout warning">
-  <strong>SEO + social metadata (roadmap In Progress):</strong> Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). No action until decisions are made.
+  <strong>SEO + social metadata (fj-marketing-1 in-progress):</strong> Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). No action until decisions are made.
 </div>
 
 <div class="callout warning">
-  <strong>ForumJourney backlog userCategory fields.</strong> 47 backlog items were seeded into pandaventuresgroup Firestore with blank <code>userCategory</code> fields. Amy needs to fill these in (MVP / Later / Future) directly in Firestore or by re-running the seed script with values populated.
-</div>
-
-<div class="callout">
-  <strong>GET /facts endpoint — next Surface layer item.</strong> Portals cannot yet query collected data beyond what's surfaced in plan <code>discoveries[]</code>. A <code>GET /facts/:occurrenceId/:category</code> endpoint is the logical next step to let portals (attendee, organizer) consume live collected data. Backlog item fj-surface-1.
+  <strong>ForumJourney backlog userCategory fields.</strong> 47 backlog items were seeded into pandaventuresgroup Firestore with blank <code>userCategory</code> fields. Amy needs to fill these in directly in Firestore or by re-running the seed script with values populated.
 </div>
 
 <h1 id="lessons">9. Lessons Learned</h1>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-08</div>
+  <p><strong>Test helper opts parameter needs a default when all properties are optional.</strong> When a test helper function has all optional properties (<code>partner?: ..., params?: ...</code>), the <code>opts</code> parameter itself must also default to <code>{}</code>. Without a default, calling <code>makeReqRes()</code> with no arguments throws at runtime because property access on <code>undefined</code> fails. Always add <code>= {}</code> when all properties of an opts-style parameter are marked optional.</p>
+</div>
 
 <div class="lesson">
   <div class="lesson-date">2026-09-05</div>
@@ -323,21 +355,20 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Commits since last run</td><td>5</td></tr>
-  <tr><td>CLAUDE.md last updated</td><td>This run — test count + seed-backlog.js noted</td></tr>
-  <tr><td>Test stubs written</td><td>2 (geography.test.ts + normalizers/parking.test.ts)</td></tr>
-  <tr><td>Tests passing</td><td>132 / 132 (16 files)</td></tr>
-  <tr><td>Test bugs fixed</td><td>1 (join.test.ts INVALID_CODE testing wrong branch)</td></tr>
-  <tr><td>Code quality fixes</td><td>1 (leads.ts limit(200) comment added)</td></tr>
-  <tr><td>Hardcoded color violations fixed</td><td>0 (all flagged occurrences are legitimate exceptions)</td></tr>
-  <tr><td>Pending items resolved from Run #7</td><td>2 (frontend vitest config ✓, dependency upgrades ✓)</td></tr>
-  <tr><td>New pending items</td><td>1 (userCategory backlog fill-in)</td></tr>
-  <tr><td>Items still pending</td><td>3 (D005 form, SEO metadata, userCategory backlog)</td></tr>
-  <tr><td>Lessons added</td><td>2 (unread pipeline, wrong test branch)</td></tr>
-  <tr><td>High/critical vulnerabilities</td><td>0 (7 moderate, accepted risk)</td></tr>
+  <tr><td>Commits since last run</td><td>13</td></tr>
+  <tr><td>CLAUDE.md last updated</td><td>This run — full refresh (routes, collections, frontend sections)</td></tr>
+  <tr><td>Test stubs written</td><td>2 (facts.test.ts + userAgenda.test.ts)</td></tr>
+  <tr><td>Tests passing</td><td>138 / 138 (18 files)</td></tr>
+  <tr><td>Firestore indexes added</td><td>3 (normalizedFacts, speakerRequests, plans)</td></tr>
+  <tr><td>Files code-reviewed</td><td>2 (operator.ts, logs.ts — clean)</td></tr>
+  <tr><td>Pending items resolved from Run #8</td><td>1 (fj-data-2 GET /facts endpoint ✓)</td></tr>
+  <tr><td>New pending items</td><td>1 (uncommitted backend changes)</td></tr>
+  <tr><td>Items still pending</td><td>4 (uncommitted changes, D005 form, SEO metadata, userCategory backlog)</td></tr>
+  <tr><td>Lessons added</td><td>1 (test helper opts default)</td></tr>
+  <tr><td>High/critical vulnerabilities</td><td>0 (7 moderate transitive, accepted risk)</td></tr>
 </table>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-07</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-08</p>
 
 </body>
 </html>

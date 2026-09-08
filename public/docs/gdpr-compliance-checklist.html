@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Privacy & Compliance Checklist</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #1e293b;
+    background: #f8fafc;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .doc-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  .doc-header .meta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .doc-header .meta span { display: flex; align-items: center; gap: 4px; }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    border: 1px solid;
+  }
+  .badge-draft { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .badge-legal { background: #ffe4e6; color: #9f1239; border-color: #fca5a5; }
+
+  /* ── Progress Summary ── */
+  .summary {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+  .summary-stat { text-align: center; }
+  .summary-stat .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+  }
+  .summary-stat .lbl {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .summary-divider { width: 1px; height: 40px; background: #e2e8f0; }
+  .progress-bar-wrap { flex: 1; min-width: 200px; }
+  .progress-bar-track {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #0d9488;
+    border-radius: 9999px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 12px; color: #64748b; }
+
+  /* ── Sequencing note ── */
+  .sequencing {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 32px;
+    font-size: 12.5px;
+    color: #14532d;
+  }
+  .sequencing strong { display: block; margin-bottom: 6px; color: #166534; }
+  .seq-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .seq-badge {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #166534;
+    white-space: nowrap;
+  }
+
+  /* ── Sections ── */
+  .section-block { margin-bottom: 36px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    flex: 1;
+  }
+  .section-count {
+    font-size: 11px;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  /* ── Items ── */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    margin-bottom: 4px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    transition: background 0.15s;
+  }
+  .item:hover { background: #f8fafc; }
+  .item.done { opacity: 0.55; }
+  .item.done .item-title { text-decoration: line-through; color: #94a3b8; }
+  .item input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: #0d9488;
+  }
+  .item-body { flex: 1; min-width: 0; }
+  .item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .item-desc {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.5;
+    display: none;
+  }
+  .item:hover .item-desc, .item.expanded .item-desc { display: block; }
+  .item-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .item-id {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 10px;
+    color: #94a3b8;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .size-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .size-S { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .size-M { background: #fefce8; color: #854d0e; border-color: #fde047; }
+  .size-L { background: #fff7ed; color: #9a3412; border-color: #fdba74; }
+
+  /* ── Notes field ── */
+  .item-notes-wrap { margin-top: 6px; }
+  .item-notes {
+    width: 100%;
+    font-size: 12px;
+    color: #334155;
+    border: 1px dashed #cbd5e1;
+    border-radius: 5px;
+    padding: 5px 8px;
+    resize: vertical;
+    min-height: 34px;
+    font-family: inherit;
+    background: #f8fafc;
+    display: none;
+  }
+  .item.expanded .item-notes { display: block; }
+
+  /* ── Legal note ── */
+  .legal-note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 32px;
+    font-size: 12px;
+    color: #7c2d12;
+  }
+
+  /* ── Footer ── */
+  .doc-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+    margin-top: 48px;
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+  }
+  .ctrl-btn:hover { background: #f1f5f9; }
+  .ctrl-btn.primary { background: #0d9488; color: #fff; border-color: #0d9488; }
+  .ctrl-btn.primary:hover { background: #0f766e; }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .controls, .item-notes, .item-notes-wrap { display: none !important; }
+    .item-desc { display: block !important; }
+    .item { break-inside: avoid; }
+    .section-block { break-inside: avoid; }
+    .doc-header { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>DockBound — Privacy &amp; Compliance Checklist</h1>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+      <span class="badge badge-draft">Draft — Pending Legal Review</span>
+      <span class="badge badge-legal">Not Legal Advice</span>
+    </div>
+    <div class="meta">
+      <span>📋 Scope: DockBound (consumer) + Compass / Chartroom / Helm (B2B)</span>
+      <span>📅 Created: 2026-09-07</span>
+      <span>🔗 Backlog: pandaventuresgroup Firestore → <code>backlog</code> collection</span>
+    </div>
+  </div>
+
+  <!-- Legal note -->
+  <div class="legal-note">
+    <strong>⚠ Legal review required before implementation.</strong>
+    This checklist is an engineering-facing reference, not legal advice. Have counsel confirm lawful basis decisions, DPA terms, and the controller vs. processor determination before launch. The open question below must be resolved first: <em>Is DockBound acting as a controller (consumer-facing data) or processor (agency/agent client data uploaded via Compass/Chartroom)?</em>
+  </div>
+
+  <!-- Progress summary -->
+  <div class="summary" id="summary">
+    <div class="summary-stat">
+      <div class="num" id="total-count">63</div>
+      <div class="lbl">Total Items</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="num" id="done-count">0</div>
+      <div class="lbl">Complete</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="num" id="open-count">63</div>
+      <div class="lbl">Remaining</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-label" id="progress-label">0% complete</div>
+    </div>
+  </div>
+
+  <!-- Recommended sequencing -->
+  <div class="sequencing">
+    <strong>📌 Recommended Sequencing (from requirements doc)</strong>
+    Complete roughly in this order — data mapping unblocks everything else; DSR tooling is the largest engineering lift and should be built while schema is still young.
+    <div class="seq-list">
+      <span class="seq-badge">1 → Data mapping (§1)</span>
+      <span class="seq-badge">2 → Sub-processor DPAs (§4)</span>
+      <span class="seq-badge">3 → DSR tooling (§3)</span>
+      <span class="seq-badge">4 → Consent + security + retention (§2, §6, §9)</span>
+      <span class="seq-badge">5 → Documentation &amp; policy (§10)</span>
+      <span class="seq-badge">6 → US state law delta (§11)</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="ctrl-btn" onclick="expandAll()">Expand all descriptions</button>
+    <button class="ctrl-btn" onclick="collapseAll()">Collapse</button>
+    <button class="ctrl-btn" onclick="window.print()">🖨 Print</button>
+    <button class="ctrl-btn" onclick="exportState()">💾 Copy state</button>
+    <button class="ctrl-btn primary" onclick="importState()">📥 Paste state</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- § 1 — Data Mapping & Records of Processing (Art. 30)  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Data Mapping &amp; Records of Processing (Art. 30)</span>
+      <span class="section-count">5 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-1-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Inventory all personal data locations</span>
+        <span class="item-desc">Inventory every place personal data lands: Firestore collections, Cloud Functions logs, Stripe customer objects, Travefy pushed content, Twilio SMS logs, Apify scrape outputs, and any analytics/logging tools.</span>
+        <div class="item-meta">
+          <span class="item-id">gdpr-1-1</span>
+          <span class="size-badge size-M">M</span>
+        </div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-1-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document data categories with lawful basis and retention</span>
+        <span class="item-desc">For each data category: document what is collected, why, lawful basis, retention period, and who it is shared with (sub-processors).</span>
+        <div class="item-meta">
+          <span class="item-id">gdpr-1-2</span>
+          <span class="size-badge size-M">M</span>
+        </div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-1-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Separate consumer PII from B2B PII; document different lawful bases</span>
+        <span class="item-desc">Separate consumer PII (DockBound traveler data) from B2B PII (agent/agency contact info, client rosters uploaded via CSV import) — these likely have different lawful bases and different notice obligations.</span>
+        <div class="item-meta">
+          <span class="item-id">gdpr-1-3</span>
+          <span class="size-badge size-S">S</span>
+        </div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-1-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document data flows for the three-layer pipeline; confirm no personal data enters</span>
+        <span class="item-desc">Document data flows for the raw observations → resolution → synthesis pipeline. Confirm whether any personal data (vs. port/ship data) ever enters this pipeline — e.g., agent-submitted corrections, reviews.</span>
+        <div class="item-meta">
+          <span class="item-id">gdpr-1-4</span>
+          <span class="size-badge size-S">S</span>
+        </div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-1-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Maintain Art. 30 records as a living document (assign owner + review cadence)</span>
+        <span class="item-desc">Art. 30 requires records of processing to be kept current — not a one-time artifact. Assign an owner and a review cadence (e.g., quarterly or on each new data collection change).</span>
+        <div class="item-meta">
+          <span class="item-id">gdpr-1-5</span>
+          <span class="size-badge size-S">S</span>
+        </div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ -->
+  <!-- § 2 — Lawful Basis & Consent -->
+  <!-- ═══════════════════════════ -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-title">Lawful Basis &amp; Consent</span>
+      <span class="section-count">5 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-2-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Define lawful basis per data category</span>
+        <span class="item-desc">Likely: contract for account/booking data, consent for marketing, legitimate interest for fraud/security logging. Document in the Art. 30 records.</span>
+        <div class="item-meta"><span class="item-id">gdpr-2-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-2-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Cookie/tracking consent banner — opt-in for EU visitors (not opt-out)</span>
+        <span class="item-desc">If using analytics, ad pixels, or non-essential cookies: add a consent banner that is opt-in for EU visitors. Confirm what cookies/tracking are in use across all product surfaces.</span>
+        <div class="item-meta"><span class="item-id">gdpr-2-2</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-2-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Consent capture: granular, timestamped, easily withdrawable</span>
+        <span class="item-desc">Consent must be granular (per purpose), logged with timestamp, and trivially withdrawable. Withdrawal must be as easy as giving consent.</span>
+        <div class="item-meta"><span class="item-id">gdpr-2-3</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-2-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">CSV roster uploads: determine controller vs. processor role</span>
+        <span class="item-desc">When Compass agents upload client rosters via CSV, clarify whether DockBound is a controller or processor for that client data. Determines whose consent/notice obligations apply and what must appear in agency terms of service.</span>
+        <div class="item-meta"><span class="item-id">gdpr-2-4</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-2-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Confirm no under-16 data collection; document determination</span>
+        <span class="item-desc">Age-gating/parental consent likely not required (B2B + adult consumer travel product). Confirm with counsel and document the determination.</span>
+        <div class="item-meta"><span class="item-id">gdpr-2-5</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- § 3 — Data Subject Rights                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <span class="section-title">Data Subject Rights — Implementation</span>
+      <span class="section-count">9 items · largest engineering lift</span>
+    </div>
+
+    <div class="item" id="i-gdpr-3-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to access: build cross-platform data export function</span>
+        <span class="item-desc">Build an export function that pulls a user's data across Firestore (profile, bookings/searches, agent overrides if applicable), Stripe customer record, and any Travefy-pushed content tied to that user.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-1</span><span class="size-badge size-L">L</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to erasure: consumer account deletion cascade (Firestore, Stripe, Twilio)</span>
+        <span class="item-desc">Consumer account deletion must remove or anonymize: Firestore user doc, Stripe customer record (or retain only minimum data required for tax/legal), and any Twilio message history. Build a cascading deletion Cloud Function.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-2</span><span class="size-badge size-L">L</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to erasure: confirm port/ship pipeline is scoped out (not personal data)</span>
+        <span class="item-desc">Confirm erasure does NOT need to touch the port/ship data pipeline — that is not personal data. Document this scoping decision so the erasure logic is narrow and defensible.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to erasure: agent guide overrides — delete full delta record (not just base reference)</span>
+        <span class="item-desc">Agent overrides are stored as delta records (agentGuideOverrides). Confirm delete logic removes the delta record entirely, not just the base profile reference. Test erasure of all subcollections (customSections, etc.).</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-4</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to rectification: confirm existing profile edit flows satisfy requirement</span>
+        <span class="item-desc">No gap expected — existing profile edit flows should count. Confirm and document the determination.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-5</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-6">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to data portability: structured machine-readable export (JSON)</span>
+        <span class="item-desc">Provide data export in a structured, machine-readable format (JSON). Can bundle with the access-request export (gdpr-3-1). Format must be interoperable — not proprietary.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-6</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-7">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to object/restrict: suppression flag for non-essential processing</span>
+        <span class="item-desc">Build a flag mechanism to suppress a user's data from non-essential processing (marketing, analytics) without full deletion. Must be persisted in Firestore and honored by all processing paths.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-7</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-8">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Build internal DSR admin tool for support staff (30-day SLA)</span>
+        <span class="item-desc">Single internal admin tool or Cloud Function so support staff can execute access/erasure/export requests without manual Firestore digging. Target SLA: 30 days under GDPR.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-8</span><span class="size-badge size-L">L</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-3-9">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">DSR B2B determination: host-submitted vs. advisor self-serve</span>
+        <span class="item-desc">Decide DSR handling for B2B tiers: does a Helm host network or Chartroom agency submit requests on behalf of their agents, or do individual advisors self-serve? Affects DSR tool design and agency terms of service.</span>
+        <div class="item-meta"><span class="item-id">gdpr-3-9</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- § 4 — Sub-processor / Vendor Agreements (DPAs)        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <span class="section-title">Sub-processor / Vendor Agreements (DPAs)</span>
+      <span class="section-count">6 items · can run in parallel with §3</span>
+    </div>
+
+    <div class="item" id="i-gdpr-4-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Firebase / Google Cloud: sign DPA and confirm Firestore data region</span>
+        <span class="item-desc">Sign the Google Cloud DPA (available via Cloud Console). Confirm Firestore/Auth data region/location settings — document where data at rest lives.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-4-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Stripe: confirm DPA covers use; verify Radar/fraud data retention</span>
+        <span class="item-desc">Confirm Stripe's standard DPA covers DockBound's use. Verify Stripe Radar/fraud data isn't creating extra retention not accounted for in your Art. 30 records.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-4-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Travefy: confirm DPA and personal data safeguards through API</span>
+        <span class="item-desc">Confirm Travefy's DPA terms as a sub-processor. Clarify what personal data (agent/client names on pushed trips) flows through their API and whether they have adequate safeguards for EU data subjects.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-4-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Apify: confirm no personal data scraped; document incidental data handling</span>
+        <span class="item-desc">Confirm no personal data is being scraped or ingested via Apify (should be port/ship data only). If any incidental personal data appears in scraped sources, document the handling procedure.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-4</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-4-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Twilio: sign DPA and confirm SMS log retention aligns with stated retention policy</span>
+        <span class="item-desc">Sign Twilio DPA and confirm SMS content/log retention policy aligns with DockBound's stated retention periods for that data category.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-5</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-4-6">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Publish or maintain master sub-processor list (public page or available on request)</span>
+        <span class="item-desc">Required for some controller relationships where DockBound acts as a processor for agencies. Update whenever a vendor is added or removed.</span>
+        <div class="item-meta"><span class="item-id">gdpr-4-6</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 5 — International Data Transfers -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <span class="section-title">International Data Transfers</span>
+      <span class="section-count">3 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-5-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Confirm Firebase/Firestore region + SCCs active for EU data subjects</span>
+        <span class="item-desc">If Firestore data resides in the US and you have EU data subjects, confirm a transfer mechanism is in place. Google Cloud relies on SCCs — confirm these are active on the DockBound account.</span>
+        <div class="item-meta"><span class="item-id">gdpr-5-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-5-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Confirm SCCs or equivalent for Stripe, Travefy, and Twilio re: EU transfers</span>
+        <span class="item-desc">Same check for Stripe, Travefy, and Twilio — confirm each has SCCs or equivalent adequacy mechanism for transferring EU personal data to the US.</span>
+        <div class="item-meta"><span class="item-id">gdpr-5-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-5-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Evaluate EU data residency for Firestore if EU user volume becomes significant</span>
+        <span class="item-desc">Consider moving Firestore to an EU region if EU user volume becomes significant — reduces transfer mechanism complexity long-term. Flag as a decision point when EU registrations cross a meaningful threshold.</span>
+        <div class="item-meta"><span class="item-id">gdpr-5-3</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 6 — Security Requirements (Art. 32) -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">6</span>
+      <span class="section-title">Security Requirements (Art. 32)</span>
+      <span class="section-count">5 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-6-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document encryption at rest and in transit (Firestore defaults satisfy Art. 32)</span>
+        <span class="item-desc">Firestore encrypts data at rest and in transit by default. Document this fact and confirm it satisfies Art. 32 obligations. Include in the Art. 30 records.</span>
+        <div class="item-meta"><span class="item-id">gdpr-6-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-6-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Access control audit: Firestore admin, Cloud Functions env vars, Stripe dashboard</span>
+        <span class="item-desc">Audit who and what has admin access to Firestore, Cloud Functions environment variables (especially Travefy secret key), and the Stripe dashboard. Document findings and remove unnecessary access.</span>
+        <div class="item-meta"><span class="item-id">gdpr-6-2</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-6-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Confirm Travefy secret key is server-side only (least-privilege)</span>
+        <span class="item-desc">Confirm Travefy secret key is handled server-side only (Cloud Functions via Firebase Secret Manager) — no client-side exposure. Document as a least-privilege control.</span>
+        <div class="item-meta"><span class="item-id">gdpr-6-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-6-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Implement logging and monitoring for unauthorized access attempts</span>
+        <span class="item-desc">Add structured logging and alerting for unauthorized access attempts on Firestore (security rule denials), Cloud Functions (auth header failures), and Stripe webhook signature failures.</span>
+        <div class="item-meta"><span class="item-id">gdpr-6-4</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-6-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Establish regular access review process for internal staff (quarterly)</span>
+        <span class="item-desc">Define and document a regular access review cadence (e.g., quarterly) for internal staff who can query raw Firestore data. Include offboarding procedures.</span>
+        <div class="item-meta"><span class="item-id">gdpr-6-5</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 7 — Breach Notification -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">7</span>
+      <span class="section-title">Breach Notification Process</span>
+      <span class="section-count">4 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-7-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Write incident response plan (detection → assessment → notification)</span>
+        <span class="item-desc">Create a written incident response plan covering: detection, severity assessment (does it pose risk to data subjects?), internal notification chain, and notification process to supervisory authority.</span>
+        <div class="item-meta"><span class="item-id">gdpr-7-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-7-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document 72-hour supervisory authority notification process</span>
+        <span class="item-desc">Document the 72-hour notification requirement to supervisory authority (e.g., ICO in the UK, relevant EU DPA). Identify the correct authority for DockBound's primary operating jurisdiction.</span>
+        <div class="item-meta"><span class="item-id">gdpr-7-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-7-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Define direct user notification process for high-risk breaches</span>
+        <span class="item-desc">Define the process for notifying affected users directly when a breach poses high risk to their rights and freedoms. Include notification template, delivery channel (email), and timeline.</span>
+        <div class="item-meta"><span class="item-id">gdpr-7-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-7-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Assign DRI for breach response (accountable person)</span>
+        <span class="item-desc">Assign an owner/DRI for breach response. Does not need to be a formal DPO at current scale — but someone must be accountable. Document in the incident response plan.</span>
+        <div class="item-meta"><span class="item-id">gdpr-7-4</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 8 — DPIA -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">8</span>
+      <span class="section-title">Data Protection Impact Assessment (DPIA)</span>
+      <span class="section-count">2 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-8-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Conduct DPIA for systematic profiling and B2B data processing on behalf of agencies</span>
+        <span class="item-desc">Likely required given: systematic profiling potential (agent dashboards showing client trip data) and B2B data processing on behalf of agencies. Conduct and document the DPIA before go-live in EU.</span>
+        <div class="item-meta"><span class="item-id">gdpr-8-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-8-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Trigger DPIA re-review if AIS/crime data ever merges with identifiable consumer data</span>
+        <span class="item-desc">Currently the data pipeline is port-level data (not personal) — but flag for DPIA re-review if scope ever expands to include AIS/crime data in combination with identifiable consumer data.</span>
+        <div class="item-meta"><span class="item-id">gdpr-8-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 9 — Retention & Deletion -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">9</span>
+      <span class="section-title">Retention &amp; Deletion Policy</span>
+      <span class="section-count">3 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-9-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Define retention periods per data category</span>
+        <span class="item-desc">Define retention periods for: search history, booking/order data, agent client rosters, SMS logs, Cloud Function logs, Stripe data, Travefy pushed content. Document in Art. 30 records.</span>
+        <div class="item-meta"><span class="item-id">gdpr-9-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-9-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Build automated deletion/anonymization Cloud Function scheduled triggers</span>
+        <span class="item-desc">Build scheduled Cloud Functions to auto-delete or anonymize data after its retention period expires. Do not rely on manual cleanup — automated enforcement is required for defensible compliance.</span>
+        <div class="item-meta"><span class="item-id">gdpr-9-2</span><span class="size-badge size-L">L</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-9-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Verify raw observation pipeline does not indefinitely retain personal data</span>
+        <span class="item-desc">Confirm the append-only raw observation layer does not inadvertently retain personal data indefinitely. Should be low-risk since it is port/ship-focused — but verify no agent PII leaks in via corrections or submissions.</span>
+        <div class="item-meta"><span class="item-id">gdpr-9-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 10 — Documentation & Governance -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Documentation &amp; Governance</span>
+      <span class="section-count">4 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-10-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Publish privacy policy — separate consumer vs. B2B notices</span>
+        <span class="item-desc">Create public-facing privacy policies per product surface: consumer DockBound vs. B2B Compass/Chartroom may need different notices (different controllers, lawful bases, and DSR contact paths). Have counsel review before publishing.</span>
+        <div class="item-meta"><span class="item-id">gdpr-10-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-10-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Write internal data protection policy for staff</span>
+        <span class="item-desc">Create an internal data protection policy covering: data handling rules for staff, access controls, incident reporting, and onboarding/offboarding procedures. Distribute to all team members with access to production data.</span>
+        <div class="item-meta"><span class="item-id">gdpr-10-2</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-10-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Determine if a formal DPO is required (confirm with counsel)</span>
+        <span class="item-desc">Likely not mandatory at current scale unless large-scale systematic monitoring is involved — but document the determination either way. Confirm with counsel.</span>
+        <div class="item-meta"><span class="item-id">gdpr-10-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-10-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Publish or maintain sub-processor list (on request or as a public page)</span>
+        <span class="item-desc">Keep the vendor/sub-processor list current and available on request (or published as a page). Update whenever a vendor is added or removed. Reuses the list from gdpr-4-6.</span>
+        <div class="item-meta"><span class="item-id">gdpr-10-4</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- § 11 — US Addendum: State Privacy Laws                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div style="border-top:2px solid #0f172a;margin:40px 0 24px;padding-top:16px;">
+    <h2 style="font-size:15px;font-weight:800;color:#0f172a;margin:0 0 4px;">§ 11 — US Addendum: State Privacy Laws (CCPA/CPRA + Multi-State Baseline)</h2>
+    <p style="font-size:12px;color:#64748b;margin:0;">The DSR tooling built for GDPR (§3) covers ~90% of what these state laws require. This section is the delta on top. 24 states have comprehensive consumer privacy statutes as of August 2026.</p>
+  </div>
+
+  <!-- § 11.1 — Applicability Check -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.1</span>
+      <span class="section-title">Applicability Check</span>
+      <span class="section-count">3 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-1-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Determine which state privacy law thresholds DockBound meets or is likely to meet</span>
+        <span class="item-desc">Assess current and projected user counts and revenue against each state's threshold. Revenue and consumer-count thresholds vary widely (e.g., Texas has no revenue threshold; Florida's is $1B+). Document which laws apply now and at what scale milestones new ones trigger.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-1-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-1-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Priority state analysis: CA (CCPA/CPRA), TX (TDPSA), CO (CPA), CT (CTDPA), IL (BIPA)</span>
+        <span class="item-desc">Priority states given a nationally-sold consumer product: California (CCPA/CPRA — sets the practical ceiling), Texas (TDPSA — broad applicability, no revenue floor), Colorado (CPA — highest per-violation penalties), Connecticut (CTDPA), and Illinois (BIPA if any biometric data is ever collected).</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-1-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-1-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Track actual user base concentration per state for ongoing threshold monitoring</span>
+        <span class="item-desc">Thresholds are per-state — a state with heavy DockBound usage can trigger obligations even if it is not on the priority list. Build or identify a way to track registered user counts by state and review annually.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-1-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 11.2 — Consumer Rights Delta -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.2</span>
+      <span class="section-title">Consumer Rights — Delta on Top of GDPR DSR Tooling</span>
+      <span class="section-count">5 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-2-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Opt-out of "sale"/"sharing": audit all analytics and data-sharing integrations</span>
+        <span class="item-desc">CCPA defines "sale" broadly (including some ad-tech data sharing). Audit whether any current or planned integration (analytics, ad pixels, Travefy data sharing) could count as a "sale" under this definition.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-2-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-2-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Add "Do Not Sell or Share My Personal Information" link if applicable</span>
+        <span class="item-desc">Required on the consumer-facing site if any sale or sharing occurs. Determine applicability from the audit (gdpr-11-2-1), then add the link with the appropriate opt-out mechanism.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-2-2</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-2-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Implement Global Privacy Control (GPC) signal recognition in consent layer</span>
+        <span class="item-desc">California requires automatically honoring browser-level GPC opt-out signals. Must be processed before any data collection begins on page load — not just a manual toggle.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-2-3</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-2-4">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to correct: confirm profile edit flows satisfy state law requirements (most states)</span>
+        <span class="item-desc">Most US state privacy laws include a right to correct personal data (Utah is the notable outlier). Confirm existing profile-edit flows satisfy this requirement — same determination as GDPR rectification (gdpr-3-5).</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-2-4</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-2-5">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Right to limit sensitive personal information (CCPA-specific — relevant if geolocation added)</span>
+        <span class="item-desc">Relevant if DockBound ever collects precise geolocation, which cruise/port apps often do for "near me" features. Confirm current data collection and plan for if/when geolocation is added.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-2-5</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 11.3 — Consent & Notice Differences -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.3</span>
+      <span class="section-title">Consent &amp; Notice Differences from GDPR</span>
+      <span class="section-count">3 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-3-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Build consent architecture supporting both opt-out (ordinary) and opt-in (sensitive) models per category</span>
+        <span class="item-desc">Most US state laws are opt-out by default for ordinary data but require opt-in for sensitive data. Consent architecture must support both models per-category — not a single global toggle. Must interoperate with GDPR's opt-in-by-default posture.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-3-1</span><span class="size-badge size-L">L</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-3-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">CCPA-specific privacy policy disclosures (categories, sold/shared, retention, how to exercise rights)</span>
+        <span class="item-desc">Privacy policy must include: categories of data collected, categories sold/shared (or a statement that none is), retention period per category, and how to exercise rights. Have counsel review before publishing.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-3-2</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-3-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">"Notice at collection": just-in-time disclosure at point of data collection</span>
+        <span class="item-desc">CCPA requires a just-in-time notice at the point data is collected — not just a buried policy link. Add contextual notices at sign-up, CSV upload, and any other data collection entry points.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-3-3</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 11.4 — Data Protection Assessments -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.4</span>
+      <span class="section-title">Data Protection Assessments (State-Required)</span>
+      <span class="section-count">1 item</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-4-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Conduct state-required data protection assessments for CO, CT, VA, OR</span>
+        <span class="item-desc">Colorado, Connecticut, Virginia, and Oregon require data protection assessments for higher-risk processing (profiling, sale of data, sensitive data processing). Can largely reuse the GDPR DPIA (gdpr-8-1) with state-specific formatting if requested by a regulator.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-4-1</span><span class="size-badge size-M">M</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 11.5 — Enforcement & Cure Periods -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.5</span>
+      <span class="section-title">Enforcement &amp; Cure Periods</span>
+      <span class="section-count">3 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-5-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document cure period status per state; do not rely on post-complaint remediation for CA</span>
+        <span class="item-desc">Cure periods are expiring or already gone in several states. California's CPRA-era violations have no cure period — "fix it after a complaint" is not a safe compliance strategy for CA.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-5-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-5-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Track California breach private right of action risk</span>
+        <span class="item-desc">California is the only state with a private right of action for consumers, and only for data breaches (not general violations). Raises the bar specifically on breach prevention and the incident response plan (gdpr-7-1). Review security controls with this risk in mind.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-5-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-5-3">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Document state penalty caps for risk quantification</span>
+        <span class="item-desc">Colorado: up to $20,000/violation, capped at $500,000. Most other states: $7,500–$10,000 per violation. Document these for risk quantification and prioritization decisions.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-5-3</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- § 11.6 — Sub-processor US Lens -->
+  <div class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.6</span>
+      <span class="section-title">Sub-processor / Vendor Check (US Lens)</span>
+      <span class="section-count">2 items</span>
+    </div>
+
+    <div class="item" id="i-gdpr-11-6-1">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Confirm all vendors include CCPA "service provider"/"contractor" contract language</span>
+        <span class="item-desc">Confirm Stripe, Firebase/Google Cloud, Travefy, Apify, and Twilio agreements include CCPA-required "service provider" or "contractor" contract language (distinct from GDPR's "processor" language, but functionally parallel). Many vendor DPAs cover both — confirm rather than assume.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-6-1</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+
+    <div class="item" id="i-gdpr-11-6-2">
+      <input type="checkbox" onchange="toggleItem(this)">
+      <div class="item-body">
+        <span class="item-title">Add contract carve-out if any vendor could "sell" data under CCPA's broad definition</span>
+        <span class="item-desc">If any vendor could be deemed to "sell" data under CCPA's broad definition (which includes some data sharing, not just direct sales), add a specific contract carve-out restricting that activity.</span>
+        <div class="item-meta"><span class="item-id">gdpr-11-6-2</span><span class="size-badge size-S">S</span></div>
+        <div class="item-notes-wrap"><textarea class="item-notes" placeholder="Notes…"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>DockBound Privacy &amp; Compliance Checklist · Created 2026-09-07</span>
+    <span>Backlog: pandaventuresgroup Firestore → <code>backlog</code> collection · userCategory: Compliance · IDs: gdpr-*</span>
+  </div>
+</div>
+
+<script>
+  // ── State persistence via JSON clipboard ──
+  function getState() {
+    const state = {};
+    document.querySelectorAll('.item').forEach(item => {
+      const cb = item.querySelector('input[type=checkbox]');
+      const notes = item.querySelector('.item-notes');
+      if (cb) state[item.id] = { checked: cb.checked, notes: notes ? notes.value : '' };
+    });
+    return state;
+  }
+
+  function applyState(state) {
+    Object.entries(state).forEach(([id, val]) => {
+      const item = document.getElementById(id);
+      if (!item) return;
+      const cb = item.querySelector('input[type=checkbox]');
+      const notes = item.querySelector('.item-notes');
+      if (cb) { cb.checked = val.checked; item.classList.toggle('done', val.checked); }
+      if (notes && val.notes) notes.value = val.notes;
+    });
+    updateProgress();
+  }
+
+  function exportState() {
+    const json = JSON.stringify(getState());
+    navigator.clipboard.writeText(json).then(() => alert('State copied to clipboard. Paste it back with the "Paste state" button.')).catch(() => prompt('Copy this:', json));
+  }
+
+  function importState() {
+    const raw = prompt('Paste your saved state JSON:');
+    if (!raw) return;
+    try { applyState(JSON.parse(raw)); } catch(e) { alert('Invalid state JSON.'); }
+  }
+
+  // ── Toggle item done state ──
+  function toggleItem(cb) {
+    const item = cb.closest('.item');
+    item.classList.toggle('done', cb.checked);
+    updateProgress();
+  }
+
+  // ── Progress counter ──
+  function updateProgress() {
+    const items = document.querySelectorAll('.item');
+    const total = items.length;
+    const done = document.querySelectorAll('.item.done').length;
+    document.getElementById('done-count').textContent = done;
+    document.getElementById('open-count').textContent = total - done;
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = pct + '% complete (' + done + ' of ' + total + ')';
+  }
+
+  // ── Expand/collapse ──
+  function expandAll() {
+    document.querySelectorAll('.item').forEach(i => i.classList.add('expanded'));
+  }
+  function collapseAll() {
+    document.querySelectorAll('.item').forEach(i => i.classList.remove('expanded'));
+  }
+
+  // ── Click item row to expand ──
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        item.classList.toggle('expanded');
+      });
+    });
+    updateProgress();
+  });
+</script>
+</body>
+</html>

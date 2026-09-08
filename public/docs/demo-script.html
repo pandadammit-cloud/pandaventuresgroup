@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Demo Script</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1e0a4a;
+    --navy-light: #2d1260;
+    --purple: #7c3aed;
+    --purple-light: #a78bfa;
+    --teal: #0d9488;
+    --teal-light: #2dd4bf;
+    --gold: #c9920b;
+    --gold-light: #fbbf24;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --success: #059669;
+    --white: #ffffff;
+    --off-white: #f8f7ff;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-700: #374151;
+    --gray-900: #111827;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0518;
+    overflow: hidden;
+  }
+
+  /* ── Slide Container ── */
+  #deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 4rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(60px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  /* ── Backgrounds ── */
+  .bg-navy      { background: linear-gradient(145deg, #1e0a4a 0%, #2d1260 100%); }
+  .bg-teal      { background: linear-gradient(145deg, #0f4c45 0%, #134e4a 100%); }
+  .bg-light     { background: linear-gradient(145deg, #f8f7ff 0%, #ede9fe 100%); }
+  .bg-gold      { background: linear-gradient(145deg, #451a03 0%, #78350f 100%); }
+  .bg-dark-blue { background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%); }
+  .bg-purple    { background: linear-gradient(145deg, #2e1065 0%, #4c1d95 100%); }
+
+  /* ── Typography ── */
+  .label-chip {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+  .chip-teal   { background: rgba(13,148,136,0.25); color: #5eead4; border: 1px solid rgba(94,234,212,0.3); }
+  .chip-gold   { background: rgba(201,146,11,0.25); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+  .chip-purple { background: rgba(124,58,237,0.25); color: #c4b5fd; border: 1px solid rgba(196,181,253,0.3); }
+  .chip-navy   { background: rgba(30,10,74,0.4); color: #a5b4fc; border: 1px solid rgba(165,180,252,0.3); }
+  .chip-white  { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); }
+
+  h1.slide-title {
+    font-size: 3.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  h1.slide-title .accent { color: var(--teal-light); }
+  h1.slide-title .gold   { color: var(--gold-light); }
+
+  h2.slide-heading {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+  h2.slide-heading .accent { color: var(--teal-light); }
+  h2.slide-heading .gold   { color: var(--gold-light); }
+  h2.slide-heading .purple { color: var(--purple-light); }
+
+  h3.slide-subheading {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .slide-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    max-width: 680px;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .slide-body {
+    width: 100%;
+    max-width: 960px;
+  }
+
+  /* ── Speaker Notes ── */
+  .speaker-note {
+    position: fixed;
+    bottom: 3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 800px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .speaker-note strong { color: rgba(255,255,255,0.8); }
+
+  /* ── Navigation ── */
+  #nav {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 100;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9);
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 600;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.22); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  #slide-counter {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.4);
+    min-width: 60px;
+    text-align: center;
+  }
+
+  /* ── Progress Dots ── */
+  #progress {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--teal-light); transform: scale(1.4); }
+  .dot.section-break { width: 16px; border-radius: 3px; }
+
+  /* ── Section Banner ── */
+  .section-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .card.teal-border { border-color: rgba(13,148,136,0.5); }
+  .card.gold-border  { border-color: rgba(201,146,11,0.5); }
+  .card.purple-border{ border-color: rgba(124,58,237,0.5); }
+
+  .card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+  .card p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  /* ── Feature Compare Table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  .compare-table th {
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: left;
+  }
+  .compare-table th.center { text-align: center; }
+  .compare-table td {
+    padding: 0.5rem 1rem;
+    color: rgba(255,255,255,0.8);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    vertical-align: middle;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td.center { text-align: center; }
+  .compare-table td.section-row {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+    padding-top: 0.8rem;
+    padding-bottom: 0.25rem;
+  }
+  .yes  { color: #34d399; font-size: 1.1rem; }
+  .no   { color: rgba(255,255,255,0.2); font-size: 1rem; }
+  .lock { color: rgba(255,255,255,0.2); font-size: 0.8rem; }
+
+  /* ── Tab Tabs ── */
+  .tab-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .tab-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .tab-item .tab-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .tab-item h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.2rem;
+  }
+  .tab-item p {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+  .tab-item.highlight {
+    border-color: rgba(13,148,136,0.5);
+    background: rgba(13,148,136,0.08);
+  }
+
+  /* ── DOCK Score Visual ── */
+  .dock-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .dock-letter-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .dock-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    background: var(--navy);
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--white);
+    margin: 0 auto 0.5rem;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .dock-letter-card h5 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0.2rem;
+  }
+  .dock-letter-card p {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.4;
+  }
+
+  .opstate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    letter-spacing: 0.03em;
+  }
+  .opstate-elevated {
+    background: rgba(217,119,6,0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.3);
+  }
+  .opstate-high {
+    background: rgba(220,38,38,0.2);
+    color: #f87171;
+    border: 1px solid rgba(248,113,113,0.3);
+  }
+  .opstate-relaxed {
+    background: rgba(5,150,105,0.2);
+    color: #34d399;
+    border: 1px solid rgba(52,211,153,0.3);
+  }
+  .opstate-manageable {
+    background: rgba(37,99,235,0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(147,197,253,0.3);
+  }
+
+  /* ── Score Bar ── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .score-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    width: 160px;
+    flex-shrink: 0;
+  }
+  .score-bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.8s ease;
+  }
+  .score-val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--white);
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── Credential Tag ── */
+  .cred {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.7);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-top: 0.5rem;
+  }
+  .cred span { color: var(--teal-light); font-weight: 700; }
+  .cred .sep { color: rgba(255,255,255,0.25); margin: 0 0.2rem; }
+
+  /* ── Step List ── */
+  .step-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .step-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    background: var(--teal);
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.15rem;
+  }
+  .step-num.gold-num { background: var(--gold); }
+  .step-num.purple-num { background: var(--purple); }
+
+  /* ── Highlight Box ── */
+  .highlight-box {
+    background: rgba(13,148,136,0.12);
+    border: 1px solid rgba(13,148,136,0.4);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .highlight-box.gold-box {
+    background: rgba(201,146,11,0.12);
+    border-color: rgba(201,146,11,0.4);
+  }
+  .highlight-box.danger-box {
+    background: rgba(220,38,38,0.12);
+    border-color: rgba(220,38,38,0.4);
+  }
+  .highlight-box .hb-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .highlight-box .hb-text { font-size: 0.82rem; color: rgba(255,255,255,0.75); line-height: 1.55; }
+  .highlight-box .hb-text strong { color: var(--white); }
+
+  /* ── Logo ── */
+  .logo-mark {
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    position: fixed;
+    top: 1rem;
+    left: 1.5rem;
+    opacity: 0.5;
+    z-index: 100;
+  }
+  .logo-mark .accent { color: var(--gold-light); }
+
+  /* ── Intro logo big ── */
+  .logo-hero {
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+  .logo-hero .accent { color: var(--gold-light); }
+  .logo-tagline {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
+
+  /* Keyboard hint */
+  .kbd-hint {
+    position: fixed;
+    bottom: 1rem;
+    right: 1.5rem;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.2);
+    z-index: 100;
+  }
+  .kbd { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 1px 5px; font-family: monospace; }
+
+  /* Two-column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  /* Port congestion visual */
+  .congestion-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.82rem;
+  }
+  .congestion-row:last-child { border-bottom: none; }
+  .cong-date { color: rgba(255,255,255,0.5); width: 60px; flex-shrink: 0; font-size: 0.75rem; }
+  .cong-bar-wrap { flex: 1; }
+  .cong-bar { height: 20px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 0.7rem; font-weight: 700; }
+  .cong-bar.low  { background: rgba(5,150,105,0.3); color: #34d399; width: 30%; }
+  .cong-bar.med  { background: rgba(217,119,6,0.3); color: #fbbf24; width: 60%; }
+  .cong-bar.high { background: rgba(220,38,38,0.35); color: #f87171; width: 90%; }
+  .cong-ships { color: rgba(255,255,255,0.4); font-size: 0.72rem; width: 70px; text-align: right; flex-shrink: 0; }
+
+  /* Travefy specific */
+  .travefy-badge {
+    display: inline-block;
+    background: #1a4d7a;
+    color: #60a5fa;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  .enrichment-card {
+    background: rgba(30,64,175,0.15);
+    border: 1px solid rgba(96,165,250,0.25);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .enrichment-card h5 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #93c5fd;
+    margin-bottom: 0.5rem;
+  }
+  .enrichment-card p {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  /* Big stat */
+  .big-stat {
+    text-align: center;
+  }
+  .big-stat .number {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--teal-light);
+  }
+  .big-stat .unit {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 0.25rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo-mark">DOCK<span class="accent">Bound</span></div>
+
+<div id="deck">
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 01 — TITLE
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy active" id="slide-1">
+    <div style="text-align:center;">
+      <div class="logo-hero">DOCK<span class="accent">Bound</span></div>
+      <div class="logo-tagline">Port Intelligence for Cruise Professionals</div>
+      <div style="margin:2rem 0;width:48px;height:3px;background:var(--teal);margin-left:auto;margin-right:auto;border-radius:2px;"></div>
+      <p style="font-size:1.05rem;color:rgba(255,255,255,0.55);max-width:540px;margin:0 auto;line-height:1.7;">
+        Purpose-built cruise port intelligence — for travelers who want to make the most of every port day, and for the advisors who serve them.
+      </p>
+      <div style="margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <div class="label-chip chip-teal">🧭 Traveler Path</div>
+        <div class="label-chip chip-gold">📋 Independent Advisor</div>
+        <div class="label-chip chip-purple">✈️ Travefy Advisor</div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Presenter:</strong> Welcome. DockBound helps cruise travelers navigate port days with confidence, and gives travel advisors the tools to serve clients proactively — from DOCK risk scores to real-time congestion data.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 02 — AGENDA
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-2">
+    <div class="slide-body" style="max-width:780px;">
+      <div class="label-chip chip-white" style="display:block;text-align:center;">What We'll Cover Today</div>
+      <h2 class="slide-heading">Three Paths Through <span class="accent">DockBound</span></h2>
+      <div class="card-grid cols-3" style="margin-top:1.5rem;">
+        <div class="card teal-border">
+          <span class="card-icon">🧭</span>
+          <h4>Traveler</h4>
+          <p>Login, dashboard, port day experience. See the difference between free and paid access — live.</p>
+          <div style="margin-top:0.75rem;" class="cred"><span>test7@test7.com</span></div>
+        </div>
+        <div class="card gold-border">
+          <span class="card-icon">📋</span>
+          <h4>Independent Advisor</h4>
+          <p>4-tab dashboard. Roster management, port intelligence, DOCK scores, and real port congestion data.</p>
+          <div style="margin-top:0.75rem;" class="cred"><span>amytest2@amytest2.com</span></div>
+        </div>
+        <div class="card purple-border">
+          <span class="card-icon">✈️</span>
+          <h4>Travefy Advisor</h4>
+          <p>Everything the independent advisor has, plus DockBound data written directly into Travefy TripEvents.</p>
+          <div style="margin-top:0.75rem;" class="cred"><span>testman@testman.com</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Flow:</strong> We'll move through each user type in sequence. Each path builds on the last — by the end you'll see the full ecosystem from traveler through advisor through Travefy.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 03 — WHAT IS DOCKBOUND
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-3">
+    <div class="slide-body" style="max-width:860px;">
+      <div class="label-chip chip-teal" style="display:block;text-align:center;">Platform Overview</div>
+      <h2 class="slide-heading">The Problem We Solve</h2>
+      <div class="card-grid cols-2" style="margin-top:1.25rem;">
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <span class="card-icon">😕</span>
+            <h4>Without DockBound</h4>
+            <p>Cruise port days are a black box. Travelers arrive with no context — long tender queues, unexpected customs delays, congested piers, port advisories they never heard about.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">📞</span>
+            <h4>Advisors Are Reactive</h4>
+            <p>Travel advisors learn about port issues when their clients text from the ship — after the problem is already happening. There's no early-warning layer built for cruise port conditions.</p>
+          </div>
+        </div>
+        <div>
+          <div class="card teal-border">
+            <span class="card-icon">⚓</span>
+            <h4>DockBound Changes That</h4>
+            <p>Per-port intelligence — DOCK scores, port guides, congestion forecasts, State Dept. advisories, and weather — delivered to both traveler and advisor before the ship ever docks.</p>
+          </div>
+          <div class="card" style="margin-top:0.75rem;">
+            <span class="card-icon">🔄</span>
+            <h4>Live, Dynamic Data</h4>
+            <p>Scores update based on actual ship counts, weather, and advisories. An "Elevated" port can become "High-Constraint" overnight when three additional ships add calls on the same date.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Talking point:</strong> DockBound is not a booking tool or a CRM. It's the intelligence layer that sits between the cruise itinerary and the port day itself.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 04 — SECTION BREAK: TRAVELER
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-teal" id="slide-4">
+    <div style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">🧭</div>
+      <div class="label-chip chip-teal">Part 1 of 3</div>
+      <h1 class="slide-title" style="font-size:2.8rem;">The <span class="accent">Traveler</span> Experience</h1>
+      <p class="slide-subtitle">How a traveler discovers, accesses, and navigates their cruise port intelligence — both free and premium.</p>
+      <div class="cred" style="justify-content:center;">Login: <span>test7@test7.com</span><span class="sep">/</span><span>test7test7</span></div>
+    </div>
+    <div class="speaker-note">
+      <strong>Action:</strong> Open the DockBound site. Navigate to /auth and log in with test7@test7.com / test7test7. After login the dashboard loads automatically.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 05 — TRAVELER: HOW THEY GET IN
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-5">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Traveler Path</div>
+      <h2 class="slide-heading">How a Traveler Gets <span class="accent">Started</span></h2>
+      <div class="two-col">
+        <div>
+          <ul class="step-list">
+            <li>
+              <div class="step-num">1</div>
+              <div><strong style="color:var(--white);">Find their cruise</strong> — Browse sailings at dockbound.app or arrive via an advisor referral link. No payment required upfront.</div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div><strong style="color:var(--white);">Sign up or log in</strong> — A DockBound account is required to view port data. Email-based, takes under a minute.</div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div><strong style="color:var(--white);">Free access activates</strong> — The traveler sees a snapshot of every port: itinerary, weather, and tours. No credit card.</div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div><strong style="color:var(--white);">Upgrade when ready</strong> — One-time purchase unlocks the full DOCKGuide for that itinerary — port guides, DOCK scores, advisories, currency tools, and more.</div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="highlight-box">
+            <span class="hb-icon">💡</span>
+            <div class="hb-text">
+              <strong>Why free first?</strong><br>
+              Travelers get enough value from the free tier to understand DockBound's depth — then upgrade when they see the locked premium sections and want the full picture before arriving in port.
+            </div>
+          </div>
+          <div style="margin-top:1rem;" class="card">
+            <h4>Pricing</h4>
+            <p style="font-size:0.88rem;color:rgba(255,255,255,0.7);">Single itinerary access is a one-time purchase. The traveler pays once and gets full DOCKGuide access for every port on that sailing — forever, including after the cruise ends.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Show the micro-selection (cruise browse) page, then the dashboard. Point out the cruise picker on the left sidebar.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 06 — FREE VS PAID COMPARISON
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-6">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Feature Access</div>
+      <h2 class="slide-heading">Free vs. <span class="accent">Paid</span> — What's Included</h2>
+      <table class="compare-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="center" style="color:rgba(255,255,255,0.4);">Free</th>
+            <th class="center" style="color:#34d399;">Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="section-row" colspan="3">Port Day Basics (included for all)</td></tr>
+          <tr><td>Day navigation — port name + type</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Port info card (name, country, port type)</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Current weather (temperature, conditions)</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Tours &amp; activities (Viator results)</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Severe weather banner (US ports)</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td class="section-row" colspan="3">Full DOCKGuide (paid only)</td></tr>
+          <tr><td>5-day weather forecast per port</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Full port guide (18+ sections)</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Port Day at a Glance (cash, card, water, return complexity)</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>DOCK Score (friction, congestion, conditions, risks)</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>State Dept. travel advisory</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>In The Know local tips</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Live currency converter</td><td class="center"><span class="lock">🔒</span></td><td class="center"><span class="yes">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> With test7 logged in, click to a port day. Point to the visible free sections at the top, then scroll to where the 🔒 upgrade prompts appear. The visual gap is intentional — it communicates the premium layer clearly.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 07 — TRAVELER: THE DASHBOARD
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-7">
+    <div class="slide-body" style="max-width:860px;">
+      <div class="label-chip chip-teal">Live Demo — Traveler Dashboard</div>
+      <h2 class="slide-heading">The <span class="accent">DOCKGuide</span> Dashboard</h2>
+      <div class="card-grid cols-3" style="margin-top:1.25rem;">
+        <div class="card">
+          <span class="card-icon">📅</span>
+          <h4>Day Navigation Strip</h4>
+          <p>Pill-strip across the top of the screen. Each pill = one port day. Click to jump between ports. Sea days and embarkation days are labeled but skipped for guide content.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🌤️</span>
+          <h4>Port Hero Card</h4>
+          <p>Port name, country, type (cruise port / tender / embarkation), current weather. The paid tier expands this to a full 5-day forecast for that port.</p>
+        </div>
+        <div class="card teal-border">
+          <span class="card-icon">📖</span>
+          <h4>Full DOCKGuide (Paid)</h4>
+          <p>18+ structured sections: Getting Off, Weather Reality, Who It's For, What to Bring, In The Know, Return Stress, Port Day at a Glance, DOCK Score, and more.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚓</span>
+          <h4>DOCK Score</h4>
+          <p>Composite score: Distance Friction · Operational Load · Conditions · Key Risks. Static baseline + live dynamic adjustments for ship counts, weather, advisories.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🗺️</span>
+          <h4>Tours &amp; Activities</h4>
+          <p>Viator-sourced results for that port. Available on free tier — travelers can explore tours without upgrading.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">💱</span>
+          <h4>Currency Converter</h4>
+          <p>Live exchange rates for non-USD ports. Shows local currency and current rate for the port's country. Paid tier only.</p>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Navigate through 2–3 different port days. Show a sea day (it's labeled but there's no guide). Then click a port with a full guide. Show the DOCKGuide sections loading. If on a paid cruise, scroll to show DOCK score.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 08 — TRAVELER: PREMIUM DEMO
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-8">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-gold">Premium Cruise — What Changes</div>
+      <h2 class="slide-heading">Switching to a <span class="gold">Paid</span> Cruise</h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;">Select a paid cruise from the left sidebar to see the full DOCKGuide. The UI adapts automatically — locked sections open, DOCK scores appear, and the Port Day at a Glance summary activates.</p>
+          <ul class="step-list">
+            <li>
+              <div class="step-num gold-num">1</div>
+              <div>Select a premium cruise from the left sidebar</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">2</div>
+              <div>Navigate to any port day — notice the DOCK score panel is now visible</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">3</div>
+              <div>Scroll through the full port guide — 18+ named sections, not just weather and tours</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">4</div>
+              <div>Find "Port Day at a Glance" — card acceptance, cash recommendation, tap water safety, return complexity at a glance</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">5</div>
+              <div>Check the currency converter for any non-USD port</div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="highlight-box gold-box">
+            <span class="hb-icon">⚓</span>
+            <div class="hb-text">
+              <strong>Port Day at a Glance</strong><br>
+              V4 intelligence layer — summarizes the 5 most decision-critical facts about a port in one card: card acceptance, cash need, tap water, return complexity, and primary impact action. Designed for the 30 seconds before the gangway opens.
+            </div>
+          </div>
+          <div style="margin-top:1rem;" class="card">
+            <h4>What to highlight</h4>
+            <p>The difference between a free and paid cruise is most visible in the guide depth — free shows weather and tours; paid shows the advisor-authored intelligence beneath it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Tip:</strong> The test7 account has at least one premium cruise available. Use the cruise switcher on the left to switch between a free and paid sailing — the screen content changes visibly without reloading the page.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 09 — SECTION BREAK: IND. ADVISOR
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-gold" id="slide-9">
+    <div style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">📋</div>
+      <div class="label-chip chip-gold">Part 2 of 3</div>
+      <h1 class="slide-title" style="font-size:2.8rem;">The Independent <span class="gold">Advisor</span></h1>
+      <p class="slide-subtitle">A full advisor toolkit — 4 tabs, manual client management, DOCK intelligence, and real-time port congestion data. No Travefy required.</p>
+      <div class="cred" style="justify-content:center;">Login: <span>amytest2@amytest2.com</span><span class="sep">/</span><span>amytest2</span></div>
+    </div>
+    <div class="speaker-note">
+      <strong>Action:</strong> Log out of the traveler account. Log in as amytest2@amytest2.com / amytest2. This lands on the advisor dashboard (/agent-dashboard). Take a moment to orient the audience to the 4-tab layout.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 10 — ADVISOR DASHBOARD OVERVIEW
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-10">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-gold">Advisor Dashboard</div>
+      <h2 class="slide-heading">4 Tabs — One <span class="gold">Command Center</span></h2>
+      <div class="tab-list" style="margin-top:1.25rem;">
+        <div class="tab-item">
+          <span class="tab-icon">🗓</span>
+          <div>
+            <h4>Sailings — Trip Intelligence</h4>
+            <p>Every sailing in the advisor's roster, grouped by cruise and sail date. Port-day DOCK scores, at-risk flags, weather driver icons, and a "Port Guide →" deep-link for each row. The 7-day Sailing Timeline shows who's at sea right now and what their ports look like today.</p>
+          </div>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">👥</span>
+          <div>
+            <h4>Clients — Traveler Roster</h4>
+            <p>Add clients manually (name, email, phone, cruise, sail date). Archive/restore. Send port guide email. Message thread per traveler. For independent advisors, clients are entered here — no external import needed.</p>
+          </div>
+        </div>
+        <div class="tab-item highlight">
+          <span class="tab-icon">🗺️</span>
+          <div>
+            <h4>Port Tools — Port Guide + DOCK + Congestion Calendar ⭐</h4>
+            <p>Look up any port guide by port name. Full DOCKGuide view, DOCK score breakdown, and the Congestion Calendar — a visual port utilization chart showing ship counts by date. <strong style="color:var(--teal-light);">We'll spend extra time here on Belize.</strong></p>
+          </div>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⚙️</span>
+          <div>
+            <h4>Settings — Alerts &amp; Guide Preferences</h4>
+            <p>Configure notification preferences (email alerts for DOCK score changes, advisories, weather). Customize which guide sections are visible to clients and in what order.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Click through each tab quickly to show the layout. Don't dive deep yet — just orient the audience. Sailings → Clients → Port Tools → Settings, then come back to Sailings for the walkthrough.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 11 — SAILINGS TAB
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-11">
+    <div class="slide-body" style="max-width:860px;">
+      <div class="label-chip chip-gold">Tab 1: Sailings</div>
+      <h2 class="slide-heading">Trip Intelligence <span class="accent">Table</span></h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <span class="card-icon">📊</span>
+            <h4>Itinerary Timeline</h4>
+            <p>Cruise-grouped table. Each row = one sailing with port stops. Click the client count to see an inline expanded list of which clients are on that sailing.</p>
+          </div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <span class="card-icon">🔴</span>
+            <h4>At-Risk Flags</h4>
+            <p>Any port day where the dynamic DOCK score has increased ≥ 0.5 points above the static baseline is flagged AT-RISK. Advisors can act proactively before the ship arrives.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">🗺️</span>
+            <h4>Port Guide Deep-Link</h4>
+            <p>Every sailing row has a "Port Guide →" button. Clicking it jumps directly to Port Tools with the first port pre-selected — no manual lookup needed.</p>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin-bottom:0.75rem;">
+            <span class="hb-icon">🧠</span>
+            <div class="hb-text">
+              <strong>Port-Day Intelligence Panel</strong><br>
+              Below the table, the Sailing Timeline shows today's port days and the next 7 days across all clients. Each port card shows the DOCK op-state badge, static vs dynamic score, weather driver icons, and AT-RISK flag if the dynamic score has escalated.
+            </div>
+          </div>
+          <div class="card">
+            <h4>For independent advisors</h4>
+            <p style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Trips are built from manually entered roster entries — cruise name, sail date, departure port. DockBound normalizes these against cruise data to build the sailing timeline automatically.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Show the Sailings tab. If there are roster entries, expand one to show the client list. Point to the "Port Guide →" button. If the At-Risk section has any items, show those too.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 12 — CLIENTS TAB
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-12">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-gold">Tab 2: Clients</div>
+      <h2 class="slide-heading">Traveler Roster — <span class="gold">Manual Entry</span></h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <ul class="step-list">
+            <li>
+              <div class="step-num gold-num">1</div>
+              <div><strong style="color:var(--white);">Add a client</strong> — Name, email, phone, reference ID, cruise selection, and sail date. Cruise is selected from a searchable list of active sailings.</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">2</div>
+              <div><strong style="color:var(--white);">Track the roster</strong> — All clients in a sortable table. See cruise, sail date, status, and last-contact timestamp at a glance.</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">3</div>
+              <div><strong style="color:var(--white);">Add a cruise row</strong> — If a client books a second sailing, use "+ Cruise" on the roster row to add it. One client, multiple trips.</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">4</div>
+              <div><strong style="color:var(--white);">Send port guide</strong> — "Send Email" sends the client their DOCKGuide for that port day via SendGrid. Logged to the send history.</div>
+            </li>
+            <li>
+              <div class="step-num gold-num">5</div>
+              <div><strong style="color:var(--white);">Archive, don't delete</strong> — Past or inactive clients are archived, not deleted. Restore at any time. Toggle "Show archived" to see the full history.</div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="highlight-box gold-box">
+            <span class="hb-icon">📋</span>
+            <div class="hb-text">
+              <strong>No Travefy required</strong><br>
+              Independent advisors manage their client list entirely within DockBound. There's no external app to sync — clients are added manually and cruises are selected from DockBound's database of active sailings.
+            </div>
+          </div>
+          <div style="margin-top:1rem;" class="card">
+            <h4>Message Thread</h4>
+            <p>Each client has a message thread. Advisors can log contact notes and send in-app messages. All communication is tied to the traveler record — no separate inbox needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Show the Clients tab. Click "+ Add Client" to demonstrate the form. If there are existing roster entries, show the row actions (Send Email, + Cruise, Archive).
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 13 — PORT TOOLS INTRO
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-13">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Tab 3: Port Tools</div>
+      <h2 class="slide-heading">Port Intelligence — <span class="accent">Deep Dive</span></h2>
+      <div class="card-grid cols-3" style="margin-top:1.25rem;">
+        <div class="card teal-border">
+          <span class="card-icon">📖</span>
+          <h4>Port Guide Lookup</h4>
+          <p>Search any port by name. Full DOCKGuide loads — all 18+ sections, Port Day at a Glance, DOCK score, currency converter. The same guide the traveler sees, with advisor-level context.</p>
+        </div>
+        <div class="card teal-border">
+          <span class="card-icon">⚓</span>
+          <h4>DOCK Score</h4>
+          <p>4-component composite score. Static baseline from port guide data. Dynamic adjustments for live ship counts, weather, and State Dept. advisories. Op-state: Relaxed → Manageable → Elevated → High-Constraint.</p>
+        </div>
+        <div class="card teal-border">
+          <span class="card-icon">📅</span>
+          <h4>Congestion Calendar</h4>
+          <p>Bar chart of port utilization by date. Ship counts, op-state overlay, and at-risk date flags. Shows the 30-day window so advisors can spot crowded days before they're a problem.</p>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:1.25rem;">
+        <span class="hb-icon">🗺️</span>
+        <div class="hb-text">
+          <strong>Demo target: Belize City (BZE)</strong><br>
+          Belize has a baseline DOCK score that lands in the <em>Elevated</em> op-state — high tender friction, complex logistics. On <strong>September 23</strong>, it tips into <em>High-Constraint</em> because of unusually high ship counts on that date. We'll see both states live.
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Action:</strong> Click the Port Tools tab. In the port guide search, type "Belize." The guide loads for Belize City. Scroll briefly to orient — then focus on the DOCK score section.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 14 — DOCK SCORE EXPLAINED
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-14">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">DOCK Score</div>
+      <h2 class="slide-heading">What is a <span class="accent">DOCK Score?</span></h2>
+      <div class="dock-grid" style="margin-top:1.25rem;">
+        <div class="dock-letter-card">
+          <div class="dock-letter" style="background:#1e3a5f;">D</div>
+          <h5>Distance Friction</h5>
+          <p>How hard is it to get from ship to your destination? Pier location, tender requirement, transport availability, and transit time all factor in.</p>
+        </div>
+        <div class="dock-letter-card">
+          <div class="dock-letter" style="background:#1a3a2e;">O</div>
+          <h5>Operational Load</h5>
+          <p>Port traffic and capacity — how many ships are in port, how crowded the pier is, infrastructure limits. The most dynamic of the four components.</p>
+        </div>
+        <div class="dock-letter-card">
+          <div class="dock-letter" style="background:#3a2a10;">C</div>
+          <h5>Conditions</h5>
+          <p>Weather severity and State Dept. advisory level for that port. Updated live as forecasts change and as advisories are issued or lifted.</p>
+        </div>
+        <div class="dock-letter-card">
+          <div class="dock-letter" style="background:#3a1a1a;">K</div>
+          <h5>Key Risks</h5>
+          <p>Port-specific hazards: known scams, infrastructure issues, safety concerns, or logistical gotchas that don't fall neatly into the other three components.</p>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <div class="opstate-badge opstate-relaxed">Relaxed (1–2)</div>
+        <div class="opstate-badge opstate-manageable">Manageable (2–3)</div>
+        <div class="opstate-badge opstate-elevated">Elevated (3–4)</div>
+        <div class="opstate-badge opstate-high">High-Constraint (4–5)</div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Talking point:</strong> The static baseline is computed from the port guide content. The dynamic score is computed fresh each time using live ship counts, weather data, and State Dept. advisories. The delta between static and dynamic is the "drift" — a positive drift is the AT-RISK signal.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 15 — BELIZE: ELEVATED BASELINE
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-15">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Live Demo — Belize City (BZE)</div>
+      <h2 class="slide-heading">Belize: <span class="accent">Elevated</span> at Baseline</h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;">Even on a quiet day, Belize City earns an Elevated DOCK score. Here's why:</p>
+          <div class="score-row">
+            <div class="score-label">D — Distance Friction</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:80%;background:#f59e0b;"></div></div>
+            <div class="score-val">4.0</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">O — Operational Load</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:60%;background:#f59e0b;"></div></div>
+            <div class="score-val">3.0</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">C — Conditions</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:50%;background:#34d399;"></div></div>
+            <div class="score-val">2.5</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">K — Key Risks</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:70%;background:#f59e0b;"></div></div>
+            <div class="score-val">3.5</div>
+          </div>
+          <div style="margin-top:1rem;display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Baseline avg:</span>
+            <div class="opstate-badge opstate-elevated">Elevated — 3.25</div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <h4>Why Distance Friction is High (4.0)</h4>
+            <p>Belize is a tender port — ships cannot dock at a pier. Every passenger must take a tender boat to shore. This immediately adds friction, time, and capacity constraints to the port experience.</p>
+          </div>
+          <div class="card">
+            <h4>Why Key Risks are Elevated (3.5)</h4>
+            <p>Belize City has well-documented safety considerations — advisors should be aware of which tour operators operate within the safe zone vs. which encourage travelers to go further afield without guidance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> In Port Tools, the DOCK score section shows the component breakdown. Point to each letter. The "Elevated" badge should be visible in the op-state area. The port guide sections below will explain the tender logistics in detail.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 16 — BELIZE: HIGH-CONSTRAINT ON 9/23
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-16">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Dynamic DOCK — Date: September 23</div>
+      <h2 class="slide-heading">September 23: <span style="color:#f87171;">High-Constraint</span></h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <div class="highlight-box danger-box" style="margin-bottom:1rem;">
+            <span class="hb-icon">⚠️</span>
+            <div class="hb-text">
+              <strong>What changed on 9/23?</strong><br>
+              Multiple ships have called Belize City on September 23. The port's tender fleet and pier infrastructure can only handle a limited number of passengers per hour — when ship count spikes, every tender queue gets longer, wait times multiply, and the operational load score tips into High-Constraint territory.
+            </div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">D — Distance Friction</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:80%;background:#f59e0b;"></div></div>
+            <div class="score-val">4.0</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">O — Operational Load <span style="font-size:0.65rem;color:#f87171;">↑ ships</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:90%;background:#dc2626;"></div></div>
+            <div class="score-val" style="color:#f87171;">4.5</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">C — Conditions</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:50%;background:#34d399;"></div></div>
+            <div class="score-val">2.5</div>
+          </div>
+          <div class="score-row">
+            <div class="score-label">K — Key Risks</div>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:70%;background:#f59e0b;"></div></div>
+            <div class="score-val">3.5</div>
+          </div>
+          <div style="margin-top:1rem;display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Dynamic avg 9/23:</span>
+            <div class="opstate-badge opstate-high">High-Constraint — 3.63</div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <h4>What this means for clients</h4>
+            <p>Travelers on September 23 will face significantly longer tender queues and reduced effective time ashore. Advisors with clients on this date should set expectations and recommend early tender priority if available.</p>
+          </div>
+          <div class="card">
+            <h4>AT-RISK flag triggered</h4>
+            <p>When the dynamic score exceeds the static baseline by ≥ 0.5, the sailing row in the Sailings tab shows an orange AT-RISK badge and the port day card shows the delta. Delta = 0.38 in this case — approaching threshold.</p>
+          </div>
+          <div style="margin-top:0.75rem;display:flex;gap:0.5rem;">
+            <div class="opstate-badge opstate-elevated" style="font-size:0.7rem;">Static: Elevated 3.25</div>
+            <span style="color:rgba(255,255,255,0.4);font-size:0.9rem;">→</span>
+            <div class="opstate-badge opstate-high" style="font-size:0.7rem;">Dynamic: High-Constraint</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> In the DOCK score area of Port Tools, there should be a date selector or the congestion calendar is visible below. Navigate to Sept 23 to show the dynamic score change. The O component will be visually higher than the static baseline.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 17 — PORT CONGESTION CALENDAR
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-17">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-teal">Congestion Calendar — Belize City</div>
+      <h2 class="slide-heading">Seeing the <span class="accent">Full Month</span> at Once</h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <p style="font-size:0.84rem;color:rgba(255,255,255,0.6);margin-bottom:0.75rem;">The Port Congestion Calendar — also in the Port Tools tab — shows ship counts by date as a bar chart. Each bar is colored by op-state. Advisors can instantly see which dates are problematic before a client's sailing arrives.</p>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:1rem;">
+            <div class="congestion-row"><span class="cong-date">Sep 18</span><div class="cong-bar-wrap"><div class="cong-bar low">Relaxed</div></div><span class="cong-ships">1 ship</span></div>
+            <div class="congestion-row"><span class="cong-date">Sep 20</span><div class="cong-bar-wrap"><div class="cong-bar med">Manageable</div></div><span class="cong-ships">2 ships</span></div>
+            <div class="congestion-row"><span class="cong-date">Sep 21</span><div class="cong-bar-wrap"><div class="cong-bar low">Relaxed</div></div><span class="cong-ships">1 ship</span></div>
+            <div class="congestion-row"><span class="cong-date">Sep 22</span><div class="cong-bar-wrap"><div class="cong-bar med">Elevated</div></div><span class="cong-ships">3 ships</span></div>
+            <div class="congestion-row" style="background:rgba(220,38,38,0.06);border-radius:4px;"><span class="cong-date" style="color:#f87171;font-weight:700;">Sep 23</span><div class="cong-bar-wrap"><div class="cong-bar high">High-Constraint ← YOUR CLIENT</div></div><span class="cong-ships" style="color:#f87171;">5+ ships</span></div>
+            <div class="congestion-row"><span class="cong-date">Sep 25</span><div class="cong-bar-wrap"><div class="cong-bar low">Relaxed</div></div><span class="cong-ships">1 ship</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin-bottom:0.75rem;">
+            <span class="hb-icon">📅</span>
+            <div class="hb-text">
+              <strong>Practical advisor use</strong><br>
+              Before confirming a shore excursion for a Belize port day, check the calendar first. If the date is red, counsel your client about tender wait times — or help them get priority tender tickets if the cruise line offers them.
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:0.75rem;">
+            <h4>How the calendar is built</h4>
+            <p>Ship counts come from the DockBound cruise schedule index — rebuilt monthly from live sailing data. The op-state color is derived from the dynamic DOCK O-component threshold for that port.</p>
+          </div>
+          <div class="card">
+            <h4>Updated monthly</h4>
+            <p>The port schedule index is rebuilt monthly. Near-term dates (next 14 days) are most accurate as late ship additions and itinerary changes have been captured.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Scroll down in Port Tools past the DOCK score to the Congestion Calendar / Port Utilization Chart section for Belize. The bar chart is visible here. Point to September 23 — it should be visually taller/redder than surrounding dates.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 18 — SETTINGS TAB
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-18">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-gold">Tab 4: Settings</div>
+      <h2 class="slide-heading">Advisor <span class="gold">Settings</span></h2>
+      <div class="card-grid cols-2" style="margin-top:1.25rem;">
+        <div class="card">
+          <span class="card-icon">🔔</span>
+          <h4>Alert Preferences</h4>
+          <p>Configure which DOCK score changes trigger a notification. Set thresholds for when the advisor is alerted — e.g., "notify me when any client's port day moves from Elevated to High-Constraint." Email alerts are the primary channel; SMS is coming.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📋</span>
+          <h4>Guide Settings — Section Visibility</h4>
+          <p>The advisor controls which of the 18+ port guide sections are visible to their clients, and the display order. Toggle sections on or off — changes apply to the guides sent to all clients on that advisor's roster.</p>
+        </div>
+        <div class="card" style="grid-column:1/-1;">
+          <span class="card-icon">✉️</span>
+          <h4>Guide Email — Send to Client</h4>
+          <p>From the Clients tab, send a traveler their DOCKGuide as a formatted email. The email includes the port day breakdown, DOCK score, and relevant guide sections. All sends are logged to the advisor's send history for reference.</p>
+        </div>
+      </div>
+      <div class="highlight-box gold-box" style="margin-top:1rem;">
+        <span class="hb-icon">💡</span>
+        <div class="hb-text">
+          <strong>Note for independent advisors:</strong> The Settings tab does not include a Travefy sync panel — that's specific to Travefy-connected advisors. Everything else (alerts, guide settings, email) is identical between the two advisor types.
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Click the Settings tab. Show the Alert Settings section — point to the toggle switches. Then click Guide Settings to show the section visibility toggles (18 sections listed with on/off controls). You don't need to change anything — just show the controls exist.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 19 — ADVISOR PLAN TIERS
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-19">
+    <div class="slide-body" style="max-width:900px;">
+      <div class="label-chip chip-gold">Advisor Plans</div>
+      <h2 class="slide-heading">Basic · Professional · <span class="gold">Engage</span></h2>
+      <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:1rem;">Applies to both Independent and Travefy advisors — same tiers, same pricing</p>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:44%;">Feature</th>
+            <th class="center" style="width:18%;">Basic<br><span style="font-weight:400;font-size:0.65rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,0.4);">$199/mo</span></th>
+            <th class="center" style="width:18%;">Professional<br><span style="font-weight:400;font-size:0.65rem;text-transform:none;letter-spacing:0;color:rgba(255,255,255,0.4);">$699/mo</span></th>
+            <th class="center" style="width:18%;color:#fbbf24;">Engage<br><span style="font-weight:400;font-size:0.65rem;text-transform:none;letter-spacing:0;color:rgba(251,191,36,0.6);">$1,499/mo</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="section-row" colspan="4">Port Intelligence (all plans)</td></tr>
+          <tr><td>Port intelligence in Travefy (enrichment events)</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Daily data refresh</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Critical safety notifications <em style="color:rgba(255,255,255,0.35);font-size:0.72rem;">(to advisor)</em></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Opportunity &amp; referral reporting</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td class="section-row" colspan="4">Dashboard &amp; Alerts (Professional +)</td></tr>
+          <tr><td>Active-traveler dashboard with At-Risk view</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Prioritized condition changes + affected traveler list</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Daily digest &amp; 7-day look-ahead</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>Agency-wide roster view</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td>All configurable advisor alert types</td><td class="center"><span class="no">—</span></td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td></tr>
+          <tr><td class="section-row" colspan="4">Traveler Communications (Engage only)</td></tr>
+          <tr>
+            <td>Email to affected travelers <span style="display:inline-block;background:rgba(217,119,6,0.25);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:999px;letter-spacing:0.06em;vertical-align:middle;margin-left:4px;">IN PROGRESS</span></td>
+            <td class="center"><span class="no">—</span></td><td class="center"><span class="no">—</span><td class="center"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>SMS to affected travelers <span style="display:inline-block;background:rgba(217,119,6,0.25);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);font-size:0.6rem;font-weight:700;padding:1px 6px;border-radius:999px;letter-spacing:0.06em;vertical-align:middle;margin-left:4px;">IN PROGRESS</span></td>
+            <td class="center"><span class="no">—</span></td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td>
+          </tr>
+          <tr><td>Message drafts, templates &amp; history</td><td class="center"><span class="no">—</span></td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box gold-box" style="margin-top:1rem;">
+        <span class="hb-icon">⚠️</span>
+        <div class="hb-text">
+          <strong>Traveler communications layer is still being finalized.</strong> The technical infrastructure (SendGrid for email, Twilio for SMS) is in place but pending domain verification and carrier approval respectively. The feature design — who triggers it, what the message contains, opt-in mechanics — is an open question that needs a dedicated session before Engage goes to market.
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Presenter note:</strong> Be transparent here — Basic and Professional are well-defined. The Engage communications layer (email/SMS to travelers) is on the roadmap but the product details aren't locked yet. Don't over-promise on the timing or exact UX of those features.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 20 — SECTION BREAK: TRAVEFY
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-purple" id="slide-20">
+    <div style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">✈️</div>
+      <div class="label-chip chip-purple">Part 3 of 3</div>
+      <h1 class="slide-title" style="font-size:2.8rem;">The <span class="purple">Travefy</span> Advisor</h1>
+      <p class="slide-subtitle">Same 4-tab advisor experience — plus one superpower: DockBound data written directly into Travefy TripEvents, visible to clients in Travefy's app.</p>
+      <div class="cred" style="justify-content:center;">Login: <span>testman@testman.com</span><span class="sep">/</span><span>testmantestman</span></div>
+    </div>
+    <div class="speaker-note">
+      <strong>Action:</strong> Log out of amytest2. Log in as testman@testman.com / testmantestman. This advisor is connected to Travefy. The dashboard layout is identical — the difference shows up in the Settings tab (Travefy sync panel) and in Travefy itself.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 20 — TRAVEFY ADVISOR: WHAT'S DIFFERENT
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-dark-blue" id="slide-21">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-purple">Travefy Integration</div>
+      <h2 class="slide-heading">What's <span class="purple">Different</span></h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <h3 class="slide-subheading" style="font-size:1rem;margin-bottom:0.75rem;">Everything the independent advisor has, plus:</h3>
+          <div class="tab-item" style="margin-bottom:0.75rem;">
+            <span class="tab-icon">🔗</span>
+            <div>
+              <h4>Travefy Account Link</h4>
+              <p>In the Settings tab, the advisor connects their Travefy account via API credentials. Once linked, DockBound can read their trips and write data back.</p>
+            </div>
+          </div>
+          <div class="tab-item" style="margin-bottom:0.75rem;">
+            <span class="tab-icon">🔄</span>
+            <div>
+              <h4>Sync Travefy Trips</h4>
+              <p>One click pulls all active Travefy trips into DockBound. Trips are enriched with DOCK scores and port guide data — then written back as TripEvents in Travefy automatically.</p>
+            </div>
+          </div>
+          <div class="tab-item highlight">
+            <span class="tab-icon">📤</span>
+            <div>
+              <h4>Enrichment Events in Travefy</h4>
+              <p>For each port day on a synced trip, DockBound writes a TripEvent (EventType 12) with the DOCK score, op-state, port guide summary, and a deep-link back to DockBound. <strong style="color:var(--teal-light);">This is what the client sees in their Travefy app.</strong></p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="center" style="font-size:0.65rem;">Independent</th>
+                <th class="center" style="font-size:0.65rem;">Travefy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>All 4 dashboard tabs</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>Port Tools + DOCK score</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>Congestion Calendar</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>Manual client management</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>60-day free trial</td><td class="center"><span class="yes">✓</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>Travefy sync panel</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>Trip link editor per client</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td></tr>
+              <tr><td>DockBound → Travefy enrichment</td><td class="center"><span class="no">—</span></td><td class="center"><span class="yes">✓</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>On screen:</strong> Show the Settings tab for testman. The Travefy sync panel should be visible at the top (it's hidden entirely for independent advisors). Point to the "Sync Now" button and the connected account status.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 21 — TRAVEFY: THE ENRICHMENT
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-navy" id="slide-22">
+    <div class="slide-body" style="max-width:820px;">
+      <div class="label-chip chip-purple">What the Client Sees in Travefy</div>
+      <h2 class="slide-heading">DockBound Data <span class="purple">Inside Travefy</span></h2>
+      <div class="two-col" style="margin-top:1.25rem;">
+        <div>
+          <p style="font-size:0.84rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;">After the advisor syncs, DockBound writes one TripEvent per port day. In Travefy, the client sees these as part of their itinerary — DockBound intelligence, no separate app required.</p>
+          <div class="enrichment-card" style="margin-bottom:0.75rem;">
+            <h5><span class="travefy-badge">TRAVEFY</span> &nbsp; DockBound Port Intelligence — Belize City</h5>
+            <p>
+              <strong style="color:rgba(255,255,255,0.85);">DOCK Score: Elevated (3.3)</strong><br>
+              Tender port — expect queue times. Multiple ships in port on this date increases wait.<br><br>
+              <strong style="color:rgba(255,255,255,0.85);">Conditions:</strong> ☀️ Partly cloudy, 84°F. No active advisories.<br><br>
+              <strong style="color:rgba(255,255,255,0.85);">Tip:</strong> Book a guided tour with a certified operator — stay within the recommended safety zone near the tourism village.<br><br>
+              <a href="#" style="color:#60a5fa;font-size:0.72rem;">View full DockBound port guide →</a>
+            </p>
+          </div>
+          <div class="enrichment-card">
+            <h5><span class="travefy-badge">TRAVEFY</span> &nbsp; DockBound Port Intelligence — Cozumel</h5>
+            <p>
+              <strong style="color:rgba(255,255,255,0.85);">DOCK Score: Manageable (2.1)</strong><br>
+              Pier port. Low friction day — conditions favorable, light ship traffic.<br><br>
+              <strong style="color:rgba(255,255,255,0.85);">Conditions:</strong> ⛅ Partly cloudy, 88°F. No advisories.<br><br>
+              <a href="#" style="color:#60a5fa;font-size:0.72rem;">View full DockBound port guide →</a>
+            </p>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin-bottom:0.75rem;">
+            <span class="hb-icon">✈️</span>
+            <div class="hb-text">
+              <strong>Demo step: View in Travefy</strong><br>
+              Log into Travefy with <code style="color:var(--teal-light);">support@dockbound.app</code>. Navigate to the synced trip. Scroll to each port day — the DockBound TripEvents appear inline with the rest of the itinerary. Each shows the DOCK score, op-state, a one-line summary, and a link back to the full port guide.
+            </div>
+          </div>
+          <div class="card">
+            <h4>Deduplication</h4>
+            <p>DockBound uses <code style="color:var(--teal-light);font-size:0.75rem;">PartnerIdentifier: "dockbound-{portCode}"</code> to prevent duplicate enrichments. Re-syncing a trip updates the existing TripEvent rather than creating a second one.</p>
+          </div>
+          <div class="card" style="margin-top:0.75rem;">
+            <h4>Dynamic preference</h4>
+            <p>If the client's port day is within 14 days, DockBound uses the live dynamic DOCK score (with real ship counts and weather). Farther out, it uses the static baseline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Action:</strong> Open Travefy in a new tab. Log in as support@dockbound.app. Find a synced trip with DockBound events. Show the port day events inline in the itinerary view. Click the "View full port guide" link — it should open DockBound with that port pre-loaded.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 22 — CLOSING
+  ══════════════════════════════════════════ -->
+  <div class="slide bg-teal" id="slide-23">
+    <div style="text-align:center;max-width:720px;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">⚓</div>
+      <div class="label-chip chip-teal">Summary</div>
+      <h1 class="slide-title" style="font-size:2.4rem;">One Platform — <span class="accent">Three Audiences</span></h1>
+      <div class="card-grid cols-3" style="margin-top:1.5rem;text-align:left;">
+        <div class="card teal-border">
+          <span class="card-icon">🧭</span>
+          <h4 style="font-size:0.85rem;">Traveler</h4>
+          <p style="font-size:0.75rem;">Free port snapshot or full DOCKGuide. Per-itinerary access. Purpose-built for confident port days.</p>
+        </div>
+        <div class="card gold-border">
+          <span class="card-icon">📋</span>
+          <h4 style="font-size:0.85rem;">Independent Advisor</h4>
+          <p style="font-size:0.75rem;">Full roster + DOCK intelligence without Travefy. Manual client management, proactive alerts, congestion calendar.</p>
+        </div>
+        <div class="card purple-border">
+          <span class="card-icon">✈️</span>
+          <h4 style="font-size:0.85rem;">Travefy Advisor</h4>
+          <p style="font-size:0.75rem;">Everything above, plus DockBound intelligence visible to clients inside Travefy — no extra app for the traveler.</p>
+        </div>
+      </div>
+      <div style="margin-top:2rem;font-size:0.95rem;color:rgba(255,255,255,0.55);">
+        60-day free trial &nbsp;·&nbsp; No long-term contract &nbsp;·&nbsp; Invite code required for advisor signup
+      </div>
+      <div style="margin-top:1.5rem;" class="cred" style="justify-content:center;">
+        <span>dockbound.app</span>
+      </div>
+    </div>
+    <div class="speaker-note">
+      <strong>Close:</strong> Questions? The three paths share the same core intelligence layer — DOCK scores, port guides, congestion data. What differs is how that data reaches the end user — directly on the dashboard for travelers, through advisor tools for independent advisors, and through Travefy TripEvents for Travefy advisors.
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── Controls ── -->
+<div id="nav">
+  <button class="nav-btn" id="prev-btn" disabled>← Prev</button>
+  <span id="slide-counter">1 / 23</span>
+  <button class="nav-btn" id="next-btn">Next →</button>
+</div>
+
+<div id="progress"></div>
+
+<div class="kbd-hint">
+  <span class="kbd">←</span> <span class="kbd">→</span> or <span class="kbd">Space</span> to navigate
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let animating = false;
+
+  // Section colors for progress dots
+  const sectionMap = [
+    0,  // intro
+    1,  // agenda
+    2,  // what is
+    3, 4, 5, 6, 7, 8, // traveler (section break + slides)
+    9, 10, 11, 12, 13, 14, 15, 16, 17, // independent advisor
+    18, 19, 20, // travefy
+    21  // closing
+  ];
+
+  // Build progress dots
+  const progressEl = document.getElementById('progress');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    if (i === 3 || i === 9 || i === 18) dot.classList.add('section-break');
+    progressEl.appendChild(dot);
+  });
+
+  function updateDots() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  function goTo(index) {
+    if (animating || index < 0 || index >= total) return;
+    animating = true;
+
+    slides[current].classList.add('exit');
+    setTimeout(() => {
+      slides[current].classList.remove('active', 'exit');
+      current = index;
+      slides[current].classList.add('active');
+      updateUI();
+      animating = false;
+    }, 260);
+  }
+
+  function updateUI() {
+    document.getElementById('slide-counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('prev-btn').disabled = current === 0;
+    document.getElementById('next-btn').disabled = current === total - 1;
+    updateDots();
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next-btn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    }
+  });
+
+  // Initialize
+  updateUI();
+</script>
+</body>
+</html>

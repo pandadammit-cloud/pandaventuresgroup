@@ -13,8 +13,11 @@ $files = @(
   "pm-report.html"
 )
 
-New-Item -ItemType Directory -Force -Path $destDockBound    | Out-Null
-New-Item -ItemType Directory -Force -Path $destForumJourney | Out-Null
+$destDocsRoot = "$PSScriptRoot\..\public\docs"
+
+New-Item -ItemType Directory -Force -Path $destDockBound              | Out-Null
+New-Item -ItemType Directory -Force -Path $destForumJourney           | Out-Null
+New-Item -ItemType Directory -Force -Path "$destDocsRoot\releases"    | Out-Null
 
 foreach ($file in $files) {
   $src = Join-Path $srcDockBound $file
@@ -28,6 +31,19 @@ foreach ($file in $files) {
   $dst = Join-Path $destForumJourney $file
   if (Test-Path $src) { Copy-Item $src $dst -Force; Write-Host "  ForumJourney: $file" }
   else                 { Write-Host "  MISSING:      ForumJourney/$file" }
+}
+
+# DockBound root-level docs
+$rootDocs = @(
+  @{ src = "demo-script.html";          dst = "demo-script.html" },
+  @{ src = "gdpr-compliance-checklist.html"; dst = "gdpr-compliance-checklist.html" },
+  @{ src = "releases\v1.0.0.html";      dst = "releases\V1.0.0.html" }
+)
+foreach ($entry in $rootDocs) {
+  $src = Join-Path $srcDockBound $entry.src
+  $dst = Join-Path $destDocsRoot $entry.dst
+  if (Test-Path $src) { Copy-Item $src $dst -Force; Write-Host "  DockBound:    $($entry.src)" }
+  else                 { Write-Host "  MISSING:      $($entry.src)" }
 }
 
 Write-Host "Doc sync complete."

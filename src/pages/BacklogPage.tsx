@@ -318,35 +318,33 @@ export default function BacklogPage() {
           {
             product: 'dockbound',
             label:   'DockBound',
-            path:    '/docs/dockbound',
             docs: [
-              { file: 'product-spec.html',    title: 'Product Spec' },
-              { file: 'admin-spec.html',      title: 'Admin Spec'   },
-              { file: 'architecture.html',    title: 'Architecture' },
-              { file: 'pm-report.html',       title: 'PM Report'    },
-              { file: 'vdd.html',             title: 'VDD'          },
-              { file: 'demo-script.html',     title: 'Demo Script'  },
-              { file: 'gdpr-compliance.html', title: 'GDPR'         },
+              { href: '/docs/dockbound/product-spec.html',       title: 'Product Spec' },
+              { href: '/docs/dockbound/admin-spec.html',         title: 'Admin Spec'   },
+              { href: '/docs/dockbound/architecture.html',       title: 'Architecture' },
+              { href: '/docs/dockbound/pm-report.html',          title: 'PM Report'    },
+              { href: '/docs/releases/V1.0.0.html',              title: 'VDD'          },
+              { href: '/docs/demo-script.html',                  title: 'Demo Script'  },
+              { href: '/docs/gdpr-compliance-checklist.html',    title: 'GDPR'         },
             ],
           },
           {
             product: 'forumjourney',
             label:   'ForumJourney',
-            path:    '/docs/forumjourney',
             docs: [
-              { file: 'product-spec.html', title: 'Product Spec' },
-              { file: 'admin-spec.html',   title: 'Admin Spec'   },
-              { file: 'architecture.html', title: 'Architecture' },
-              { file: 'pm-report.html',    title: 'PM Report'    },
+              { href: '/docs/forumjourney/product-spec.html', title: 'Product Spec' },
+              { href: '/docs/forumjourney/admin-spec.html',   title: 'Admin Spec'   },
+              { href: '/docs/forumjourney/architecture.html', title: 'Architecture' },
+              { href: '/docs/forumjourney/pm-report.html',    title: 'PM Report'    },
             ],
           },
-        ] as const).map(({ product, label, path, docs }) => (
+        ] as const).map(({ product, label, docs }) => (
           <div key={product} className="backlog-doclinks__row">
             <img src={`/logo-${product}.png`} alt={label} className="backlog-doclinks__logo" />
             <span className="backlog-doclinks__name">{label}</span>
             <span className="backlog-doclinks__sep">—</span>
-            {docs.map(({ file, title }) => (
-              <a key={file} href={`${path}/${file}`} target="_blank" rel="noreferrer" className="backlog-doclinks__link">
+            {docs.map(({ href, title }) => (
+              <a key={href} href={href} target="_blank" rel="noreferrer" className="backlog-doclinks__link">
                 {title}
               </a>
             ))}

@@ -285,9 +285,6 @@ export default function BacklogPage() {
               <tr>
                 <th className="backlog-kpi__th backlog-kpi__th--label" />
                 <th className="backlog-kpi__th">Open</th>
-                <th className="backlog-kpi__th">In Progress</th>
-                <th className="backlog-kpi__th">Done</th>
-                <th className="backlog-kpi__th">Blocked</th>
                 {milestoneReleases.map(r => (
                   <th key={r.name} className="backlog-kpi__th">{r.name} Left</th>
                 ))}
@@ -303,9 +300,6 @@ export default function BacklogPage() {
                     {!logo && <span className="backlog-kpi__overall">All</span>}
                   </td>
                   <td className="backlog-kpi__td backlog-kpi__td--open">{k.open}</td>
-                  <td className="backlog-kpi__td backlog-kpi__td--progress">{k.inProgress}</td>
-                  <td className="backlog-kpi__td backlog-kpi__td--done">{k.done}</td>
-                  <td className={`backlog-kpi__td${k.blocked > 0 ? ' backlog-kpi__td--blocked' : ''}`}>{k.blocked}</td>
                   {milestoneReleases.map(r => (
                     <td key={r.name} className="backlog-kpi__td">
                       {subset.filter(i => i.userCategory === r.name && i.status !== 'done').length}
@@ -399,6 +393,7 @@ export default function BacklogPage() {
                     >
                       <td className="backlog-table__td backlog-table__td--order">{item.order}</td>
                       <td className="backlog-table__td">
+                        <div className="backlog-table__id">{item.id}</div>
                         <div className="backlog-table__title">{item.title}</div>
                         {item.description && <div className="backlog-table__desc">{item.description}</div>}
                         {item.notes       && <div className="backlog-table__notes">{item.notes}</div>}
@@ -414,7 +409,7 @@ export default function BacklogPage() {
                       </td>
                       <td className="backlog-table__td"><SizeBadge size={item.size} /></td>
                       <td className="backlog-table__td">
-                        {editingCategory === item.id ? (
+                        {editingCategory === item.id && !item.release ? (
                           <select
                             className="backlog-cat-select"
                             defaultValue={item.userCategory}
@@ -432,7 +427,7 @@ export default function BacklogPage() {
                           <CategoryBadge
                             value={item.userCategory}
                             saving={saving.has(item.id)}
-                            onClick={() => setEditingCategory(item.id)}
+                            onClick={item.release ? undefined : () => setEditingCategory(item.id)}
                           />
                         )}
                       </td>

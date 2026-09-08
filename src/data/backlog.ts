@@ -18,6 +18,7 @@ export interface BacklogItem {
   commitRef?:        string;
   updatedAt?:        string;   // ISO 8601
   updatedBy?:        string;   // e.g. "dockboundAI", "forumjourneyAI", "amy"
+  release?:          string;   // set when item is locked to a shipped release
 }
 
 export interface HistoryEntry {

@@ -315,20 +315,37 @@ export default function BacklogPage() {
 
       <div className="backlog-doclinks">
         {([
-          { product: 'dockbound',    label: 'DockBound',    path: '/docs/dockbound'    },
-          { product: 'forumjourney', label: 'ForumJourney', path: '/docs/forumjourney' },
-        ] as const).map(({ product, label, path }) => (
-          <div key={product} className="backlog-doclinks__row">
-            <img src={`/logo-${product}.png`} alt={label} className="backlog-doclinks__logo" />
-            <span className="backlog-doclinks__name">{label}</span>
-            <span className="backlog-doclinks__sep">—</span>
-            {[
+          {
+            product: 'dockbound',
+            label:   'DockBound',
+            path:    '/docs/dockbound',
+            docs: [
+              { file: 'product-spec.html',    title: 'Product Spec' },
+              { file: 'admin-spec.html',      title: 'Admin Spec'   },
+              { file: 'architecture.html',    title: 'Architecture' },
+              { file: 'pm-report.html',       title: 'PM Report'    },
+              { file: 'vdd.html',             title: 'VDD'          },
+              { file: 'demo-script.html',     title: 'Demo Script'  },
+              { file: 'gdpr-compliance.html', title: 'GDPR'         },
+            ],
+          },
+          {
+            product: 'forumjourney',
+            label:   'ForumJourney',
+            path:    '/docs/forumjourney',
+            docs: [
               { file: 'product-spec.html', title: 'Product Spec' },
               { file: 'admin-spec.html',   title: 'Admin Spec'   },
               { file: 'architecture.html', title: 'Architecture' },
               { file: 'pm-report.html',    title: 'PM Report'    },
-              { file: 'roadmap.html',      title: 'Roadmap'      },
-            ].map(({ file, title }) => (
+            ],
+          },
+        ] as const).map(({ product, label, path, docs }) => (
+          <div key={product} className="backlog-doclinks__row">
+            <img src={`/logo-${product}.png`} alt={label} className="backlog-doclinks__logo" />
+            <span className="backlog-doclinks__name">{label}</span>
+            <span className="backlog-doclinks__sep">—</span>
+            {docs.map(({ file, title }) => (
               <a key={file} href={`${path}/${file}`} target="_blank" rel="noreferrer" className="backlog-doclinks__link">
                 {title}
               </a>

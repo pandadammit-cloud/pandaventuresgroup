@@ -195,7 +195,7 @@
   <div class="internal-badge">Internal Use Only</div>
   <h1>Platform Administration Specification</h1>
   <div class="meta">
-    <span>Last updated: 2026-09-05</span>
+    <span>Last updated: 2026-09-07</span>
     <span>Not for distribution outside DockBound team</span>
   </div>
 </div>
@@ -877,6 +877,33 @@
   </tbody>
 </table>
 
+<h3 class="subsection-title">Recently Built — September 7, 2026</h3>
+<table class="gap-table">
+  <thead><tr><th>Item</th><th>What Was Built</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="status built">Built</span> Port Guide Email Delivery (Single + Bulk)</td>
+      <td>Two new Cloud Functions: <code>sendPortGuideEmail</code> (single traveler — called from the mail icon on a Clients tab row) and <code>sendBulkPortGuideEmail</code> (full sailing roster — called from "Send All" on an Itinerary Timeline row). Both use SendGrid (<code>sendgridApiKey</code> secret). A shared <code>buildPortGuideEmail()</code> helper generates the email body. All sends are logged in the <code>guide_send_log</code> Firestore collection with fields: <code>agentUid</code>, <code>rosterId</code>, <code>portCode</code>, <code>email</code>, <code>sentAt</code>, <code>bulkSend</code>. A <code>GUIDE_EMAIL_TEST_MODE</code> flag in <code>functions/index.js</code> redirects all sends to an override address during testing. Email delivery is currently shown as "Coming Soon" in the production UI while SendGrid domain verification for <code>support@dockbound.app</code> is pending.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> NWS Imminent Weather Alerts</td>
+      <td>New <code>nwsAlerts</code> Cloud Function — a public POST endpoint that accepts a <code>portCode</code> and proxies the NOAA NWS Alerts API (<code>api.weather.gov/alerts/active?point=lat,lon</code>). A <code>NWS_PORT_COORDS</code> map in the function covers US cruise ports; international ports return <code>covered: false</code>. The function filters returned features to the standard NWS alert structure. Frontend: <code>nwsService.ts</code> exposes <code>fetchNWSAlerts()</code>, <code>isNWSSignificant()</code>, and <code>formatNWSExpires()</code>. Alerts are fetched only for today/tomorrow port days. Displayed in the traveler dashboard (banner strip) and advisor Sailing Timeline port-day cards (badge).</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> StateGovTravelAdvisory Cloud Run Removed</td>
+      <td>The separate Cloud Run service (<code>StateGovTravelAdvisory/</code>) that previously proxied the State Department RSS feed has been removed. <code>fetchAndStoreAlerts()</code> in <code>functions/index.js</code> now parses the State Dept RSS feed directly via the <code>rss-parser</code> npm package — no external service, no <code>TRAVEL_ALERTS_API_URL</code> secret. Travel advisory data still stored in <code>travel_alerts/{countryCode}</code> with the same schema.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Data Architecture Layer (DB.V1.0.1)</td>
+      <td>Guide personalization write path wired: <code>agentGuideOverrideService.ts</code> reads/writes <code>agentGuideOverrides/{uid}</code> with <code>baseProfileId</code>, <code>addSections</code>, and <code>removeSections</code>. <code>AgentGuideSettings</code> now persists section visibility choices to this collection instead of <code>portGuideConfig</code>. <code>resolvePortGuideDisplayConfig()</code> in <code>portGuideConfigService.ts</code> reads overrides to filter sections. <code>buildFallbackProfile()</code> added to <code>guideResolverService.ts</code> so guide never goes empty if <code>guideProfiles/platform-default</code> is missing. Seed scripts: <code>seed-datasources.cjs</code>, <code>seed-fieldtypes.cjs</code>, <code>seed-section-types.cjs</code>, <code>seed-guide-profiles.cjs</code> — all idempotent, target <code>pandaventuresgroup</code> Firestore for the shared registry.</td>
+    </tr>
+    <tr>
+      <td><span class="status built">Built</span> Composite Index for cruise_itinerary_changes</td>
+      <td>Added <code>cruiseId ASC + detectedAt ASC</code> composite index to <code>firestore.indexes.json</code> for the <code>cruise_itinerary_changes</code> collection. This fixes the <code>getUnseenItineraryChanges</code> query error that was surfacing in production logs (db-infra-2 backlog item).</td>
+    </tr>
+  </tbody>
+</table>
+
 <h3 class="subsection-title">P1 — Critical Gaps (Build Soon)</h3>
 <table class="gap-table">
   <thead><tr><th>Priority</th><th>Gap</th><th>Why It Matters</th><th>Suggested Solution</th></tr></thead>
@@ -884,7 +911,7 @@
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Advisor Detail Page <em>(was P1)</em></td>
-      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/advisors/:uid</code> (<code>AdminAdvisorDetailPage</code>): email, agency, tier, slotsUsed, subscription status, trial end date, Travefy connection. Actions: plan tier + status override (audit-logged), suspend/reactivate.</td>
+      <td><span class="status built">Built 2026-09-07</span> — <code>/admin/advisors/:uid</code> (<code>AdminAdvisorDetailPage</code>): email, agency, tier, slotsUsed, subscription status, trial end date, Travefy connection. Actions: plan tier + status override (audit-logged), suspend/reactivate.</td>
       <td></td>
     </tr>
     <tr>
@@ -896,7 +923,7 @@
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Order Lookup &amp; Comp Access <em>(was P1)</em></td>
-      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/orders</code> (<code>AdminOrderLookupPage</code>): search by traveler email, view order history, issue comped DOCKGuide access. Refunds still require Stripe Dashboard.</td>
+      <td><span class="status built">Built 2026-09-07</span> — <code>/admin/orders</code> (<code>AdminOrderLookupPage</code>): search by traveler email, view order history, issue comped DOCKGuide access. Refunds still require Stripe Dashboard.</td>
       <td></td>
     </tr>
     <tr>
@@ -908,7 +935,7 @@
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Pipeline Health Dashboard <em>(was P1)</em></td>
-      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/pipeline-health</code> (<code>PipelineHealthPage</code>): ok/error status, last-run timestamp, duration, records-processed for all 9 scheduled pipelines. Per-pipeline failure detail (e.g. per-advisor Travefy errors) still requires Firebase Console logs.</td>
+      <td><span class="status built">Built 2026-09-07</span> — <code>/admin/pipeline-health</code> (<code>PipelineHealthPage</code>): ok/error status, last-run timestamp, duration, records-processed for all 9 scheduled pipelines. Per-pipeline failure detail (e.g. per-advisor Travefy errors) still requires Firebase Console logs.</td>
       <td></td>
     </tr>
     <tr>
@@ -945,7 +972,7 @@
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Audit Log Viewer <em>(was P2)</em></td>
-      <td><span class="status built">Built 2026-09-05</span> — <code>/admin/audit-log</code> (<code>AuditLogPage</code>): searchable, read-only viewer for the <code>logs</code> Firestore collection. Shows action type, admin UID, affected UID, timestamp, and metadata.</td>
+      <td><span class="status built">Built 2026-09-07</span> — <code>/admin/audit-log</code> (<code>AuditLogPage</code>): searchable, read-only viewer for the <code>logs</code> Firestore collection. Shows action type, admin UID, affected UID, timestamp, and metadata.</td>
       <td></td>
     </tr>
     <tr>
@@ -1036,14 +1063,14 @@
     <tr>
       <td><span class="status built">Built</span></td>
       <td>Admin Portal Link to Agent Tools <em>(was P3)</em></td>
-      <td><span class="status built">Built 2026-09-05</span> — Agent Tools (<code>/admin/agents</code>) is now a tile in the Admin Portal hub under the People &amp; Access group.</td>
+      <td><span class="status built">Built 2026-09-07</span> — Agent Tools (<code>/admin/agents</code>) is now a tile in the Admin Portal hub under the People &amp; Access group.</td>
       <td></td>
     </tr>
   </tbody>
 </table>
 
 <p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e2e8f0;font-size:0.75rem;color:#9ca3af;text-align:center;">
-  DockBound Internal Admin Specification &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; Not for distribution
+  DockBound Internal Admin Specification &nbsp;·&nbsp; Last updated 2026-09-07 &nbsp;·&nbsp; Internal use only &nbsp;·&nbsp; Not for distribution
 </p>
 
 </div>

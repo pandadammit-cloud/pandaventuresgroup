@@ -72,7 +72,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   <div class="logo">ForumJourney</div>
   <h1>System Architecture</h1>
   <div class="subtitle">Technical Reference for Platform Engineering</div>
-  <div class="meta">Internal codebase: EventBound &nbsp;·&nbsp; Generated: 2026-09-05 &nbsp;·&nbsp; PandA Ventures</div>
+  <div class="meta">Internal codebase: EventBound &nbsp;·&nbsp; Generated: 2026-09-07 &nbsp;·&nbsp; PandA Ventures</div>
 </div>
 
 <div class="toc">
@@ -297,7 +297,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   <li><strong>Runner:</strong> <code>src/sourcing/runner.ts</code> — resolves the <code>EventCollectionSpecification</code> (creates one if absent), iterates enabled categories, creates <code>CollectionJob</code> per active source, invokes adapters</li>
   <li><strong>Adapters:</strong> implement <code>SourceAdapter</code> interface (<code>src/sourcing/adapters/types.ts</code>) — active: <code>google_places_parking</code>, <code>googlePlaces</code>, <code>openStreetMap</code></li>
   <li><strong>Normalization:</strong> adapter raw payload → <code>FactCandidate[]</code> via category normalizers (<code>src/sourcing/normalizers/parking.ts</code>)</li>
-  <li><strong>Storage:</strong> raw payload → <code>rawSourceRecords</code>; normalized facts → <code>normalizedFacts</code></li>
+  <li><strong>Storage:</strong> raw payload → <code>rawSourceRecords</code>; normalized facts → <code>normalizedFacts</code>. Each fact is stamped with <code>sourcePriority</code> and <code>sourceAccuracy</code> from its source at write time.</li>
   <li><strong>Geography:</strong> <code>src/sourcing/geography.ts</code> provides typed <code>GeographicRule</code> builders and Haversine-based <code>pointInRule()</code>. Default radii: parking 1.0 mi, transit 1.5 mi, dining 1.0 mi, activities 10.0 mi.</li>
   <li><strong>Credentials:</strong> adapter API keys resolved at runtime from GCP Secret Manager via <code>src/lib/secrets.ts</code> (<code>resolveCredential()</code>); falls back to env var if no credential ref</li>
   <li><strong>Admin UI:</strong> <code>/operator/sources/*</code> routes manage the <code>sourceRegistry</code> — propose, approve, reject, configure sources</li>
@@ -391,13 +391,13 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <div class="block">
   <h4>sourceRegistry</h4>
   <p>Key: <code>{sourceId}</code></p>
-  <p>External data source config: adapter ID, category, credential ref, reliability, refresh profile. Managed via <code>/operator/sources/*</code> routes.</p>
+  <p>External data source config: adapter ID, category, credential ref, reliability, refresh profile. Two-dimension source scoring: <code>priority</code> (ordinal integer — lower = higher preference) and <code>accuracy</code> (0–1 float — confidence in data quality for this source and category). Managed via <code>/operator/sources/*</code> routes.</p>
 </div>
 
 <div class="block">
   <h4>normalizedFacts</h4>
   <p>Key: auto-ID</p>
-  <p>Normalized, source-agnostic facts indexed by occurrenceId + category. Payload shape is category-specific (e.g., <code>ParkingFactPayload</code>). Queried by plan generator for parking discoveries.</p>
+  <p>Normalized, source-agnostic facts indexed by occurrenceId + category. Payload shape is category-specific (e.g., <code>ParkingFactPayload</code>). Facts carry <code>sourcePriority</code> and <code>sourceAccuracy</code> copied from their source at collection time — these enable conflict resolution when multiple sources provide the same category for the same location. Queried by plan generator for parking discoveries.</p>
 </div>
 
 <div class="block">
@@ -552,7 +552,7 @@ firebase deploy --only firestore   # rules + indexes only</div>
   <tr><td>Adapter credentials</td><td>API keys resolved at runtime from GCP Secret Manager via <code>resolveCredential()</code>. In-memory cache per function invocation. Never logged.</td></tr>
 </table>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-07</p>
 
 </body>
 </html>

@@ -157,6 +157,19 @@
     padding: 1px 5px;
     border-radius: 3px;
   }
+  table.data-table th.col-feat { text-align: center; min-width: 80px; }
+  table.data-table td.col-feat { text-align: center; }
+  .feat-yes { color: #059669; font-weight: 700; }
+  .feat-no  { color: #9ca3af; }
+  table.data-table td.feat-section {
+    font-weight: 700;
+    color: #1e0a4a;
+    background: #f5f3ff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 0.6rem;
+  }
 
   /* ── Function Cards ── */
   .function-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem; }
@@ -271,7 +284,7 @@
   <div class="logo-mark">DOCK<span>Bound</span></div>
   <h1>Product Specification</h1>
   <div class="meta">
-    <span>Last updated: 2026-09-05</span>
+    <span>Last updated: 2026-09-07</span>
     <span>Maintained via <code style="color:rgba(255,255,255,0.6);font-size:0.75rem">/update-spec</code></span>
   </div>
 </div>
@@ -441,15 +454,15 @@
 </div>
 
 <div class="journey">
-  <h3>Journey 9 — Advisor: Delivers DOCKGuide to Traveler <span class="roadmap-badge">Roadmap</span></h3>
-  <p>An advisor proactively pushes a client's port guide to them for a port arriving today or tomorrow.</p>
+  <h3>Journey 9 — Advisor: Delivers DOCKGuide to Traveler</h3>
+  <p>An advisor proactively pushes a client's port guide to them for a port arriving soon — either to one traveler or to the full sailing roster at once.</p>
   <ol>
-    <li><strong>Identify</strong> — Sees in "Who's Sailing" that a client arrives at port tomorrow</li>
-    <li><strong>Select</strong> — Chooses the client and specific port day</li>
-    <li><strong>Send</strong> — One-click delivery pushes DOCKGuide via email or in-app notification</li>
-    <li><strong>Traveler receives</strong> — Gets the port guide link before they even think to look</li>
+    <li><strong>Identify</strong> — Sees in the Itinerary Timeline that a sailing row has clients who need guides</li>
+    <li><strong>Send single</strong> — From the Clients tab, clicks the mail icon on a traveler's row to open a confirmation modal and sends their port guide email via SendGrid; or</li>
+    <li><strong>Send bulk</strong> — Clicks "Send All" on a sailing row in the Itinerary Timeline to preview the full traveler list, then confirms to send to all enrolled travelers in one action</li>
+    <li><strong>Traveler receives</strong> — Gets a port-day guide email before they even think to look; advisor delivers tangible value at the exact right moment</li>
   </ol>
-  <div class="functions-used"><strong>Functions:</strong> View Who's Sailing timeline · Send DOCKGuide to traveler (roadmap) · View delivery history (roadmap)</div>
+  <div class="functions-used"><strong>Functions:</strong> View Itinerary Timeline · Send port guide email (single traveler) · Send port guide email (bulk — full sailing roster) · View send confirmation modal</div>
 </div>
 
 <div class="journey">
@@ -1026,9 +1039,9 @@
 <div class="fn">
   <div class="fn-name">Configure Alert Settings</div>
   <div class="fn-body">
-    <div class="label what">What</div><div class="def">Lets the advisor configure two alert channels for cruise changes at their tracked ports. <strong>Email alerts</strong>: on/off toggle, custom delivery address (defaults to account email), and checkboxes for which change types trigger an alert (new sailings, updates, deletions, reappearances); frequency is a daily digest sent each morning. <strong>SMS alerts</strong>: a TCPA-compliant opt-in form — advisor enters their mobile number, selects change types, and must check an explicit consent checkbox (never pre-selected) before clicking "Yes, sign me up!". Once enrolled, full STOP/HELP keyword disclosures are displayed; advisor can remove SMS alerts at any time. Inbound STOP/HELP replies are handled by Twilio. Settings are stored on the agent's Firestore document under <code class="path">alertSettings</code>; <code class="path">lastAlertSentAt</code> is updated by the system after each send.</div>
+    <div class="label what">What</div><div class="def">Lets the advisor configure two alert channels for cruise changes at their tracked ports. <strong>Email alerts</strong>: on/off toggle, custom delivery address (defaults to account email), and checkboxes for which change types trigger an alert (new sailings, updates, deletions, reappearances); frequency is a daily digest sent each morning. Currently shown as "Coming Soon" in production while SendGrid domain verification is pending — functional in development. <strong>SMS alerts</strong>: a TCPA-compliant opt-in form — shown as "Coming Soon" while Twilio account approval is pending. Code is implemented: advisor enters their mobile number, selects change types, and must check an explicit consent checkbox (never pre-selected). SMS consent state always initializes to <code class="path">false</code> — TCPA compliance is enforced in code, not just UX convention. Inbound STOP/HELP replies are handled by Twilio. Settings are stored on the agent's Firestore document under <code class="path">alertSettings</code>; <code class="path">lastAlertSentAt</code> is updated by the system after each send.</div>
     <div class="label who">Who</div><div class="def">Advisor, on the Settings tab — Notification Preferences section.</div>
-    <div class="label result">Result</div><div class="def">Advisor receives a morning email (and/or an SMS text for enrolled advisors) on any day new matching changes are detected at their tracked ports — ensuring they're never the last to know about an itinerary modification.</div>
+    <div class="label result">Result</div><div class="def">When active (post-verification): advisor receives a morning email (and/or an SMS text for enrolled advisors) on any day new matching changes are detected at their tracked ports — ensuring they're never the last to know about an itinerary modification.</div>
   </div>
 </div>
 
@@ -1061,11 +1074,29 @@
 </div>
 
 <div class="fn">
-  <div class="fn-name">Send DOCKGuide to Traveler <span class="roadmap-badge">Roadmap</span></div>
+  <div class="fn-name">Send Port Guide Email — Single Traveler</div>
   <div class="fn-body">
-    <div class="label what">What</div><div class="def">Lets the advisor push a specific client's port guide for an arriving port directly to that client via email or in-app notification — without the client needing to log in first.</div>
-    <div class="label who">Who</div><div class="def">Advisor, from the Sailings tab — Who's Sailing section. (Feature not yet built — Phase 2.4.)</div>
-    <div class="label result">Result</div><div class="def">Client receives their port guide proactively on the day before or day of arrival; advisor delivers tangible value at the exact right moment.</div>
+    <div class="label what">What</div><div class="def">From the Clients tab, advisor clicks the mail icon on a traveler's row to open a confirmation modal showing the destination port and recipient. In test mode (development environment), a warning is displayed and the email is redirected to the override address. On confirm, a <code class="path">sendPortGuideEmail</code> Cloud Function call sends the traveler's port guide for their sailing's first upcoming port via SendGrid. The send is logged in <code class="path">guide_send_log</code>.</div>
+    <div class="label who">Who</div><div class="def">Advisor, from the Clients tab — mail icon on any traveler row with an active sailing.</div>
+    <div class="label result">Result</div><div class="def">Traveler receives their port guide email before arrival; advisor delivers proactive value without the client needing to log in. Currently gated as "Coming Soon" in production pending SendGrid domain verification.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">Send Port Guide Email — Full Sailing Roster (Bulk)</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">From each sailing row in the Itinerary Timeline (Sailings tab), clicking "Send All" opens a modal displaying the full traveler list for that cruise. Advisor reviews the list and confirms. The <code class="path">sendBulkPortGuideEmail</code> Cloud Function sends one port guide email to each enrolled traveler in parallel. Each send is logged in <code class="path">guide_send_log</code> with <code class="path">bulkSend: true</code>.</div>
+    <div class="label who">Who</div><div class="def">Advisor, from the Sailings tab — "Send All" button on any Itinerary Timeline sailing row.</div>
+    <div class="label result">Result</div><div class="def">Every enrolled traveler on a sailing receives their port guide in a single advisor action — no per-client clicking required. Currently gated as "Coming Soon" in production pending SendGrid domain verification.</div>
+  </div>
+</div>
+
+<div class="fn">
+  <div class="fn-name">NWS Imminent Weather Alerts</div>
+  <div class="fn-body">
+    <div class="label what">What</div><div class="def">For port days that are today or tomorrow, DockBound queries the NOAA National Weather Service (NWS) Alerts API via the <code class="path">nwsAlerts</code> Cloud Function. Alerts with severity <strong>Extreme</strong> or <strong>Severe</strong> are surfaced in the traveler dashboard and the advisor's Sailing Timeline port-day cards. Non-significant alerts and international port results (outside NWS coverage) are filtered out. Coverage is US ports only — international ports return <code class="path">covered: false</code> without surfacing an alert.</div>
+    <div class="label who">Who</div><div class="def">Travelers (in their dashboard) and advisors (in the Sailing Timeline intelligence panel) — automatically triggered for today/tomorrow port days.</div>
+    <div class="label result">Result</div><div class="def">Users see an immediate warning when a US port day is under an active extreme or severe weather event — before they step off the ship.</div>
   </div>
 </div>
 
@@ -1837,12 +1868,11 @@
     <tr><td><strong>Nightly Travefy Sync</strong></td><td>Your Travefy trips are automatically refreshed every night at 2am, so your dashboard is always current by morning.</td></tr>
     <tr><td><strong>Trip Enrichment</strong></td><td>DockBound writes its intelligence — DockScores and port summaries — back into your Travefy trips as TripEvents, so clients see it in Travefy too.</td></tr>
     <tr><td><strong>Port Guide Customization</strong></td><td>Control which guide sections your clients see and in what order — match the DOCKGuide to your agency's brand and service style.</td></tr>
-    <tr><td><strong>CSV Bulk Import</strong></td><td>Add your entire client list in one file upload — DockBound validates cruise IDs before importing so you don't get bad data.</td></tr>
     <tr><td><strong>Advisor-Traveler Communications</strong></td><td>A built-in messaging hub on every advisor's roster: log emails, calls, texts, and notes against a traveler's record, or send a real SMS directly from DockBound — all threaded in one place so nothing gets lost across channels.</td></tr>
     <tr><td><strong>Cruise Change Feed</strong></td><td>A live feed of cruise itinerary changes detected by DockBound's data pipeline — new sailings, itinerary updates, port swaps, and cancellations. Changes matching your tracked ports surface first so you always see what matters most.</td></tr>
     <tr><td><strong>Port Activity Monitor</strong></td><td>A port-centric view of recent cruise changes grouped by each of your tracked ports — see how volatile each destination has been in the last 30 days and spot patterns before your clients feel them.</td></tr>
     <tr><td><strong>Advisor Alert Digest</strong></td><td>A daily morning email summarizing overnight cruise changes at your tracked ports — opt in, choose which change types trigger a notification, and add a custom delivery address.</td></tr>
-    <tr><td><strong>One-Click Port Guide Delivery</strong><span class="roadmap-badge">Coming Soon</span></td><td>Send a client their port guide for tomorrow's destination in a single click — proactive service, zero effort.</td></tr>
+    <tr><td><strong>Port Guide Email Delivery</strong></td><td>Send a client their port guide for an upcoming port directly from the dashboard — single traveler or the full sailing roster at once. Proactive service at the exact right moment.</td></tr>
   </tbody>
 </table>
 
@@ -1865,34 +1895,102 @@
 ════════════════════════════════════════════════ -->
 <h2 class="section-title" id="tiers">10. Tiers &amp; Access</h2>
 
-<h3 class="subsection-title">Traveler Access</h3>
+<h3 class="subsection-title">Traveler Access — Free vs. Paid</h3>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Travelers access DockBound via direct purchase (<code class="path">/payment-checkout</code>) or through an advisor referral. The free tier gives a port snapshot; the paid tier unlocks the full DOCKGuide experience for one itinerary. Access is enforced client-side via the <code class="path">FeatureGate</code> component reading <code class="path">effectivePermissions</code> written by the <code class="path">resolveNodePermissions</code> Cloud Function at login.</p>
 <table class="data-table">
-  <thead><tr><th>Level</th><th>How Obtained</th><th>Content</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th class="col-feat">Free</th>
+      <th class="col-feat">Paid</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>Freemium</td><td>Sign-up without purchase, or advisor referral</td><td>Limited sections visible — node-permission gated via FeatureGate component</td></tr>
-    <tr><td>Paid</td><td>Stripe purchase at <code>/payment-checkout</code></td><td>Full DOCKGuide for one itinerary — all sections unlocked</td></tr>
+    <tr><td class="feat-section" colspan="3">Port Day Basics</td></tr>
+    <tr><td>Day navigation pill strip (port name + day type)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Port info card (port name, country, port type)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Current weather (temp, conditions)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>NWS severe weather banner (US ports, same-day)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Tours &amp; activities (Viator search results)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td class="feat-section" colspan="3">Full DOCKGuide</td></tr>
+    <tr><td>5-day weather forecast</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Full port guide (18+ sections: Getting Off, Weather Reality, Who It's For, What to Bring, etc.)</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Port Day at a Glance (V4 summary: card acceptance, cash, tap water, return complexity)</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>DOCK Score (friction, operational load, conditions, key risks)</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>State Department travel advisory</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>In The Know tips (port-specific local intel)</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Currency converter (local currency rates)</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
   </tbody>
 </table>
 
-<h3 class="subsection-title">Advisor Tiers — Slot-Based Plans (Independent &amp; Agency)</h3>
+<h3 class="subsection-title">Advisor Type Comparison — Travefy vs. Independent</h3>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Both advisor types (<code class="path">travefyadvisor</code> and <code class="path">independentAdvisor</code>) have identical access to every dashboard tab and feature except the Travefy sync panel. Both start with a 60-day free trial and use the same <code class="path">TRAVEFY_TIERS</code> pricing. The <code class="path">independentAdvisor</code> path requires a credit card at signup (Stripe trial); the <code class="path">travefyadvisor</code> path does not.</p>
 <table class="data-table">
-  <thead><tr><th>Plan Name</th><th>Traveler Slots</th><th>Price</th><th>Notes</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th class="col-feat">Travefy Advisor</th>
+      <th class="col-feat">Independent Advisor</th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>Starter</td><td>25</td><td>$149/mo</td><td>Entry tier</td></tr>
-    <tr><td>Professional</td><td>100</td><td>$499/mo</td><td>Growth tier</td></tr>
-    <tr><td>Agency</td><td>300</td><td>$1,199/mo</td><td>Pro tier</td></tr>
-    <tr><td>Enterprise</td><td>750</td><td>$2,499/mo</td><td>Enterprise tier</td></tr>
+    <tr><td class="feat-section" colspan="3">Dashboard Access</td></tr>
+    <tr><td>Sailings tab — Trip Intelligence table</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Sailings tab — port-day intelligence panel (DOCK, weather, at-risk)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Clients tab — traveler roster, add/archive, messaging</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Port Tools tab — port guide lookup, congestion calendar, guide settings</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Settings tab — alert preferences</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td class="feat-section" colspan="3">Travefy Integration</td></tr>
+    <tr><td>Settings tab — Travefy sync panel (connect account, sync trips)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-no">—</span></td></tr>
+    <tr><td>Travefy trip link editor per roster row</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-no">—</span></td></tr>
+    <tr><td>DockBound enrichment written back to Travefy TripEvents</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-no">—</span></td></tr>
+    <tr><td class="feat-section" colspan="3">Onboarding</td></tr>
+    <tr><td>Credit card required at signup</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>60-day free trial</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Invite code required</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
   </tbody>
 </table>
 
-<h3 class="subsection-title">Advisor Tiers — Travefy Advisor &amp; Independent Advisor Plans</h3>
-<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Advisors who sign up via the Travefy Advisor path (<code class="path">advisorType: travefyadvisor</code>) or the independent advisor path (<code class="path">advisorType: independentAdvisor</code>) both start with a 60-day free trial, after which they choose one of the three monthly plans below. Both types use the same <code class="path">TRAVEFY_TIERS</code> pricing structure — pricing may diverge in the future via <code class="path">INDEPENDENT_ADVISOR_TIERS</code> without code changes to the checkout flow. Note: the <code class="path">independentAdvisor</code> path requires a credit card at signup (Stripe trial); the <code class="path">travefyadvisor</code> path does not.</p>
+<h3 class="subsection-title">Advisor Plans — Feature Comparison</h3>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Both advisor types share the same three monthly plan tiers (<code class="path">TRAVEFY_TIERS</code>). Pricing may diverge via <code class="path">INDEPENDENT_ADVISOR_TIERS</code> in a future release without checkout flow changes.</p>
 <table class="data-table">
-  <thead><tr><th>Plan Name</th><th>Price</th><th>Key Features</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th class="col-feat">Basic<br><span style="font-weight:400;font-size:0.7rem;text-transform:none;letter-spacing:0">$199/mo</span></th>
+      <th class="col-feat">Professional<br><span style="font-weight:400;font-size:0.7rem;text-transform:none;letter-spacing:0">$699/mo</span></th>
+      <th class="col-feat">Engage<br><span style="font-weight:400;font-size:0.7rem;text-transform:none;letter-spacing:0">$1,499/mo</span></th>
+    </tr>
+  </thead>
   <tbody>
-    <tr><td>Basic</td><td>$199/mo</td><td>Port intelligence in Travefy, daily refresh, critical safety notifications to advisor, opportunity &amp; referral reporting, critical alerts only.</td></tr>
-    <tr><td>Professional</td><td>$699/mo</td><td>All Basic features + active-traveler dashboard, prioritized condition changes &amp; affected travelers, daily digest &amp; 7-day look-ahead, agency-wide roster view, replaceable affiliate links.</td></tr>
-    <tr><td>Engage</td><td>$1,499/mo</td><td>All Professional features + all configurable advisor alerts, email/SMS to affected travelers, drafts, templates &amp; message history.</td></tr>
+    <tr><td class="feat-section" colspan="4">Port Intelligence</td></tr>
+    <tr><td>Port intelligence in Travefy (enrichment events)</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Daily data refresh</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Critical safety notifications to advisor</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Opportunity &amp; referral reporting</td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td class="feat-section" colspan="4">Dashboard &amp; Alerts</td></tr>
+    <tr><td>Active-traveler dashboard</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Prioritized condition changes with affected traveler list</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Daily digest &amp; 7-day look-ahead</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Agency-wide roster view</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Replaceable affiliate links</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>All configurable advisor alert types</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td class="feat-section" colspan="4">Traveler Communications</td></tr>
+    <tr><td>Email to affected travelers</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>SMS to affected travelers</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+    <tr><td>Message drafts, templates &amp; history</td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-no">—</span></td><td class="col-feat"><span class="feat-yes">✓</span></td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">Advisor Tiers — Slot-Based Plans (Agency-Managed Advisors)</h3>
+<p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.75rem;">Agency-managed advisors are billed by traveler slot count rather than the per-advisor tier model. Slots are shared across all advisors in the agency. Priced via <code class="path">AGENT_TIERS</code> in <code class="path">agentService.ts</code>.</p>
+<table class="data-table">
+  <thead><tr><th>Plan Name</th><th>Traveler Slots</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Starter</td><td>25</td><td>$149/mo</td></tr>
+    <tr><td>Professional</td><td>100</td><td>$499/mo</td></tr>
+    <tr><td>Agency</td><td>300</td><td>$1,199/mo</td></tr>
+    <tr><td>Enterprise</td><td>750</td><td>$2,499/mo</td></tr>
   </tbody>
 </table>
 
@@ -1907,7 +2005,7 @@
 </table>
 
 <p style="margin-top:3rem;padding-top:1rem;border-top:1px solid #e5e7eb;font-size:0.75rem;color:#9ca3af;text-align:center;">
-  DockBound Product Specification &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Maintained via <code>/update-spec</code>
+  DockBound Product Specification &nbsp;·&nbsp; Last updated 2026-09-07 &nbsp;·&nbsp; Maintained via <code>/update-spec</code>
 </p>
 
 </div><!-- /content -->

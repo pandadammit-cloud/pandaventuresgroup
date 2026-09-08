@@ -10,8 +10,7 @@ $files = @(
   "product-spec.html",
   "admin-spec.html",
   "architecture.html",
-  "pm-report.html",
-  "roadmap.html"
+  "pm-report.html"
 )
 
 New-Item -ItemType Directory -Force -Path $destDockBound    | Out-Null

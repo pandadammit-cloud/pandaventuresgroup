@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Sub-processor List &amp; DPA Checklist</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 13.5px; line-height: 1.65; color: #1e293b; background: #f8fafc; margin: 0; padding: 0; }
+  .page { max-width: 980px; margin: 0 auto; padding: 44px 36px 80px; }
+
+  .doc-header { border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 32px; }
+  .doc-header h1 { font-size: 21px; font-weight: 800; color: #0f172a; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .doc-header .sub { font-size: 12.5px; color: #64748b; margin: 0 0 10px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 9px; border-radius: 9999px; border: 1px solid; }
+  .badge-draft { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .badge-internal { background: #f0f9ff; color: #075985; border-color: #7dd3fc; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; color: #64748b; margin-top: 10px; }
+
+  .callout { border-radius: 8px; padding: 13px 17px; margin-bottom: 28px; font-size: 12.5px; }
+  .callout-action { background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; }
+  .callout-info { background: #f0f9ff; border: 1px solid #7dd3fc; color: #075985; }
+  .callout strong { display: block; margin-bottom: 3px; }
+
+  h2 { font-size: 14px; font-weight: 800; color: #0f172a; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 24px; }
+  th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 6px 10px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; font-size: 12.5px; }
+  tr:last-child td { border-bottom: none; }
+
+  .status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; border: 1px solid; white-space: nowrap; }
+  .status-done    { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .status-pending { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .status-na      { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+
+  .action-block { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 18px; margin-bottom: 12px; }
+  .action-block .vendor { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .action-block ol { margin: 0; padding-left: 18px; }
+  .action-block li { margin-bottom: 5px; font-size: 12.5px; color: #334155; }
+  .action-block .note { font-size: 12px; color: #64748b; margin-top: 8px; font-style: italic; }
+  .url { font-family: 'SF Mono','Consolas',monospace; font-size: 11px; color: #0284c7; word-break: break-all; }
+
+  .doc-footer { border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 56px; font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  @media print { body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <h1>DockBound — Sub-processor List &amp; DPA Checklist</h1>
+    <p class="sub">All third-party vendors that process personal data on DockBound's behalf, with DPA status and action items for Amy to complete.</p>
+    <div class="badge-row">
+      <span class="badge badge-draft">DPA steps pending</span>
+      <span class="badge badge-internal">Internal</span>
+    </div>
+    <div class="meta-row">
+      <span>📅 Created: 2026-09-23</span>
+      <span>👤 Owner: Amy Abraham</span>
+      <span>🔄 Update whenever a vendor is added or removed</span>
+    </div>
+  </div>
+
+  <div class="callout callout-action">
+    <strong>⚡ Action required — Amy to complete DPA steps below.</strong>
+    All vendor DPA steps can be completed in one sitting. Most are self-serve via vendor dashboards. Estimated time: ~1 hour total. Steps are in priority order — Google Cloud and Stripe first.
+  </div>
+
+  <!-- ── Master sub-processor table ── -->
+  <h2>Master Sub-processor List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Vendor</th>
+        <th>Service</th>
+        <th>Personal data processed</th>
+        <th>DPA status</th>
+        <th>Transfer mechanism</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Google Cloud / Firebase</strong></td>
+        <td>Firestore database, Firebase Authentication, Cloud Functions hosting</td>
+        <td>All Firestore personal data (R-01 through R-12); Firebase Auth (email, UID)</td>
+        <td><span class="status status-pending">⏳ Pending</span></td>
+        <td>Google Cloud SCCs (auto-active for EU transfers)</td>
+      </tr>
+      <tr>
+        <td><strong>Stripe</strong></td>
+        <td>Payment processing, subscription management</td>
+        <td>Billing identity (name, email), card data (tokenised/PCI-DSS), Stripe customer ID</td>
+        <td><span class="status status-pending">⏳ Pending</span></td>
+        <td>Stripe SCCs / EU-US Data Privacy Framework</td>
+      </tr>
+      <tr>
+        <td><strong>SendGrid (Twilio)</strong></td>
+        <td>Transactional email delivery</td>
+        <td>Recipient email address, email content (port guide sends)</td>
+        <td><span class="status status-pending">⏳ Pending</span></td>
+        <td>Twilio/SendGrid DPA + SCCs</td>
+      </tr>
+      <tr>
+        <td><strong>Twilio</strong></td>
+        <td>SMS alerts and inbound keyword handling</td>
+        <td>Phone numbers, SMS message content (consented users only)</td>
+        <td><span class="status status-pending">⏳ Pending</span></td>
+        <td>Twilio DPA + SCCs</td>
+      </tr>
+      <tr>
+        <td><strong>Travefy</strong></td>
+        <td>Travel advisor itinerary platform integration</td>
+        <td>Advisor email (lookup key only); connection metadata. No traveler personal data transits API.</td>
+        <td><span class="status status-pending">⏳ Pending</span></td>
+        <td>Travefy DPA (confirm availability)</td>
+      </tr>
+      <tr>
+        <td><strong>Apify</strong></td>
+        <td>Cruise itinerary data scraping</td>
+        <td><strong>No personal data.</strong> Apify scrapes publicly available cruise schedule data (ship names, ports, dates). Confirmed: no passenger or individual data processed.</td>
+        <td><span class="status status-na">N/A — no personal data</span></td>
+        <td>N/A</td>
+      </tr>
+      <tr>
+        <td><strong>OpenAI</strong></td>
+        <td>Port guide content generation (admin CF)</td>
+        <td>Port and ship data only (non-personal). Prompts must never contain personal data — enforced by engineering convention.</td>
+        <td><span class="status status-pending">⏳ Confirm</span></td>
+        <td>OpenAI DPA / SCCs</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Vendors confirmed not processing personal data (no DPA required)</strong>
+    Apify (cruise data scraping — ship/port/date only, no individuals). NOAA/NWS (weather alerts API — no personal data submitted). State Department RSS feed (travel advisories — public data, no personal data submitted).
+  </div>
+
+  <!-- ── Action steps for Amy ── -->
+  <h2>DPA Action Steps — Amy to Complete</h2>
+  <p style="font-size:12.5px;color:#475569;margin-bottom:20px;">Steps are self-serve via vendor dashboards unless otherwise noted. No engineering required.</p>
+
+  <div class="action-block">
+    <div class="vendor">1. Google Cloud / Firebase — <span style="color:#166534">Highest priority</span></div>
+    <ol>
+      <li>Sign in to Google Cloud Console at <span class="url">console.cloud.google.com</span> with the DockBound project owner account.</li>
+      <li>Navigate to <strong>IAM &amp; Admin → Privacy &amp; Security → Data Processing Agreement</strong> (or search "DPA" in the console search bar).</li>
+      <li>Review and accept the Google Cloud Data Processing Agreement. This covers Firestore, Firebase Auth, and Cloud Functions under one DPA.</li>
+      <li>Confirm the Firestore data location: in the Firebase Console → Firestore → Usage tab, note the region. If it is <code>us-central1</code> (or any US region), Google's SCCs automatically cover EU/UK data subject transfers — no additional action needed.</li>
+      <li>Document the confirmed region here: <strong>Firestore region: ___________</strong></li>
+    </ol>
+    <p class="note">Google's DPA acceptance is account-level, not project-level. If the Google account already has a DPA accepted from another project, it covers DockBound too — verify acceptance date.</p>
+  </div>
+
+  <div class="action-block">
+    <div class="vendor">2. Stripe — <span style="color:#166534">High priority</span></div>
+    <ol>
+      <li>Log in to the Stripe Dashboard at <span class="url">dashboard.stripe.com</span>.</li>
+      <li>Navigate to <strong>Settings → Legal &amp; Privacy → Data Processing Agreement</strong>.</li>
+      <li>If no DPA is shown, go to <span class="url">stripe.com/legal/dpa</span> — Stripe's standard DPA is available for acceptance online.</li>
+      <li>Accept the DPA and note the acceptance date.</li>
+      <li>While in Settings, confirm the Stripe Radar data retention setting — check that fraud/risk data retention aligns with your stated billing data retention (7 years for financial records).</li>
+    </ol>
+    <p class="note">Stripe's standard DPA includes SCCs for US→EU transfers. No separate SCC addendum is needed.</p>
+  </div>
+
+  <div class="action-block">
+    <div class="vendor">3. Twilio (covers both Twilio SMS and SendGrid)</div>
+    <ol>
+      <li>Log in to the Twilio Console at <span class="url">console.twilio.com</span>.</li>
+      <li>Navigate to <strong>Account → Legal → Data Protection Addendum</strong>.</li>
+      <li>Accept the DPA. Twilio's DPA covers both the Twilio SMS platform and SendGrid (both are Twilio products).</li>
+      <li>Confirm SMS log retention period in Twilio Console → Messaging → Logs — note the default retention period and align it with the Art. 30 records (R-07: 3 years for consent log; message content per Twilio DPA).</li>
+    </ol>
+    <p class="note">A single Twilio DPA acceptance covers both the SMS (Twilio Programmable Messaging) and email (SendGrid) products on the same account.</p>
+  </div>
+
+  <div class="action-block">
+    <div class="vendor">4. Travefy</div>
+    <ol>
+      <li>Contact Travefy via the partner/API channel (or your existing account representative).</li>
+      <li>Request confirmation of their DPA terms for the API integration use case. Ask specifically: (a) do they have a standard DPA for API partners? (b) what personal data do they retain from API calls? (c) what are their data retention periods?</li>
+      <li>Note: DockBound's Travefy integration does not send traveler personal data through the API — only port guide content. Confirm Travefy agrees with this characterisation.</li>
+      <li>Document the outcome and file a copy of any DPA received.</li>
+    </ol>
+    <p class="note">If Travefy does not offer a formal DPA, document the inquiry and their response. For the limited personal data involved (advisor email as lookup key only), this is lower risk than the other vendors.</p>
+  </div>
+
+  <div class="action-block">
+    <div class="vendor">5. OpenAI</div>
+    <ol>
+      <li>Log in to the OpenAI Platform at <span class="url">platform.openai.com</span>.</li>
+      <li>Navigate to <strong>Settings → Privacy &amp; Legal → Data Processing Agreement</strong>.</li>
+      <li>Review and accept OpenAI's DPA for API usage.</li>
+      <li>Confirm the zero-data-retention (ZDR) setting is enabled for the DockBound API key — this prevents OpenAI from training on submitted prompts. Navigate to <strong>Settings → API Keys → Data Controls</strong>.</li>
+      <li>Verify (engineering): confirm that no personal data is included in port guide generation prompts. Port guide prompts should contain only port/location context — not names, emails, or traveler data.</li>
+    </ol>
+    <p class="note">Zero-data-retention is the recommended setting for any commercial API use. It may require a paid plan tier — confirm on the OpenAI platform.</p>
+  </div>
+
+  <!-- ── What to do after ── -->
+  <h2>After Completing DPA Steps</h2>
+  <ol style="font-size:13px;color:#334155;">
+    <li>Update the DPA Status column in the master table above (change ⏳ Pending to ✅ Done with acceptance date).</li>
+    <li>File copies of all DPA acceptances in a secure location (e.g., a shared Google Drive folder accessible to the program DRI and legal counsel).</li>
+    <li>Mark checklist items gdpr-4-1 through gdpr-4-5 as complete in <code>docs/gdpr-compliance-checklist.html</code>.</li>
+    <li>Add the sub-processor list URL to the privacy policy when published (gdpr-4-6 / gdpr-10-4).</li>
+  </ol>
+
+  <div class="doc-footer">
+    <span>DockBound Sub-processor List · Created 2026-09-23 · Owner: Amy Abraham</span>
+    <span>Checklist: docs/gdpr-compliance-checklist.html §4 · Art. 30 records: docs/art30-records.html</span>
+  </div>
+</div>
+</body>
+</html>

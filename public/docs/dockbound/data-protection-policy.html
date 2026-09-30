@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Internal Data Protection Policy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1e293b;
+    background: #f8fafc;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  .doc-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 20px;
+    margin-bottom: 36px;
+  }
+  .doc-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+  }
+  .doc-header .meta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .doc-header .meta span { display: flex; gap: 5px; }
+  .doc-header .meta strong { color: #334155; }
+
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 22px 0 8px;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0; }
+  th { background: #f1f5f9; text-align: left; padding: 9px 12px; font-weight: 600; color: #334155; border: 1px solid #e2e8f0; }
+  td { padding: 9px 12px; border: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  .callout {
+    border-radius: 6px;
+    padding: 13px 17px;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .callout-info    { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a5f; }
+  .callout-warning { background: #fffbeb; border-left: 4px solid #f59e0b; color: #78350f; }
+  .callout strong  { display: block; margin-bottom: 3px; }
+
+  .rule-block {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0f172a;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .rule-block strong { display: block; margin-bottom: 4px; color: #0f172a; font-size: 13px; }
+
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin-bottom: 4px; font-size: 13px; }
+  p { margin: 0 0 12px; font-size: 13px; }
+  code { font-size: 12px; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; }
+
+  .must { color: #b91c1c; font-weight: 700; }
+  .must-not { color: #b91c1c; font-weight: 700; }
+
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    align-items: flex-start;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid #94a3b8;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .doc-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <h1>Internal Data Protection Policy</h1>
+    <div class="meta">
+      <span><strong>Entity:</strong> PandA Ventures, LLC (DockBound)</span>
+      <span><strong>Owner:</strong> Amy Abraham, Co-founder</span>
+      <span><strong>Version:</strong> 1.0 — Draft</span>
+      <span><strong>Date:</strong> September 2026</span>
+      <span><strong>Audience:</strong> All staff, contractors, and anyone with access to DockBound systems or personal data</span>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Who must follow this policy</strong>
+    This policy applies to Amy Abraham and any future employee, contractor, freelancer, or partner who is granted access to DockBound systems, Firebase projects, admin tools, or any data that contains personal information about travelers, advisors, or agencies.
+  </div>
+
+  <!-- §1 Purpose -->
+  <h2>§1 · Purpose</h2>
+  <p>PandA Ventures is committed to protecting the personal data of the people who use DockBound. This policy sets out the rules that govern how we collect, use, store, share, and delete personal data. It exists to:</p>
+  <ul>
+    <li>Ensure we comply with GDPR, UK GDPR, CCPA, and other applicable privacy laws</li>
+    <li>Protect individuals whose data we hold from harm caused by unauthorised access, loss, or misuse</li>
+    <li>Make our legal obligations clear to everyone with access to personal data</li>
+    <li>Provide practical rules for common situations: access, sharing, retention, and breach response</li>
+  </ul>
+
+  <!-- §2 Principles -->
+  <h2>§2 · Data Protection Principles</h2>
+  <p>Every person handling personal data at PandA Ventures must follow these principles (GDPR Art. 5):</p>
+
+  <div class="rule-block">
+    <strong>1. Lawfulness, fairness, and transparency</strong>
+    We only process personal data where we have a lawful basis (contract, legal obligation, legitimate interest, or consent). We tell people what we are doing with their data via our privacy notices.
+  </div>
+  <div class="rule-block">
+    <strong>2. Purpose limitation</strong>
+    Data collected for one purpose must not be used for a different, incompatible purpose. Port guide data is used to generate port guides — not for marketing, profiling, or selling.
+  </div>
+  <div class="rule-block">
+    <strong>3. Data minimisation</strong>
+    Collect only what you need to do the job. Do not ask for data you will not use. Do not copy personal data out of production systems unless it is necessary for a specific, documented task.
+  </div>
+  <div class="rule-block">
+    <strong>4. Accuracy</strong>
+    Keep personal data accurate and up to date where it is reasonably practical to do so. If a user asks us to correct their data, we must do so without undue delay.
+  </div>
+  <div class="rule-block">
+    <strong>5. Storage limitation</strong>
+    Do not keep personal data longer than necessary. The retention schedule in the Art. 30 Records sets the limits. The automated retention CF enforces them for production data. Local copies must be deleted promptly.
+  </div>
+  <div class="rule-block">
+    <strong>6. Integrity and confidentiality (security)</strong>
+    Personal data must be protected against unauthorised access, loss, destruction, or damage using appropriate technical and organisational measures. See §5.
+  </div>
+  <div class="rule-block">
+    <strong>7. Accountability</strong>
+    We must be able to demonstrate compliance. This means keeping records (Art. 30 register, audit logs, incident register), following documented procedures, and reviewing them annually.
+  </div>
+
+  <!-- §3 Roles -->
+  <h2>§3 · Roles and Responsibilities</h2>
+  <table>
+    <tr><th>Role</th><th>Person</th><th>Responsibilities</th></tr>
+    <tr>
+      <td><strong>Data Controller / DRI</strong></td>
+      <td>Amy Abraham, Co-founder</td>
+      <td>Owns all data protection decisions. Signs DPAs with sub-processors. Reviews and updates all policy documents annually. Signs off on DSRs, breach notifications, and new processing activities.</td>
+    </tr>
+    <tr>
+      <td><strong>Developer / Technical Staff</strong></td>
+      <td>Any person with Firebase / GitHub / admin access</td>
+      <td>Follows secure coding practices. Never logs personal data unnecessarily. Reports potential breaches immediately. Completes data protection awareness review on joining and annually.</td>
+    </tr>
+    <tr>
+      <td><strong>Contractor / Freelancer</strong></td>
+      <td>Any third party engaged to work on DockBound</td>
+      <td>Must sign a confidentiality agreement before being granted access to personal data. Follows this policy. Access is revoked on engagement end.</td>
+    </tr>
+  </table>
+
+  <!-- §4 Lawful Basis -->
+  <h2>§4 · Lawful Basis for Processing</h2>
+  <p>Before starting any new processing activity, confirm which lawful basis applies. The Art. 30 Records document our current lawful bases for each processing activity. When a new feature is built that will process personal data, add it to the Art. 30 Records before deploying to production.</p>
+  <table>
+    <tr><th>Lawful basis</th><th>When we use it</th><th>Example</th></tr>
+    <tr>
+      <td><strong>Contract (Art. 6(1)(b))</strong></td>
+      <td>Processing needed to deliver the service the user signed up for</td>
+      <td>Creating a user account; generating a port guide based on their itinerary</td>
+    </tr>
+    <tr>
+      <td><strong>Legal obligation (Art. 6(1)(c))</strong></td>
+      <td>Processing required by law</td>
+      <td>Retaining billing records for 7 years; maintaining the GDPR erasure log</td>
+    </tr>
+    <tr>
+      <td><strong>Legitimate interests (Art. 6(1)(f))</strong></td>
+      <td>Our legitimate business interests, where they are not overridden by the individual's rights</td>
+      <td>Security logging (detecting API key abuse); usage analytics to improve the product</td>
+    </tr>
+    <tr>
+      <td><strong>Consent (Art. 6(1)(a))</strong></td>
+      <td>Where the individual has given a clear, freely given, specific, and informed agreement</td>
+      <td>SMS alert opt-in (must be explicit, never pre-checked). Required for non-essential cookies for EU/UK users.</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-warning">
+    <strong>Consent requirements</strong>
+    Consent must always be: freely given (no bundling with T&amp;Cs), specific (one checkbox per purpose), informed (plain-language explanation), and unambiguous (explicit action — never pre-ticked). Always store a timestamped consent record. Consent can be withdrawn at any time. Do not use consent as the basis for processing where contract or legitimate interests would be more appropriate — this creates an unnecessary obligation to obtain and re-obtain consent.
+  </div>
+
+  <!-- §5 Security Rules -->
+  <h2>§5 · Security Rules</h2>
+  <p>These rules apply to everyone with access to DockBound systems.</p>
+
+  <h3>Credentials and access</h3>
+  <ul>
+    <li><span class="must">MUST:</span> Use a strong, unique password for Firebase Console, Google Cloud Console, GitHub, Stripe Dashboard, and SendGrid. Use a password manager.</li>
+    <li><span class="must">MUST:</span> Enable multi-factor authentication (MFA) on Firebase Console, Google Cloud, GitHub, and Stripe.</li>
+    <li><span class="must-not">MUST NOT:</span> Share account credentials with anyone. Each person gets their own account.</li>
+    <li><span class="must-not">MUST NOT:</span> Commit Firebase service account keys, API secrets, or any credential to Git. If it happens accidentally, treat it as a P1 breach immediately: rotate the credential and report.</li>
+    <li><span class="must-not">MUST NOT:</span> Store production credentials in local files, Slack messages, emails, or any non-secrets-manager location.</li>
+    <li><span class="must">MUST:</span> Revoke access immediately when a contractor or employee leaves. Firebase Console → remove user; GitHub → remove from org; Stripe → remove team member.</li>
+  </ul>
+
+  <h3>Handling personal data</h3>
+  <ul>
+    <li><span class="must-not">MUST NOT:</span> Export, download, or copy production personal data to local machines unless strictly necessary for a specific task (e.g., debugging a DSR request). Delete local copies immediately after use.</li>
+    <li><span class="must-not">MUST NOT:</span> Log personal data (names, emails, phone numbers, payment references) in Firebase Cloud Logging, console.log statements, or any log aggregator. Log user IDs and event types instead.</li>
+    <li><span class="must-not">MUST NOT:</span> Use real production data in development or testing. Use anonymised or synthetic data in dev/test environments.</li>
+    <li><span class="must">MUST:</span> Use the <code>dockbound-dev</code> Firebase project for all development work. Production (<code>dockbound-2de7d</code>) is for verified deployments only.</li>
+    <li><span class="must">MUST:</span> Run DSR requests (data export and erasure) through the Admin DSR tool at <code>/admin/dsr</code> — not by manually deleting Firestore documents.</li>
+  </ul>
+
+  <h3>Code and deployments</h3>
+  <ul>
+    <li><span class="must">MUST:</span> Run <code>npm run build:check</code> and <code>npm run lint</code> before deploying to production.</li>
+    <li><span class="must">MUST:</span> Use <code>npm run deploy:prod</code> — not <code>firebase deploy</code> bare — to ensure the correct project is targeted.</li>
+    <li><span class="must">MUST:</span> Review Firestore security rules changes carefully before deploying. A rules misconfiguration is one of the most likely causes of a data breach. Test rules in the Firebase Console rules simulator.</li>
+    <li><span class="must-not">MUST NOT:</span> Deploy changes to Firestore rules that weaken the existing access controls without explicit review and sign-off.</li>
+    <li><span class="must">MUST:</span> Ensure any new Cloud Function that accesses personal data requires Firebase ID token authentication and validates the caller's role.</li>
+  </ul>
+
+  <h3>AI and generated content</h3>
+  <ul>
+    <li><span class="must-not">MUST NOT:</span> Send personal data (user names, emails, traveler itinerary details, advisor contact information) to OpenAI or any external AI service. Only non-personal data (port names, cruise lines, ship names, DOCK scores) may be sent.</li>
+    <li><span class="must-not">MUST NOT:</span> Use AI-generated output as ground truth for user-facing content without human review. See the QA pipeline documentation.</li>
+    <li><span class="must-not">MUST NOT:</span> Store AI prompt content that contains personal data in Firestore or any log.</li>
+  </ul>
+
+  <!-- §6 Data Subject Rights -->
+  <h2>§6 · Responding to Data Subject Rights Requests</h2>
+  <p>When a user, advisor, or traveler contacts us to exercise a privacy right, the following procedure applies:</p>
+
+  <ol>
+    <li><strong>Receive and log the request.</strong> Email to amy@dockbound.app with subject "Privacy Request." Log it in a dedicated folder in Google Drive: DockBound / Legal / Privacy / DSR Log.</li>
+    <li><strong>Verify identity.</strong> Confirm the requestor is who they say they are — a reply from their registered email address is usually sufficient. For erasure requests, extra care is needed.</li>
+    <li><strong>Determine request type:</strong> access, erasure, portability, correction, restriction, or objection.</li>
+    <li><strong>Use the Admin DSR tool</strong> (<code>/admin/dsr</code>) to fulfill access (export) and erasure requests. Do not attempt to manually query or delete Firestore documents.</li>
+    <li><strong>Respond within 30 days.</strong> GDPR allows up to one month; extend by two further months for complex requests, but notify the requester within the first month that an extension is needed.</li>
+    <li><strong>Document the response.</strong> Record: request date, request type, identity verified Y/N, action taken, response sent date, in the DSR Log.</li>
+  </ol>
+
+  <h3>What the erasure CF does</h3>
+  <p>The <code>gdprDeleteAccount</code> Cloud Function performs a full cascade erasure. It is documented in detail in the Art. 30 Records and the DSR Admin tool reference panel. It anonymises rather than deletes Stripe customer records (tax retention requirement). It writes an erasure audit record to <code>gdpr_erasure_log/</code> with a SHA-256 hash of the email — not the email itself.</p>
+
+  <!-- §7 New Processing Activities -->
+  <h2>§7 · Adding New Processing Activities</h2>
+  <p>Whenever a new feature or integration is built that will involve personal data, complete these steps before deploying to production:</p>
+
+  <ul class="checklist">
+    <li><span class="check-box"></span><span>Identify what personal data is involved, the purpose, and the lawful basis</span></li>
+    <li><span class="check-box"></span><span>Add a record to the Art. 30 Records document (<code>docs/art30-records.html</code>)</span></li>
+    <li><span class="check-box"></span><span>Confirm whether a DPIA is required (see §8)</span></li>
+    <li><span class="check-box"></span><span>If using a new third-party vendor, add them to the Sub-Processor Register and sign a DPA before sending any data</span></li>
+    <li><span class="check-box"></span><span>Update the relevant privacy notice (consumer or B2B) if the new processing is material</span></li>
+    <li><span class="check-box"></span><span>Ensure Firestore security rules restrict access to the new data to only the roles that need it</span></li>
+    <li><span class="check-box"></span><span>Ensure the retention enforcement CF covers the new data, or document why it doesn't need to</span></li>
+    <li><span class="check-box"></span><span>Ensure the DSR erasure CF covers the new collection, or document why it is out of scope</span></li>
+  </ul>
+
+  <!-- §8 DPIA -->
+  <h2>§8 · Data Protection Impact Assessment (DPIA)</h2>
+  <p>A DPIA (GDPR Art. 35) is required before starting any processing that is likely to result in high risk to individuals. Triggers include:</p>
+  <ul>
+    <li>Systematic profiling of users that produces legal or significant effects</li>
+    <li>Processing special category data (health, biometric, location data beyond coarse geography)</li>
+    <li>Large-scale processing of personal data of a sensitive nature</li>
+    <li>Matching or combining datasets from multiple sources in unexpected ways</li>
+    <li>Innovative technology or a new use of existing technology</li>
+  </ul>
+  <p>A DPIA template is under preparation (<code>docs/dpia-template.html</code> — gdpr-8-1). Current processing activities have been assessed and none individually require a mandatory DPIA at current scale, but this should be confirmed with counsel as user volume grows.</p>
+  <p>If you are unsure whether a DPIA is required, ask Amy Abraham before proceeding.</p>
+
+  <!-- §9 Sub-processors -->
+  <h2>§9 · Engaging Sub-Processors</h2>
+  <p>A sub-processor is any third-party service that processes personal data on our behalf. We must:</p>
+  <ul>
+    <li>Only engage sub-processors that provide sufficient guarantees about their data protection practices (GDPR Art. 28)</li>
+    <li>Have a signed Data Processing Agreement (DPA) with every sub-processor before sending any personal data</li>
+    <li>Ensure the DPA includes appropriate Standard Contractual Clauses (SCCs) for transfers outside the EEA/UK</li>
+    <li>List every sub-processor in the Sub-Processor Register (<code>docs/sub-processors.html</code>)</li>
+    <li>Review the register at least annually and update it when sub-processors change</li>
+  </ul>
+  <p>See <code>docs/sub-processors.html</code> for the current register and outstanding DPA action items for Amy.</p>
+
+  <!-- §10 Retention and Deletion -->
+  <h2>§10 · Retention and Deletion</h2>
+  <p>Personal data must not be kept longer than necessary. The canonical retention schedule is in the Art. 30 Records (<code>docs/art30-records.html</code>). The automated retention CF (<code>gdprRetentionEnforcement</code>) enforces the following on the 1st of each month:</p>
+  <ul>
+    <li>Audit log entries (<code>logs/</code>) older than 7 years — deleted</li>
+    <li>Guide send log entries (<code>guide_send_log/</code>) older than 2 years — deleted</li>
+    <li>Resolved attention items (<code>attention_items/</code>) older than 1 year — deleted</li>
+  </ul>
+  <p>Stripe billing records and the GDPR erasure log are <strong>not</strong> touched by the automated CF — they are retained for their full legal retention periods.</p>
+  <p>Any new collection that holds personal data must either be covered by the retention CF or have a documented reason why it is not (e.g., it mirrors a legal retention obligation). Undocumented indefinite retention is non-compliant.</p>
+
+  <!-- §11 Training -->
+  <h2>§11 · Training and Awareness</h2>
+  <p>Anyone with access to DockBound systems or personal data must:</p>
+  <ul>
+    <li><strong>On joining:</strong> Read this policy in full and confirm understanding in writing (email to amy@dockbound.app is sufficient at current scale).</li>
+    <li><strong>Annually:</strong> Re-read the policy, review any updates, and confirm continued compliance.</li>
+    <li><strong>When a breach occurs:</strong> Review the incident post-mortem and identify if the breach was preventable through better awareness.</li>
+  </ul>
+  <p>At current headcount (1–2 people), training is self-administered. As the team grows beyond 5 people, consider a brief annual written quiz or structured awareness session.</p>
+
+  <!-- §12 Breach Reporting -->
+  <h2>§12 · Reporting a Potential Breach</h2>
+  <p>If you discover or suspect a personal data breach:</p>
+  <ol>
+    <li><strong>Do not ignore it</strong> — even if you are unsure whether it is a real breach. Report immediately.</li>
+    <li>Email <strong>amy@dockbound.app</strong> with subject <code>[BREACH] [date] [brief description]</code>.</li>
+    <li>Do not attempt to conceal the incident or investigate it alone before reporting.</li>
+    <li>Follow the Incident Response Plan (<code>docs/incident-response-plan.html</code>).</li>
+  </ol>
+  <p>Deliberate non-reporting of a known breach is a serious disciplinary matter and may result in personal liability under GDPR.</p>
+
+  <!-- §13 Policy Review -->
+  <h2>§13 · Policy Review</h2>
+  <table>
+    <tr><th>Trigger</th><th>Action</th><th>Owner</th></tr>
+    <tr><td>Annual review cycle (September)</td><td>Review all sections; update retention schedule, sub-processor list, role assignments</td><td>Amy Abraham</td></tr>
+    <tr><td>Material change in processing (new feature, new vendor)</td><td>Update Art. 30 Records, sub-processor register, and privacy notices as applicable</td><td>Amy Abraham</td></tr>
+    <tr><td>New significant privacy law or regulation taking effect</td><td>Assess impact; update policy within 90 days of effective date</td><td>Amy Abraham + counsel</td></tr>
+    <tr><td>Post-incident</td><td>Update policy to reflect lessons learned within 30 days of incident closure</td><td>Amy Abraham</td></tr>
+    <tr><td>New staff / contractor joining</td><td>Share policy; obtain written acknowledgement</td><td>Amy Abraham</td></tr>
+  </table>
+
+  <!-- §14 Related Documents -->
+  <h2>§14 · Related Documents</h2>
+  <table>
+    <tr><th>Document</th><th>Location</th></tr>
+    <tr><td>Privacy Program Charter</td><td><code>docs/privacy-program-charter.html</code></td></tr>
+    <tr><td>Art. 30 Records of Processing Activities</td><td><code>docs/art30-records.html</code></td></tr>
+    <tr><td>Sub-Processor Register and DPA Action Items</td><td><code>docs/sub-processors.html</code></td></tr>
+    <tr><td>Incident Response Plan</td><td><code>docs/incident-response-plan.html</code></td></tr>
+    <tr><td>Consumer Privacy Notice (draft)</td><td><code>docs/privacy-policy-draft.html</code> · publish at <code>/privacy</code></td></tr>
+    <tr><td>Business Privacy Notice (draft)</td><td><code>docs/privacy-policy-draft.html</code> · publish at <code>/privacy/advisors</code></td></tr>
+    <tr><td>GDPR Compliance Checklist</td><td><code>docs/gdpr-compliance-checklist.html</code></td></tr>
+    <tr><td>DSR Admin Tool</td><td><code>/admin/dsr</code> in the DockBound admin portal</td></tr>
+    <tr><td>Incident Register</td><td>Google Drive → DockBound / Legal / Privacy / Incident Register</td></tr>
+  </table>
+
+  <div class="doc-footer">
+    PandA Ventures, LLC · Confidential — internal use only · v1.0 Draft September 2026
+  </div>
+
+</div>
+</body>
+</html>

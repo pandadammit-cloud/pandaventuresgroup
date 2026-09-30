@@ -354,11 +354,12 @@
         <li><span class="icon todo">☐</span><span>E2E: Flow01 — Traveler self-serve purchase</span></li>
         <li><span class="icon todo">☐</span><span>E2E: Flow02 — Auth redirect and return</span></li>
         <li><span class="icon done">☑</span><span>Unit: <code class="path">src/services/userService.test.ts</code> — PASS 2026-09-07</span></li>
+        <li><span class="icon done">☑</span><span>E2E: <code class="path">tests/acceptance/Flow17.spec.ts</code> — payment route structural tests (PAY-01–04) written 2026-09-27; Stripe completion requires live test-mode env</span></li>
         <li><span class="icon todo">☐</span><span>Manual: Stripe test-mode purchase end-to-end on dev — verify <code class="path">/dashboard</code> shows correct cruise</span></li>
       </ul>
 
       <div class="ac-label gaps">Known Gaps</div>
-      <div class="gaps-none">None</div>
+      <div class="gaps-text">Full Stripe purchase flow (card entry → success redirect) requires live Stripe test-mode environment; PAY-02 verifies the payment form mounts but cannot complete a charge in E2E</div>
     </div>
   </div>
 
@@ -475,13 +476,14 @@
 
       <div class="ac-label evidence">Test Evidence</div>
       <ul class="check-list">
-        <li><span class="icon todo">☐</span><span>Unit: <code class="path">src/services/attentionService.test.ts</code> — stub only (carry forward to v1.1.0)</span></li>
+        <li><span class="icon done">☑</span><span>Unit: <code class="path">src/services/attentionService.test.ts</code> — 5 tests PASS 2026-09-27 (getOpenAttentionItems scoping, runPhase1Detection create/skip, updateAttentionStatus write, expiredWithoutAction guard)</span></li>
+        <li><span class="icon done">☑</span><span>E2E: <code class="path">tests/acceptance/Flow16.spec.ts</code> — AGENCY-01–04 written 2026-09-27; requires TEST_AGENCYHOST_EMAIL/PASSWORD env vars pointing to an agencyhost account</span></li>
         <li><span class="icon todo">☐</span><span>Manual: trigger Phase 1 detection, verify attention items create + update + resolve</span></li>
         <li><span class="icon todo">☐</span><span>Manual: upload a logo, verify it appears in the header</span></li>
       </ul>
 
       <div class="ac-label gaps">Known Gaps</div>
-      <div class="gaps-text"><code class="path">attentionService.test.ts</code> is a stub — unit tests not implemented (v1.1.0)</div>
+      <div class="gaps-none">None</div>
     </div>
   </div>
 

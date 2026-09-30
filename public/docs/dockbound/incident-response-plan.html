@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Personal Data Breach Response Plan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1e293b;
+    background: #f8fafc;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* Header */
+  .doc-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 20px;
+    margin-bottom: 36px;
+  }
+  .doc-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+  }
+  .doc-header .meta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .doc-header .meta span { display: flex; gap: 5px; }
+  .doc-header .meta strong { color: #334155; }
+
+  /* Section headings */
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 24px 0 8px;
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+  th { background: #f1f5f9; text-align: left; padding: 9px 12px; font-weight: 600; color: #334155; border: 1px solid #e2e8f0; }
+  td { padding: 9px 12px; border: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* Timeline / steps */
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .timeline li {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: start;
+  }
+  .step-num {
+    background: #0f172a;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { padding-top: 2px; }
+  .step-body strong { display: block; font-size: 13px; color: #0f172a; }
+  .step-body p { margin: 4px 0 0; font-size: 13px; color: #475569; }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .callout-critical { background: #fef2f2; border-left: 4px solid #ef4444; color: #7f1d1d; }
+  .callout-warning  { background: #fffbeb; border-left: 4px solid #f59e0b; color: #78350f; }
+  .callout-info     { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a5f; }
+  .callout-success  { background: #f0fdf4; border-left: 4px solid #22c55e; color: #14532d; }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* Severity badges */
+  .sev { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sev-p1 { background: #fef2f2; color: #b91c1c; }
+  .sev-p2 { background: #fff7ed; color: #c2410c; }
+  .sev-p3 { background: #fffbeb; color: #92400e; }
+  .sev-p4 { background: #f0fdf4; color: #166534; }
+
+  /* Template boxes */
+  .template {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 18px 20px;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+  .template .template-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+  .template p { margin: 0 0 8px; }
+  .template em { color: #64748b; font-style: italic; }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid #94a3b8;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Open item */
+  .open-item {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #78350f;
+    margin: 8px 0;
+  }
+  .open-item strong { display: block; margin-bottom: 2px; }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <h1>Personal Data Breach Response Plan</h1>
+    <div class="meta">
+      <span><strong>Entity:</strong> PandA Ventures, LLC (DockBound)</span>
+      <span><strong>Owner:</strong> Amy Abraham, Co-founder</span>
+      <span><strong>Version:</strong> 1.0 — Draft</span>
+      <span><strong>Date:</strong> September 2026</span>
+      <span><strong>Covers:</strong> GDPR Art. 33–34 · UK GDPR · CCPA breach notification</span>
+    </div>
+  </div>
+
+  <div class="callout callout-critical">
+    <strong>72-Hour Clock</strong>
+    The moment a breach is <em>confirmed</em> (or reasonably suspected), the 72-hour supervisory authority notification window begins under GDPR Art. 33. Do not wait for full investigation to complete before notifying. An initial notification can be supplemented.
+  </div>
+
+  <!-- §1 Purpose and Scope -->
+  <h2>§1 · Purpose and Scope</h2>
+  <p>This plan defines how PandA Ventures, LLC ("DockBound") detects, assesses, contains, and reports personal data breaches. It applies to all systems that process personal data on behalf of DockBound: the DockBound Firebase project (Auth, Firestore, Cloud Functions), Stripe, SendGrid, Twilio, and any sub-processor listed in the Sub-Processor Register.</p>
+  <p>A <strong>personal data breach</strong> is any security incident that leads to the accidental or unlawful destruction, loss, alteration, unauthorised disclosure of, or access to, personal data (GDPR Art. 4(12)). This includes:</p>
+  <ul>
+    <li>Unauthorised access to Firestore collections containing user, advisor, or traveler data</li>
+    <li>Accidental exposure of Firebase service account keys or API keys</li>
+    <li>Mass-deletion of user data (whether accidental or malicious)</li>
+    <li>Disclosure of traveler itinerary data to the wrong advisor or third party</li>
+    <li>SendGrid/Twilio mis-routing of personal communications</li>
+    <li>Stripe dispute data or payment details accessed without authorisation</li>
+    <li>Compromised admin account with access to the DSR/Privacy admin page</li>
+  </ul>
+
+  <!-- §2 Severity Classification -->
+  <h2>§2 · Severity Classification</h2>
+  <table>
+    <tr>
+      <th style="width:80px">Severity</th>
+      <th style="width:200px">Definition</th>
+      <th>Examples</th>
+      <th style="width:150px">Response Time</th>
+    </tr>
+    <tr>
+      <td><span class="sev sev-p1">P1 Critical</span></td>
+      <td>Large-scale or high-risk breach; rights and freedoms of data subjects at serious risk</td>
+      <td>Firestore database exported without auth; Firebase service account key leaked publicly; admin account compromised; bulk user PII exposed</td>
+      <td>Contain within <strong>4 hours</strong>; authority notification within <strong>72 hours</strong></td>
+    </tr>
+    <tr>
+      <td><span class="sev sev-p2">P2 High</span></td>
+      <td>Limited scope breach or disclosure; elevated risk but contained</td>
+      <td>Single advisor's roster data visible to wrong advisor; Stripe customer record accessed by unauthorised party; SendGrid API key exposed in logs</td>
+      <td>Contain within <strong>24 hours</strong>; assess for authority notification within <strong>48 hours</strong></td>
+    </tr>
+    <tr>
+      <td><span class="sev sev-p3">P3 Moderate</span></td>
+      <td>Limited personal data affected; low risk to data subjects; confidentiality breach without likely harm</td>
+      <td>Email address leaked in error log (non-public); single mistaken email send to wrong traveler; accidental exposure of non-sensitive field</td>
+      <td>Contain within <strong>72 hours</strong>; document internally; no authority notification unless risk escalates</td>
+    </tr>
+    <tr>
+      <td><span class="sev sev-p4">P4 Low</span></td>
+      <td>No personal data exposed; near-miss or availability incident only</td>
+      <td>Firestore document temporarily unavailable; CF timeout with no data loss; internal audit log entry duplicated</td>
+      <td>Document and review; no notification required</td>
+    </tr>
+  </table>
+
+  <!-- §3 Detection Sources -->
+  <h2>§3 · Detection Sources</h2>
+  <p>DockBound may learn of a breach through any of the following channels:</p>
+  <table>
+    <tr><th>Source</th><th>What to look for</th><th>Who monitors</th></tr>
+    <tr>
+      <td>Firebase Console — Security Rules alerts</td>
+      <td>Unusual read/write volume, failed auth spikes, permission denied spikes</td>
+      <td>Amy Abraham (weekly review; immediate alert on console notifications)</td>
+    </tr>
+    <tr>
+      <td>Google Cloud Console — IAM alerts</td>
+      <td>Unexpected service account activity, new key generation, unusual API calls</td>
+      <td>Amy Abraham</td>
+    </tr>
+    <tr>
+      <td>Admin Audit Log (<code>/admin/audit-log</code>)</td>
+      <td>Bulk role changes, unexpected DSR erasures, repeated failed admin auth</td>
+      <td>Amy Abraham (review on login; monthly full review)</td>
+    </tr>
+    <tr>
+      <td>Security key logging in <code>logs/</code> collection</td>
+      <td>Hash-mismatch on API key validation (potential key enumeration); revoked key usage attempts</td>
+      <td>Automated — logs written by <code>validateApiKey</code> CF; Amy reviews monthly</td>
+    </tr>
+    <tr>
+      <td>Sub-processor breach notification</td>
+      <td>Email from Google, Stripe, SendGrid, Twilio, Travefy announcing incident affecting our data</td>
+      <td>Amy Abraham — monitor <strong>amy@dockbound.app</strong> for vendor security notices</td>
+    </tr>
+    <tr>
+      <td>User or advisor report</td>
+      <td>User reports seeing another user's data; advisor reports unexpected roster content</td>
+      <td>Routed to amy@dockbound.app; treat as potential P1 until assessed</td>
+    </tr>
+    <tr>
+      <td>GitHub / repository alerts</td>
+      <td>Secret scanning alerts (Firebase config, API keys committed); Dependabot critical CVEs</td>
+      <td>Amy Abraham — GitHub email notifications</td>
+    </tr>
+  </table>
+
+  <!-- §4 Response Procedure -->
+  <h2>§4 · Response Procedure</h2>
+
+  <h3>Phase 1 — Detect and Assess (Target: within 2 hours of discovery)</h3>
+  <ul class="timeline">
+    <li>
+      <span class="step-num">1</span>
+      <div class="step-body">
+        <strong>Declare incident</strong>
+        <p>The person discovering the potential breach sends an email to <strong>amy@dockbound.app</strong> with subject line: <code>[BREACH] [date] [brief description]</code>. If Amy is the discoverer, she self-declares and begins the log.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <div class="step-body">
+        <strong>Open incident log</strong>
+        <p>Create a dated entry in the Incident Register (see §8). Record: discovery timestamp, reporter, initial description, affected systems, estimated data subjects affected.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <div class="step-body">
+        <strong>Classify severity</strong>
+        <p>Using the P1–P4 grid in §2, assign initial severity. When in doubt, assign the higher severity — it can be downgraded after investigation.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <div class="step-body">
+        <strong>Confirm whether personal data is involved</strong>
+        <p>If the incident affects only non-personal data (port guides, DOCK scores, ship data), it is NOT a personal data breach under GDPR. Close as P4 and document the assessment.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Phase 2 — Contain (Target: within 4–72 hours depending on severity)</h3>
+  <ul class="timeline">
+    <li>
+      <span class="step-num">5</span>
+      <div class="step-body">
+        <strong>Revoke compromised credentials</strong>
+        <p>Firebase service account keys → Google Cloud Console → IAM &amp; Admin → Service Accounts → delete key.<br>
+        API keys → <code>/admin/api-keys</code> → Revoke.<br>
+        SendGrid API key → SendGrid Dashboard → Settings → API Keys → Revoke.<br>
+        Firebase Secret Manager secrets → rotate via <code>firebase functions:secrets:set SECRET_NAME</code>.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">6</span>
+      <div class="step-body">
+        <strong>Suspend affected accounts (if applicable)</strong>
+        <p>If a compromised admin account is suspected: Firebase Console → Authentication → find user → Disable account.<br>
+        If an advisor account is compromised: <code>/admin/advisors/:uid</code> → Suspend.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">7</span>
+      <div class="step-body">
+        <strong>Restore Firestore rules if misconfigured</strong>
+        <p>If a Firestore rules misconfiguration caused the breach: immediately redeploy corrected rules via <code>firebase deploy --only firestore:rules --project [project]</code>.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">8</span>
+      <div class="step-body">
+        <strong>Preserve evidence</strong>
+        <p>Before rolling back or deleting anything: export relevant Firestore documents, capture Firebase Console audit logs, screenshot relevant Cloud Logging entries. Store in a dated folder in Google Drive.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">9</span>
+      <div class="step-body">
+        <strong>Assess scope</strong>
+        <p>Determine: (a) which data categories were exposed; (b) how many data subjects are affected; (c) which countries they are in (EU/UK/US); (d) whether the breach is ongoing or contained.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Phase 3 — Notify (within 72 hours of confirmed breach for P1/P2)</h3>
+  <ul class="timeline">
+    <li>
+      <span class="step-num">10</span>
+      <div class="step-body">
+        <strong>Determine notification obligations</strong>
+        <p>Notify the supervisory authority if the breach is <em>likely to result in a risk to the rights and freedoms of natural persons</em> (GDPR Art. 33). Notify affected data subjects if the risk is <em>high</em> (GDPR Art. 34). See decision tree below.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">11</span>
+      <div class="step-body">
+        <strong>File supervisory authority notification</strong>
+        <p>P1 and most P2 breaches require notification. Use the template in §5. Submit via the lead supervisory authority's online portal (see §6 for authority contacts). Deadline: <strong>72 hours from when the breach was confirmed</strong> (or from when it was first suspected if confirmation is pending). A partial notification followed by a supplement is acceptable under Art. 33(4).</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">12</span>
+      <div class="step-body">
+        <strong>Notify affected data subjects (if high risk)</strong>
+        <p>If the breach is likely to result in high risk to individuals (e.g., financial harm, identity theft, safety risk), notify them directly without undue delay. Use the template in §5. Send via the email address on their DockBound account. If email is unavailable, use a prominent in-app notice or public communication.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">13</span>
+      <div class="step-body">
+        <strong>Notify sub-processor if applicable</strong>
+        <p>If the breach originated with a sub-processor (Stripe, SendGrid, etc.), the sub-processor is responsible for notifying DockBound under their DPA. DockBound then assesses its own Art. 33 obligations. If DockBound caused a breach that exposed sub-processor-held data, notify the sub-processor immediately.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Phase 4 — Remediate and Review</h3>
+  <ul class="timeline">
+    <li>
+      <span class="step-num">14</span>
+      <div class="step-body">
+        <strong>Root cause analysis</strong>
+        <p>Within 7 days of containment: document root cause (misconfiguration, credential compromise, code defect, process failure). Record in the incident log.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">15</span>
+      <div class="step-body">
+        <strong>Corrective action</strong>
+        <p>Implement fixes. Common actions: patch Firestore rules, rotate secrets, add input validation, update CSP, add monitoring alert, revise admin access controls.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">16</span>
+      <div class="step-body">
+        <strong>Supplement supervisory authority notification if needed</strong>
+        <p>If the initial notification was partial, file a supplement via the same portal with full details once the investigation is complete (Art. 33(4)).</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">17</span>
+      <div class="step-body">
+        <strong>Close incident and update register</strong>
+        <p>Mark the incident closed in the Incident Register with: root cause, corrective actions taken, notifications filed, date closed.</p>
+      </div>
+    </li>
+  </ul>
+
+  <!-- §5 Notification Decision Tree -->
+  <h2>§5 · Notification Decision Tree</h2>
+  <table>
+    <tr><th>Question</th><th>Yes</th><th>No</th></tr>
+    <tr>
+      <td>Is personal data involved?</td>
+      <td>Continue assessment</td>
+      <td>Not a GDPR breach — document as P4 security event and close</td>
+    </tr>
+    <tr>
+      <td>Is the breach <em>unlikely</em> to result in any risk to individuals? (e.g., encrypted data, already public info, no harm possible)</td>
+      <td>No authority notification required — document internally in register per Art. 33(5)</td>
+      <td>Continue assessment</td>
+    </tr>
+    <tr>
+      <td>Is the breach likely to result in <em>some</em> risk to individuals?</td>
+      <td><strong>Notify supervisory authority within 72 hours</strong> (Art. 33)</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Is the breach likely to result in <em>high risk</em> to individuals? (financial harm, discrimination, identity theft, physical harm, significant social/economic consequence)</td>
+      <td><strong>Also notify affected data subjects directly and without undue delay</strong> (Art. 34)</td>
+      <td>No subject notification required; authority notification only</td>
+    </tr>
+    <tr>
+      <td>Does notification to subjects create disproportionate effort? (e.g., subjects cannot be identified)</td>
+      <td>Use public communication or prominent in-app notice instead of individual notification</td>
+      <td>Send individual notification</td>
+    </tr>
+  </table>
+
+  <!-- §6 Notification Templates -->
+  <h2>§6 · Notification Templates</h2>
+
+  <h3>Template A — Supervisory Authority Notification (Art. 33)</h3>
+  <div class="template">
+    <div class="template-label">Template — Supervisory Authority Notification</div>
+    <p><strong>To:</strong> <em>[Lead supervisory authority — see §7 for contacts]</em></p>
+    <p><strong>Subject:</strong> Personal Data Breach Notification — PandA Ventures, LLC (DockBound) — <em>[Date]</em></p>
+    <p><strong>1. Nature of the breach</strong><br>
+    <em>[Describe what happened: type of breach (confidentiality / integrity / availability), how it occurred, systems affected, date and time discovered, whether the breach is ongoing or contained.]</em></p>
+    <p><strong>2. Categories and approximate number of data subjects concerned</strong><br>
+    <em>[e.g., "Approximately [N] travel advisors and/or travelers. Data categories affected: name, email address, itinerary details, [other as applicable]."]</em></p>
+    <p><strong>3. Categories and approximate number of personal data records concerned</strong><br>
+    <em>[e.g., "Approximately [N] Firestore documents from the users/ and agentRoster collections."]</em></p>
+    <p><strong>4. Name and contact details of Data Protection Officer or other contact point</strong><br>
+    Amy Abraham, Co-founder, PandA Ventures, LLC<br>
+    Email: amy@dockbound.app</p>
+    <p><strong>5. Likely consequences of the breach</strong><br>
+    <em>[Describe expected impact on data subjects: e.g., "Potential exposure of email addresses and travel itineraries which could be used for targeted phishing."]</em></p>
+    <p><strong>6. Measures taken or proposed</strong><br>
+    <em>[Describe containment and remediation steps: credentials revoked on [date/time], Firestore rules redeployed, affected accounts suspended, root cause identified as [X], corrective action [Y] implemented/in progress.]</em></p>
+    <p><strong>7. If notification is delayed beyond 72 hours</strong><br>
+    <em>[Explain reasons for delay if applicable, per Art. 33(1).]</em></p>
+  </div>
+
+  <h3>Template B — Data Subject Notification (Art. 34)</h3>
+  <div class="template">
+    <div class="template-label">Template — Data Subject Notification Email</div>
+    <p><strong>Subject:</strong> Important notice about your DockBound account</p>
+    <p>Dear <em>[Name]</em>,</p>
+    <p>We are writing to let you know about a security incident that may have affected your personal information held by DockBound.</p>
+    <p><strong>What happened</strong><br>
+    <em>[Plain-language description of the breach — what occurred, when, what data was involved. Avoid technical jargon.]</em></p>
+    <p><strong>What information was involved</strong><br>
+    <em>[List the specific categories: e.g., "Your name, email address, and cruise itinerary details."]</em></p>
+    <p><strong>What we have done</strong><br>
+    <em>[Describe containment steps taken.]</em></p>
+    <p><strong>What you can do</strong><br>
+    <em>[Practical guidance: change password, watch for phishing emails, contact us if you notice suspicious activity.]</em></p>
+    <p><strong>Contact us</strong><br>
+    If you have questions or concerns, please contact us at <strong>amy@dockbound.app</strong>. You also have the right to lodge a complaint with your local data protection authority.</p>
+    <p>We sincerely apologise for this incident and any concern it may cause.</p>
+    <p>Amy Abraham<br>
+    Co-founder, DockBound<br>
+    amy@dockbound.app</p>
+  </div>
+
+  <!-- §7 Supervisory Authority Contacts -->
+  <h2>§7 · Supervisory Authority Contacts</h2>
+
+  <div class="callout callout-warning">
+    <strong>Open Item — Counsel</strong>
+    Lead supervisory authority and EU representative have not yet been formally designated. Until designated, use the ICO (UK) as the primary notification point for EU/UK users. This should be confirmed with privacy counsel before the first notification is filed.
+  </div>
+
+  <table>
+    <tr><th>Authority</th><th>Jurisdiction</th><th>Notification Portal</th><th>Contact</th></tr>
+    <tr>
+      <td><strong>ICO</strong> — Information Commissioner's Office</td>
+      <td>United Kingdom</td>
+      <td>ico.org.uk → Report a breach</td>
+      <td>casework@ico.org.uk</td>
+    </tr>
+    <tr>
+      <td><strong>DPC</strong> — Data Protection Commission (Ireland)</td>
+      <td>EU (Google Cloud, Stripe EU entity)</td>
+      <td>dataprotection.ie → Report a breach</td>
+      <td>info@dataprotection.ie</td>
+    </tr>
+    <tr>
+      <td><strong>CNIL</strong> — Commission nationale de l'informatique et des libertés</td>
+      <td>France (alternative EU lead)</td>
+      <td>notifications.cnil.fr</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>State AG offices</strong></td>
+      <td>California (CPRA), other US states</td>
+      <td>State-specific — see CCPA notification requirements if CA residents affected</td>
+      <td>—</td>
+    </tr>
+  </table>
+
+  <p><strong>CCPA/US state breach notification:</strong> If 500+ California residents are affected, notify the California AG and affected residents "in the most expedient time possible and without unreasonable delay." Other US states have their own thresholds and timelines — monitor annually via the IAPP State Breach Notification Law Tracker.</p>
+
+  <!-- §8 Incident Register -->
+  <h2>§8 · Incident Register</h2>
+  <p>All incidents (including near-misses and P4 events that turn out not to be breaches) must be recorded in the Incident Register per GDPR Art. 33(5). The register is a permanent record — do not delete entries. Maintain it in a Google Drive folder accessible only to Amy Abraham.</p>
+
+  <table>
+    <tr>
+      <th style="width:100px">Field</th>
+      <th>Content</th>
+    </tr>
+    <tr><td>Incident ID</td><td>INC-YYYY-NNN (sequential per year)</td></tr>
+    <tr><td>Date discovered</td><td>ISO datetime — <em>YYYY-MM-DD HH:MM UTC</em></td></tr>
+    <tr><td>Date breach occurred (if known)</td><td>ISO datetime or estimated range</td></tr>
+    <tr><td>Reported by</td><td>Name + role</td></tr>
+    <tr><td>Systems affected</td><td>e.g., Firestore users/ collection, SendGrid API key</td></tr>
+    <tr><td>Data categories</td><td>e.g., name, email, itinerary, payment reference</td></tr>
+    <tr><td>Data subjects affected</td><td>Estimated count + type (travelers / advisors / agencies)</td></tr>
+    <tr><td>Severity</td><td>P1 / P2 / P3 / P4</td></tr>
+    <tr><td>Containment steps</td><td>Summary with timestamps</td></tr>
+    <tr><td>Authority notified?</td><td>Yes / No / N/A — if Yes: authority name, date filed, reference number</td></tr>
+    <tr><td>Subjects notified?</td><td>Yes / No / N/A — if Yes: date, method, count</td></tr>
+    <tr><td>Root cause</td><td>Brief description</td></tr>
+    <tr><td>Corrective actions</td><td>Itemised with completion dates</td></tr>
+    <tr><td>Date closed</td><td>ISO date</td></tr>
+  </table>
+
+  <p><strong>Incident Register location:</strong> Google Drive → DockBound / Legal / Privacy / Incident Register [to be created by Amy].</p>
+
+  <!-- §9 Roles and Responsibilities -->
+  <h2>§9 · Roles and Responsibilities</h2>
+  <table>
+    <tr><th>Role</th><th>Person</th><th>Responsibilities</th></tr>
+    <tr>
+      <td><strong>Incident Lead / DRI</strong></td>
+      <td>Amy Abraham, Co-founder</td>
+      <td>Overall ownership of the response. Declares breach severity, authorises notifications, files supervisory authority reports, signs off on closure.</td>
+    </tr>
+    <tr>
+      <td><strong>Technical Lead</strong></td>
+      <td>Amy Abraham (also holds technical access)</td>
+      <td>Executes containment steps: credential revocation, Firestore rules deployment, CF redeployment, log preservation.</td>
+    </tr>
+    <tr>
+      <td><strong>Legal Counsel</strong></td>
+      <td>TBD — engage for P1 and P2 breaches</td>
+      <td>Advise on notification obligation, review notification drafts, confirm lead supervisory authority.</td>
+    </tr>
+    <tr>
+      <td><strong>Communications</strong></td>
+      <td>Amy Abraham</td>
+      <td>Draft and send data subject notifications. Handle any press inquiries (unlikely at current scale).</td>
+    </tr>
+  </table>
+
+  <!-- §10 Prevention Controls -->
+  <h2>§10 · Prevention Controls in Place</h2>
+  <p>DockBound has implemented the following technical measures to reduce breach risk:</p>
+  <ul class="checklist">
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>Firestore security rules enforce role-based read/write; <code>role</code>, <code>agencyId</code>, <code>privacyFlags</code> fields blocked from client self-write</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>All Cloud Functions require Firebase ID token authentication; admin CFs additionally verify <code>admin</code> / <code>super-admin</code> role</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>Secrets (Stripe, SendGrid, Twilio, Travefy) stored in Firebase Secret Manager — not in code or environment variables</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>API key validation logs hash-mismatches and revoked key attempts to <code>logs/</code> audit collection</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>Stripe webhook verifies <code>stripe-signature</code> header; failures logged to audit trail</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>GDPR erasure log written to <code>gdpr_erasure_log/</code> with SHA-256 email hash — audit trail cannot be client-deleted</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>Automated retention enforcement CF (<code>gdprRetentionEnforcement</code>) deletes logs per retention schedule on the 1st of each month</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span>GitHub secret scanning enabled — commits with credentials trigger email alerts</span></li>
+    <li><span class="check-box" style="background:#f0fdf4;border-color:#22c55e"></span><span><code>gdpr_erasure_log</code> collection locked to CF write + admin read only via Firestore rules</span></li>
+  </ul>
+
+  <h3>Controls Pending / Amy Action Items</h3>
+  <ul class="checklist">
+    <li><span class="check-box"></span><span>Enable Google Cloud anomalous access alerts (Cloud Monitoring → Alerting → Create policy → Firebase/Firestore anomaly)</span></li>
+    <li><span class="check-box"></span><span>Create Incident Register folder in Google Drive and share with amy@dockbound.app only</span></li>
+    <li><span class="check-box"></span><span>Test the incident response procedure: simulate a P3 event (e.g., accidentally exposed log entry) and walk through steps 1–17 in a tabletop exercise</span></li>
+    <li><span class="check-box"></span><span>Engage privacy counsel to confirm lead supervisory authority designation and EU representative</span></li>
+    <li><span class="check-box"></span><span>Register for ICO breach notification portal (ico.org.uk) to have account ready before needed</span></li>
+  </ul>
+
+  <!-- §11 Review and Testing -->
+  <h2>§11 · Plan Review and Testing</h2>
+  <table>
+    <tr><th>Activity</th><th>Frequency</th><th>Owner</th></tr>
+    <tr><td>Review this plan for accuracy and completeness</td><td>Annually (September)</td><td>Amy Abraham</td></tr>
+    <tr><td>Tabletop exercise: walk through a simulated P3/P2 breach scenario</td><td>Annually</td><td>Amy Abraham (+ counsel if available)</td></tr>
+    <tr><td>Verify supervisory authority contact details are still current</td><td>Annually</td><td>Amy Abraham</td></tr>
+    <tr><td>Review and update sub-processor DPA breach notification clauses</td><td>Annually or on material sub-processor change</td><td>Amy Abraham</td></tr>
+    <tr><td>Update plan after any real incident to incorporate lessons learned</td><td>Within 30 days of incident closure</td><td>Amy Abraham</td></tr>
+  </table>
+
+  <!-- §12 Related Documents -->
+  <h2>§12 · Related Documents</h2>
+  <table>
+    <tr><th>Document</th><th>Location</th></tr>
+    <tr><td>Privacy Program Charter</td><td><code>docs/privacy-program-charter.html</code></td></tr>
+    <tr><td>Art. 30 Records of Processing Activities</td><td><code>docs/art30-records.html</code></td></tr>
+    <tr><td>Sub-Processor Register and DPA Action Items</td><td><code>docs/sub-processors.html</code></td></tr>
+    <tr><td>GDPR Compliance Checklist</td><td><code>docs/gdpr-compliance-checklist.html</code></td></tr>
+    <tr><td>DSR Admin Tool (export + erasure)</td><td><code>/admin/dsr</code> in the DockBound admin portal</td></tr>
+    <tr><td>Incident Register</td><td>Google Drive → DockBound / Legal / Privacy / Incident Register [to be created]</td></tr>
+  </table>
+
+  <div class="doc-footer">
+    PandA Ventures, LLC · Confidential — internal use only · v1.0 Draft September 2026
+  </div>
+
+</div>
+</body>
+</html>

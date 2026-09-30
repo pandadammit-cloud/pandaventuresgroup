@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Manual Test Script</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    background: #fff;
+  }
+
+  .cover {
+    background: linear-gradient(135deg, #1e0a4a 0%, #3b0f8c 60%, #0d9488 100%);
+    color: #fff;
+    padding: 2.5rem 2.5rem 2rem;
+  }
+  .cover .logo-mark { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; color: #fff; margin-bottom: 0.25rem; }
+  .cover .logo-mark span { color: #c9920b; }
+  .cover h1 { font-size: 1.4rem; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cover .meta { font-size: 0.8rem; color: rgba(255,255,255,0.5); display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .cover .meta label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); display: block; margin-bottom: 2px; }
+  .cover .meta input {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: #fff;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    width: 180px;
+  }
+
+  .content { max-width: 1000px; margin: 0 auto; padding: 2rem 2.5rem; }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1e0a4a;
+    border-bottom: 3px solid #7c3aed;
+    padding-bottom: 0.4rem;
+    margin: 2.5rem 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title.first { margin-top: 0; }
+  .section-title .section-num {
+    background: #1e0a4a;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .journey-header {
+    background: #f5f3ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 8px 8px 0 0;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #3b0f8c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .journey-header .env-badge {
+    margin-left: auto;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+
+  table.steps {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+  }
+  table.steps thead th {
+    background: #1e0a4a;
+    color: rgba(255,255,255,0.75);
+    text-align: left;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  table.steps thead th.chk { width: 36px; text-align: center; }
+  table.steps thead th.step-num { width: 38px; }
+  table.steps thead th.action { width: 42%; }
+  table.steps thead th.expected { width: 38%; }
+  table.steps thead th.notes { width: 14%; }
+
+  table.steps tbody td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    color: #374151;
+  }
+  table.steps tbody tr:last-child td { border-bottom: none; }
+  table.steps tbody tr:nth-child(even) td { background: #fafafa; }
+  table.steps tbody tr:hover td { background: #f5f3ff; }
+
+  table.steps td.chk { text-align: center; vertical-align: middle; }
+  table.steps td input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: #7c3aed; }
+  table.steps td.step-num { color: #9ca3af; font-weight: 700; font-size: 0.75rem; }
+  table.steps td.action { font-weight: 500; }
+  table.steps td.action code {
+    background: #f3f0ff; color: #6d28d9; font-size: 0.75rem;
+    padding: 1px 5px; border-radius: 3px; font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  table.steps td.expected { color: #4b5563; }
+  table.steps td.expected .pass-tag {
+    display: inline-block; background: #d1fae5; color: #065f46;
+    font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; margin-right: 4px;
+  }
+  table.steps td.expected .warn-tag {
+    display: inline-block; background: #fef3c7; color: #92400e;
+    font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; margin-right: 4px;
+  }
+  table.steps td.notes { color: #9ca3af; font-size: 0.75rem; font-style: italic; }
+
+  .section-note {
+    background: #fffbeb;
+    border-left: 3px solid #c9920b;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.8rem;
+    color: #92400e;
+    margin: 0.75rem 0;
+  }
+  .section-note strong { color: #78350f; }
+
+  .toc {
+    background: #f5f3ff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.25rem 2.5rem;
+  }
+  .toc h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #7c3aed; font-weight: 700; margin-bottom: 0.6rem; }
+  .toc ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.2rem 2rem; padding-left: 1.25rem; }
+  .toc li { font-size: 0.8rem; color: #374151; }
+  .toc a { color: #7c3aed; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  .result-row {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0.75rem 0;
+    flex-wrap: wrap;
+  }
+  .result-row label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; display: block; margin-bottom: 2px; }
+  .result-row select, .result-row textarea, .result-row input {
+    border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px;
+    font-size: 0.82rem; color: #1f2937; background: #fff;
+  }
+  .result-row textarea { width: 320px; height: 48px; resize: vertical; }
+
+  .footer {
+    margin-top: 3rem; padding: 1.5rem 2.5rem;
+    background: #f9f7ff; border-top: 1px solid #e5e7eb;
+    font-size: 0.78rem; color: #6b7280; text-align: center;
+  }
+
+  @media print {
+    .cover input { border: none; background: transparent; color: #fff; }
+    .result-row input, .result-row select, .result-row textarea { border-color: #d1d5db; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo-mark">Dock<span>Bound</span></div>
+  <h1>Manual Test Script</h1>
+  <div class="meta">
+    <div>
+      <label>Tester</label>
+      <input type="text" placeholder="Name">
+    </div>
+    <div>
+      <label>Date</label>
+      <input type="text" placeholder="YYYY-MM-DD">
+    </div>
+    <div>
+      <label>Environment</label>
+      <input type="text" placeholder="dev / prod">
+    </div>
+    <div>
+      <label>Build / Commit</label>
+      <input type="text" placeholder="git commit hash">
+    </div>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>Sections</h2>
+  <ol>
+    <li><a href="#preflight">Pre-Flight Checks</a></li>
+    <li><a href="#public">Public Pages</a></li>
+    <li><a href="#traveler-purchase">Journey 1 — Traveler Purchase</a></li>
+    <li><a href="#traveler-dashboard">Journey 1b — Traveler Dashboard</a></li>
+    <li><a href="#advisor-signup">Journey 2 — Advisor Signup (Independent)</a></li>
+    <li><a href="#advisor-dashboard">Journey 3 — Advisor Dashboard (4 Tabs)</a></li>
+    <li><a href="#agency-hub">Journey 4 — Agency Hub</a></li>
+    <li><a href="#dock-scoring">Journey 5 — DOCK Scoring</a></li>
+    <li><a href="#admin-portal">Journey 6 — Admin Portal</a></li>
+    <li><a href="#sign-off">Sign-Off</a></li>
+  </ol>
+</div>
+
+<div class="content">
+
+<!-- ── Pre-Flight ── -->
+<h2 class="section-title first" id="preflight"><span class="section-num">0</span> Pre-Flight Checks</h2>
+
+<div class="section-note">
+  <strong>Before starting:</strong> Confirm you have test accounts, a Stripe test card (4242 4242 4242 4242, any future date, any CVC), and a valid invite code from <code>/admin/invite-codes</code>.
+</div>
+
+<div class="journey-header">0.1 — Environment &amp; Accounts <span class="env-badge">Both</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.1</td><td class="action">Navigate to the app URL (dev or prod)</td><td class="expected"><span class="pass-tag">PASS</span>Landing page loads without console errors</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.2</td><td class="action">Confirm you have a test traveler account with a purchased cruise</td><td class="expected">Account exists in Firebase Auth; has <code>hasPurchasedCompass: true</code></td><td class="notes">Create via Admin → Orders if needed</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.3</td><td class="action">Confirm you have a test independent advisor account (or create one in this run)</td><td class="expected">Account exists with <code>role: independentAdvisor</code></td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.4</td><td class="action">Generate a fresh invite code at <code>/admin/invite-codes</code></td><td class="expected">Code appears in format <code>DOCK-XXXX-XXXX</code></td><td class="notes">Required for advisor signup journey</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.5</td><td class="action">Confirm you have an agency host test account</td><td class="expected">Account with <code>role: agencyhost</code> exists</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">0.6</td><td class="action">Confirm you have an admin test account</td><td class="expected">Account with <code>role: admin</code> or <code>super-admin</code> exists</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Public Pages ── -->
+<h2 class="section-title" id="public"><span class="section-num">1</span> Public Pages</h2>
+
+<div class="journey-header">1.1 — Landing &amp; Static Pages <span class="env-badge">Prod</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.1</td><td class="action">Navigate to <code>/</code> (CompassLanding)</td><td class="expected">Advisor-facing landing renders; nav shows Login + advisor CTA</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.2</td><td class="action">Navigate to <code>/for-travelers</code></td><td class="expected">Traveler landing renders; cruise search visible</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.3</td><td class="action">Navigate to <code>/for-advisors</code></td><td class="expected">Advisor landing renders without errors</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.4</td><td class="action">Navigate to <code>/preview/nassau</code></td><td class="expected">Nassau DockGuide preview loads; port guide sections visible; no bullet doubling in list items</td><td class="notes">Verify no "• •" double bullets</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.5</td><td class="action">In Nassau preview, expand the Accessibility section</td><td class="expected">Accessibility section shows pier access, tender note area — <strong>no "Accessibility Resources" links visible</strong></td><td class="notes">Wheel the World + SATH removed</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.6</td><td class="action">Navigate to <code>/privacy</code></td><td class="expected">Privacy policy renders with SMS opt-in section and mobile data statement</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.7</td><td class="action">Navigate to <code>/privacy-policy.html</code> (static version)</td><td class="expected">Static HTML privacy policy renders fully without JavaScript</td><td class="notes">This is the URL for Twilio vetting</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">1.8</td><td class="action">Navigate to <code>/terms</code></td><td class="expected">Terms of Service renders</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Traveler Purchase ── -->
+<h2 class="section-title" id="traveler-purchase"><span class="section-num">2</span> Journey 1 — Traveler Purchase</h2>
+<div class="section-note"><strong>Stripe test card:</strong> 4242 4242 4242 4242 · any future date · any CVC · any ZIP</div>
+
+<div class="journey-header">2.1 — Cruise Search &amp; Purchase Flow <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">2.1</td><td class="action">Go to <code>/for-travelers</code>; enter a cruise line or ship name in the search box</td><td class="expected">Search results appear with matching cruises</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">2.2</td><td class="action">Click a cruise result</td><td class="expected">Cruise detail / preview page loads showing port-by-port itinerary</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">2.3</td><td class="action">Click "Buy" / "Get DockGuide" while not logged in</td><td class="expected">Redirected to <code>/auth</code>; after login returns to purchase flow</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">2.4</td><td class="action">Complete Stripe checkout with test card</td><td class="expected">Stripe checkout loads; payment succeeds; redirect to <code>/dashboard?subscribed=true</code></td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">2.5</td><td class="action">Observe the dashboard after purchase</td><td class="expected">Dashboard shows the purchased cruise itinerary; port days are clickable</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Traveler Dashboard ── -->
+<h2 class="section-title" id="traveler-dashboard"><span class="section-num">3</span> Journey 1b — Traveler Dashboard</h2>
+
+<div class="journey-header">3.1 — Port Guide &amp; Day Navigation <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.1</td><td class="action">Log in as paid traveler; go to <code>/dashboard</code></td><td class="expected">Cruise itinerary shows as pill strip; first port day selected by default</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.2</td><td class="action">Click a port day pill</td><td class="expected">Port guide sections load for that port; sections expand/collapse</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.3</td><td class="action">Check that sea days and embarkation/arrival days are present in the pill strip</td><td class="expected">Sea/embarkation/arrival days show in strip but do NOT attempt to load a port guide (no error)</td><td class="notes">BWI / airport code fix</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.4</td><td class="action">On a port day, check the "Port Day at a Glance" section (V4)</td><td class="expected">Section shows activity depth, transfer time, return complexity fields if populated</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.5</td><td class="action">Expand the Accessibility section on a port guide</td><td class="expected">Pier access, tender note (if applicable) show — <strong>no Accessibility Resources links</strong></td><td class="notes">Links removed until confirmed</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.6</td><td class="action">Scroll through all port guide sections; check for double bullets in any list</td><td class="expected">All list items render with single bullet — no "• item" with both disc and char</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">3.7</td><td class="action">Check the travel alerts strip at the top of the dashboard</td><td class="expected">State Dept alerts show if applicable; no JS errors in console</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Advisor Signup ── -->
+<h2 class="section-title" id="advisor-signup"><span class="section-num">4</span> Journey 2 — Advisor Signup (Independent)</h2>
+<div class="section-note"><strong>Requires:</strong> A Stripe test card. Invite codes are <em>not</em> required for open self-serve signup — but keep a valid code handy to test the invite-code path if needed.</div>
+
+<div class="journey-header">4.1 — Invite Code Validation &amp; Account Creation <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.1</td><td class="action">Navigate to <code>/auth?mode=signup&advisor=true</code></td><td class="expected">Advisor signup form appears with invite code field</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.2</td><td class="action">Enter an invalid code (e.g., <code>DOCK-0000-0000</code>) and attempt to continue</td><td class="expected">Error message: invite code invalid or already used</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.3</td><td class="action">Enter the valid invite code generated in pre-flight</td><td class="expected">Code validates; form advances to account info step</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.4</td><td class="action">Complete name, email, password fields; submit</td><td class="expected">Firebase account created; advances to plan picker</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+<div class="journey-header">4.2 — Plan Picker &amp; Pricing Display <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.5</td><td class="action">Observe the three plan cards</td><td class="expected">Basic shows <strong>$99 / per year</strong>; Professional shows <strong>$49 / per month · $499/yr</strong>; Engage shows <strong>$99 / per month · $999/yr</strong></td><td class="notes">Verify all three prices exactly</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.6</td><td class="action">Select "Professional" and click "Subscribe"</td><td class="expected">Redirects to Stripe checkout; plan name and billing amount shown; <strong>no free trial language</strong></td><td class="notes">Promo codes accepted at checkout</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.7</td><td class="action">Complete Stripe checkout with test card</td><td class="expected">Redirected to <code>/agent-dashboard?subscribed=true</code></td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">4.8</td><td class="action">Attempt to reuse the same invite code</td><td class="expected">Error: invite code already used</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Advisor Dashboard ── -->
+<h2 class="section-title" id="advisor-dashboard"><span class="section-num">5</span> Journey 3 — Advisor Dashboard (4 Tabs)</h2>
+<div class="section-note"><strong>Log in as:</strong> the independent advisor created in Journey 2, or an existing advisor with roster entries and cruise data.</div>
+
+<div class="journey-header">5.1 — Sailings Tab <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.1</td><td class="action">Go to <code>/agent-dashboard</code>; confirm default tab is Sailings (🗓)</td><td class="expected">Sailings tab active; <strong>Upcoming Sailings</strong> table shows cruises from roster (or empty state)</td><td class="notes">Panel was "Itinerary Timeline" — now "Upcoming Sailings"</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.2</td><td class="action">Click client count on an Upcoming Sailings row (if populated)</td><td class="expected">Row expands inline showing client names and emails</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.3</td><td class="action">Click "Port Guide →" on an Upcoming Sailings row</td><td class="expected">Switches to Port Tools tab with that port pre-selected</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.4</td><td class="action">As a <strong>Professional+</strong> advisor, scroll down on Sailings tab to Port Conditions panel</td><td class="expected"><strong>Port Conditions</strong> panel shows port-day cards with DOCK scores (single number + opState badge) and AT-RISK flags where applicable</td><td class="notes">Panel was "Trip Intelligence" — now "Port Conditions"; requires Professional+</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.4b</td><td class="action">As a <strong>Basic</strong> advisor, scroll to the same area on Sailings tab</td><td class="expected">Upgrade prompt shown in place of Port Conditions panel; <strong>no port-day cards visible</strong></td><td class="notes">Professional+ gate added 2026-09-17</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.5</td><td class="action">In Port Conditions (Professional+ advisor), verify DOCK op-state badges</td><td class="expected">High-Constraint badges are rare (~2% of ports); most ports show Manageable or Elevated</td><td class="notes">Calibrated 2026-09-15</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.5b</td><td class="action">Click "Print Itinerary" on an Upcoming Sailings row</td><td class="expected">Opens <code>/print/cruise/:cruiseId</code> in a <strong>new tab</strong>; print-formatted itinerary with port guides loads</td><td class="notes">New as of 2026-09-17</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.5c</td><td class="action">Click "Print Port Guide" on a Port Conditions card (Professional+ advisor)</td><td class="expected">Opens <code>/print/port/:portCode</code> in a <strong>new tab</strong>; full port guide including DOCK, In The Know, Weather, What to Bring, Confidence Cue visible</td><td class="notes">Full content = Professional+</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.5d</td><td class="action">As a <strong>Basic</strong> advisor, open any port print view</td><td class="expected">Snapshot, transport, safety, and Getting Back sections visible; <strong>DOCK score, In The Know, Weather, What to Bring, Confidence Cue are hidden</strong></td><td class="notes">Tier gate on print views</td></tr>
+  </tbody>
+</table>
+
+<div class="journey-header">5.2 — Clients Tab <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.6</td><td class="action">Click Clients tab (👥)</td><td class="expected">Traveler Roster table renders; shows name, email, cruise, sail date, status columns</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.7</td><td class="action">Click "+ Add Traveler"</td><td class="expected">Modal opens with name, email, phone, ref ID, cruise picker fields</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.8</td><td class="action">In Add Traveler, select a cruise line then pick any <strong>past</strong> cruise (sailed more than 1 week ago)</td><td class="expected">Past cruises are visible in the picker — no future-only filter</td><td class="notes">Fixed 2026-09-21 — was hidden by is_future_sailing filter</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.8b</td><td class="action">Select and save the past cruise to the traveler</td><td class="expected">Roster entry saves with historical sail date; no error</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.9</td><td class="action">Add a traveler with all required fields; submit</td><td class="expected">New row appears in roster table</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.10</td><td class="action">Click Archive on the new traveler row</td><td class="expected">Row disappears; "Show archived" toggle appears or was already there</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.11</td><td class="action">Toggle "Show archived"</td><td class="expected">Archived traveler reappears in list</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.12</td><td class="action">Click Unarchive on the archived traveler</td><td class="expected">Traveler returns to active roster</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.13</td><td class="action">Check that CSV Import is NOT present in the Clients tab</td><td class="expected">No CSV import button; support mailto link shown instead</td><td class="notes">Was removed in Sep 2026</td></tr>
+  </tbody>
+</table>
+
+<div class="journey-header">5.3 — Port Tools Tab <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.14</td><td class="action">Click Port Tools tab (🗺️)</td><td class="expected">Port search input visible; DOCK score panel and congestion calendar are gated (paid only)</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.15</td><td class="action">Search for a port (e.g., "Nassau")</td><td class="expected">Port guide loads with all V4 sections; no double bullets</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.16</td><td class="action">Check Accessibility section in the advisor port guide</td><td class="expected">Section shows pier/tender/infrastructure fields — <strong>no Accessibility Resources links</strong></td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.17</td><td class="action">Check currency converter below DOCK score (non-USD ports)</td><td class="expected">Currency converter appears for ports where local currency ≠ USD</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.18</td><td class="action">Click "Print Guide" button (Professional+ advisor)</td><td class="expected">Opens <code>/print/port/:portCode</code> in a new tab; full guide visible including DOCK, In The Know, Weather, What to Bring, Confidence Cue</td><td class="notes">Basic advisors see partial content only; non-advisors (paid travelers) get full</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.19</td><td class="action">Switch to DOCK score view; observe the scores and op-state for the selected port</td><td class="expected">DOCK scores display; op-state badge shows (Relaxed/Manageable/Elevated/High-Constraint); buffer minutes shown</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+<div class="journey-header">5.4 — Settings Tab <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.20</td><td class="action">Click Settings tab (⚙️)</td><td class="expected">Notification Preferences section visible; SMS section shows "Coming Soon"</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.21</td><td class="action">Check that SMS consent is NOT pre-selected</td><td class="expected">SMS consent checkbox initialises unchecked</td><td class="notes">TCPA requirement</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.22</td><td class="action">Observe Plan strip at top of dashboard</td><td class="expected">Compact horizontal strip shows plan badge inline; <strong>no trial countdown</strong> (free trial removed)</td><td class="notes">Trial language removed 2026-09-17</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">5.23</td><td class="action">Click "Change Plan" in the plan strip</td><td class="expected">Plan picker opens showing three tiers: Basic $99/yr, Professional $49/mo or $499/yr, Engage $99/mo or $999/yr; <strong>no free trial language</strong></td><td class="notes">Verify prices; trial removed 2026-09-17</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Agency Hub ── -->
+<h2 class="section-title" id="agency-hub"><span class="section-num">6</span> Journey 4 — Agency Hub</h2>
+<div class="section-note"><strong>Log in as:</strong> agencyhost test account.</div>
+
+<div class="journey-header">6.1 — Attention Dashboard &amp; Advisor Management <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">6.1</td><td class="action">Navigate to <code>/agency-hub</code></td><td class="expected">Attention-first dashboard loads; attention items feed shown at top</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">6.2</td><td class="action">Check the Advisor Roster tab</td><td class="expected">Advisors listed with status, last activity, open attention items</td><td class="notes">Title should say "Advisor Roster" not "Agent Roster"</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">6.3</td><td class="action">Click on an advisor in the roster</td><td class="expected">Advisor detail page loads at <code>/agency-hub/advisor/:id</code> showing status, attention items</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">6.4</td><td class="action">Go to Agency Hub Settings tab</td><td class="expected">Logo upload and disclaimer textarea visible</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">6.5</td><td class="action">Upload a test logo image</td><td class="expected">Logo appears in the Agency Hub header after upload</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── DOCK Scoring ── -->
+<h2 class="section-title" id="dock-scoring"><span class="section-num">7</span> Journey 5 — DOCK Scoring</h2>
+<div class="section-note"><strong>Calibrated 2026-09-15:</strong> High-Constraint ports reduced from 150 → 48 (6.6% → 2.1%). Buffer formula now includes D factor (+8 min per D level).</div>
+
+<div class="journey-header">7.1 — Baseline &amp; Adjusted Scores <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">7.1</td><td class="action">As advisor, go to Port Tools → select Nassau (NAS)</td><td class="expected">DOCK scores load: D, O, C, K each 1–5; avg shown; op-state = Manageable or Elevated</td><td class="notes">Nassau should NOT be High-Constraint post-calibration</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">7.2</td><td class="action">Select a known tender port (e.g., Santorini, Bora Bora)</td><td class="expected">D score = 4; buffer minutes are higher than a pier port of same O/C/K</td><td class="notes">D factor now adds +8 min per level to buffer</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">7.3</td><td class="action">Select a port with a future sail date; observe dynamic adjustments</td><td class="expected">Adjusted scores reflect weather/advisory/ship volume; drivers list explains each adjustment</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">7.4</td><td class="action">Select a port with no ship schedule data for the date</td><td class="expected"><code>dataSourcesUsed.shipVolume = false</code>; no O delta applied from ship count</td><td class="notes">Missing schedule = data gap, not 0 ships</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">7.5</td><td class="action">Observe AT-RISK flag in Trip Intelligence (delta ≥ 0.5)</td><td class="expected">AT-RISK flag appears on port-day cards where dynamic average is ≥ 0.5 above baseline</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Admin Portal ── -->
+<h2 class="section-title" id="admin-portal"><span class="section-num">8</span> Journey 6 — Admin Portal</h2>
+<div class="section-note"><strong>Log in as:</strong> admin or super-admin account. Navigate to <code>/admin</code>.</div>
+
+<div class="journey-header">8.1 — Core Admin Tiles <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.1</td><td class="action">Navigate to <code>/admin</code></td><td class="expected">Admin portal hub renders tile grid; dark background (intentional)</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.2</td><td class="action">Click Invite Codes tile → <code>/admin/invite-codes</code></td><td class="expected">Invite codes list renders; "Generate Code" button works; new code appears in DOCK-XXXX-XXXX format</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.3</td><td class="action">Click Advisors tile → <code>/admin/advisors</code></td><td class="expected">All-advisor roster renders; type/status filters work; search works</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.4</td><td class="action">Click an advisor → <code>/admin/advisors/:uid</code></td><td class="expected">Advisor detail shows plan tier, slot cap, status; suspend/unsuspend button present</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.5</td><td class="action">Click Orders tile → <code>/admin/orders</code></td><td class="expected">Order lookup by email works; comp access grant button present</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.6</td><td class="action">Click Reminders tile → <code>/admin/reminders</code></td><td class="expected">Reminders list shows quarterly + annual items including "Verify ship passenger counts" and "Check port capacity for ports under construction"</td><td class="notes">New reminders added Sep 2026</td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.7</td><td class="action">Click Audit Log tile → <code>/admin/audit-log</code></td><td class="expected">Log entries render; category/severity/actor filters work</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.8</td><td class="action">Click API Keys tile → <code>/admin/api-keys</code></td><td class="expected">Key list renders; "Create Key" works; key shown once in <code>dbk_xxxxx</code> format</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.9</td><td class="action">Click Pipeline Health tile → <code>/admin/pipeline-health</code></td><td class="expected">Last-run status for all background jobs renders; no errors shown for healthy jobs</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.10</td><td class="action">Click Content Health tile → <code>/admin/content-health</code></td><td class="expected">Port guide coverage and QA review tabs render without errors</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+<div class="journey-header">8.2 — Data Sources &amp; Field Data <span class="env-badge">Dev</span></div>
+<table class="steps">
+  <thead><tr>
+    <th class="chk">✓</th><th class="step-num">#</th>
+    <th class="action">Action</th><th class="expected">Expected Result</th><th class="notes">Notes</th>
+  </tr></thead>
+  <tbody>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.11</td><td class="action">Navigate to <code>/admin/data-sources</code></td><td class="expected">4 active data sources listed (state-dept, openweathermap, port-schedule, advisor-entry) with priority/accuracy values</td><td class="notes"></td></tr>
+    <tr><td class="chk"><input type="checkbox"></td><td class="step-num">8.12</td><td class="action">Navigate to <code>/admin/field-data</code></td><td class="expected">Port picker → select a port → field list renders → expand a field → observations by source visible</td><td class="notes"></td></tr>
+  </tbody>
+</table>
+
+
+<!-- ── Sign-Off ── -->
+<h2 class="section-title" id="sign-off"><span class="section-num">9</span> Sign-Off</h2>
+
+<div class="result-row">
+  <div>
+    <label>Overall Result</label>
+    <select>
+      <option value="">— Select —</option>
+      <option>PASS — all steps green</option>
+      <option>PASS WITH NOTES — minor issues logged</option>
+      <option>FAIL — blocking issue found</option>
+    </select>
+  </div>
+  <div>
+    <label>Tester Signature</label>
+    <input type="text" placeholder="Name + date">
+  </div>
+</div>
+
+<div class="result-row">
+  <div>
+    <label>Issues Found (IDs or short description)</label>
+    <textarea placeholder="e.g. Step 5.8 — cruise picker returned empty; step 7.2 — buffer not updated"></textarea>
+  </div>
+  <div>
+    <label>Follow-Up Actions</label>
+    <textarea placeholder="e.g. File backlog item; re-test after fix"></textarea>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="footer">
+  DockBound Manual Test Script · Updated 2026-09-21 · Reflects tier-gated print views, Port Conditions panel, past-cruise selection, PIER ACCESS label
+</div>
+
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Art. 30 Records of Processing Activities</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #1e293b;
+    background: #f8fafc;
+    margin: 0; padding: 0;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 44px 36px 80px; }
+
+  .doc-header { border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 32px; }
+  .doc-header h1 { font-size: 21px; font-weight: 800; color: #0f172a; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .doc-header .sub { font-size: 12.5px; color: #64748b; margin: 0 0 10px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 9px; border-radius: 9999px; border: 1px solid; }
+  .badge-draft  { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .badge-legal  { background: #ffe4e6; color: #9f1239; border-color: #fca5a5; }
+  .badge-internal { background: #f0f9ff; color: #075985; border-color: #7dd3fc; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; color: #64748b; margin-top: 10px; }
+
+  .callout { border-radius: 8px; padding: 13px 17px; margin-bottom: 28px; font-size: 12.5px; }
+  .callout-warn { background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; }
+  .callout-info { background: #f0f9ff; border: 1px solid #7dd3fc; color: #075985; }
+  .callout strong { display: block; margin-bottom: 3px; }
+
+  h2 { font-size: 14px; font-weight: 800; color: #0f172a; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; letter-spacing: -0.01em; }
+
+  /* Record cards */
+  .record { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+  .record-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0; cursor: pointer;
+  }
+  .record-id { font-family: 'SF Mono','Consolas',monospace; font-size: 10px; color: #94a3b8; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 6px; flex-shrink: 0; }
+  .record-title { font-size: 13px; font-weight: 700; color: #0f172a; flex: 1; }
+  .role-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; border: 1px solid; white-space: nowrap; }
+  .role-controller { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .role-processor  { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .role-both       { background: #f5f3ff; color: #5b21b6; border-color: #c4b5fd; }
+  .record-body { padding: 16px; display: none; }
+  .record.open .record-body { display: block; }
+  .record.open .record-header { background: #f0fdf4; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 0; }
+  th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 5px 10px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 7px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-weight: 600; color: #334155; white-space: nowrap; width: 160px; }
+  code { font-family: 'SF Mono','Consolas',monospace; font-size: 11px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; }
+
+  .tbd { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+
+  .controls { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .ctrl-btn { font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; }
+  .ctrl-btn:hover { background: #f1f5f9; }
+
+  .doc-footer { border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 56px; font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  @media print {
+    body { background: #fff; }
+    .record-body { display: block !important; }
+    .record-header { cursor: default; }
+    .controls { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <h1>DockBound — Records of Processing Activities (Art. 30 GDPR)</h1>
+    <p class="sub">Living document. Updated quarterly and on each new data collection. Owner: Amy Abraham, Co-founder, PandA Ventures, LLC.</p>
+    <div class="badge-row">
+      <span class="badge badge-draft">Draft — Pending Legal Review</span>
+      <span class="badge badge-legal">Not Legal Advice</span>
+      <span class="badge badge-internal">Internal — Regulatory Use on Request</span>
+    </div>
+    <div class="meta-row">
+      <span>📅 Created: 2026-09-23</span>
+      <span>🔄 Next review: 2026-12-23 (quarterly)</span>
+      <span>📋 Charter: docs/privacy-program-charter.html</span>
+    </div>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>⚠ Retention periods marked TBD must be confirmed before this document is finalised.</strong>
+    Lawful basis selections should be reviewed by counsel before the privacy policy is published. The dual-role determination for roster data (controller post-login / processor pre-login) is an accepted working position — confirm with counsel before finalising advisor/agency terms of service.
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" onclick="expandAll()">Expand all</button>
+    <button class="ctrl-btn" onclick="collapseAll()">Collapse all</button>
+    <button class="ctrl-btn" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <h2>Consumer &amp; User Data</h2>
+
+  <!-- R1 — Account Identity -->
+  <div class="record" id="r1">
+    <div class="record-header" onclick="toggleRecord('r1')">
+      <span class="record-id">R-01</span>
+      <span class="record-title">Account Identity &amp; Authentication</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Email address, display name, Firebase Auth UID, role, account creation/update timestamps</td></tr>
+        <tr><td>Data subjects</td><td>All registered users (travelers, advisors, agency hosts, admins)</td></tr>
+        <tr><td>Purpose</td><td>Authentication, product access control, account management, role-based feature gating</td></tr>
+        <tr><td>Lawful basis</td><td>Contract — necessary to provide the service the user signed up for</td></tr>
+        <tr><td>Firestore location</td><td><code>users/{uid}</code> · Firebase Authentication (managed by Google)</td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firebase Auth, Firestore) — see sub-processor list</td></tr>
+        <tr><td>Retention</td><td>Duration of account + 30 days post-deletion (to allow recovery). Firebase Auth record deleted on account erasure.</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs (US → EU/UK transfer coverage)</td></tr>
+        <tr><td>Notes</td><td>Role field (<code>role</code>) and linked IDs (<code>agentId</code>, <code>agencyId</code>) are written only by Cloud Functions via Admin SDK — not writable by the client.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R2 — Subscription & Billing -->
+  <div class="record" id="r2">
+    <div class="record-header" onclick="toggleRecord('r2')">
+      <span class="record-id">R-02</span>
+      <span class="record-title">Subscription &amp; Billing Data</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Stripe customer ID, subscription status, plan type, trial end date, payment method type (card brand/last 4 — tokenised, never full PAN). Stripe stores card details — DockBound stores only the reference.</td></tr>
+        <tr><td>Data subjects</td><td>Advisors (Compass/Chartroom/Helm) and travelers with paid access</td></tr>
+        <tr><td>Purpose</td><td>Payment processing, subscription management, access gating</td></tr>
+        <tr><td>Lawful basis</td><td>Contract — necessary to process payment and deliver the paid tier of service</td></tr>
+        <tr><td>Firestore location</td><td><code>users/{uid}</code> (plan status + Stripe customer ID only) · Full payment data held by Stripe</td></tr>
+        <tr><td>Recipients</td><td>Stripe (payment processor) — see sub-processor list. Stripe handles card data under PCI-DSS.</td></tr>
+        <tr><td>Retention</td><td>Stripe retains billing records for 7 years (tax/legal). DockBound's Firestore reference retained for duration of account + 30 days. Stripe customer record anonymised on account deletion (retain minimum for tax compliance per Stripe's DPA).</td></tr>
+        <tr><td>Transfer mechanism</td><td>Stripe SCCs / US-EU adequacy</td></tr>
+        <tr><td>Notes</td><td>Full payment card data is never stored in Firestore. Stripe Radar fraud signals may retain limited transaction metadata — confirm retention period with Stripe DPA.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R3 — Traveler self-registration -->
+  <div class="record" id="r3">
+    <div class="record-header" onclick="toggleRecord('r3')">
+      <span class="record-id">R-03</span>
+      <span class="record-title">Traveler Self-Registration (post-login)</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Name, email, phone (optional), SMS consent flag, cruise instances linked to account</td></tr>
+        <tr><td>Data subjects</td><td>Travelers who created their own DockBound account (distinct from advisor-uploaded roster entries)</td></tr>
+        <tr><td>Purpose</td><td>Delivering personalised cruise/port content, traveler–advisor communications, SMS alert opt-in</td></tr>
+        <tr><td>Lawful basis</td><td>Contract (core account/content delivery). Consent (SMS — explicit opt-in required; never pre-selected).</td></tr>
+        <tr><td>Firestore location</td><td><code>users/{uid}</code> · <code>agentRoster/{rosterId}</code> (linked entry, set on invite acceptance)</td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore). Twilio (SMS only, if consented). Advisor linked to this traveler.</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — active account duration + 30 days post-deletion. SMS consent log retained for 3 years (regulatory compliance).</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs. Twilio SCCs (if SMS enabled).</td></tr>
+        <tr><td>Notes</td><td>SMS consent (<code>smsConsent</code>) is stored on the roster entry and must be explicitly set by the traveler — never defaulted to true. Erasure of this record must also trigger erasure of the corresponding pre-login roster entry (R-04) if one exists.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Advisor / B2B Data</h2>
+
+  <!-- R4 — Advisor-uploaded roster (pre-login) -->
+  <div class="record" id="r4">
+    <div class="record-header" onclick="toggleRecord('r4')">
+      <span class="record-id">R-04</span>
+      <span class="record-title">Advisor-Uploaded Client Roster (pre-login / processor role)</span>
+      <span class="role-badge role-processor">Processor</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Traveler name, email, phone (optional), reference ID (optional), cruise + sail date, Travefy trip links, archive status</td></tr>
+        <tr><td>Data subjects</td><td>Travelers entered or imported by an advisor before the traveler has created their own DockBound account</td></tr>
+        <tr><td>Purpose</td><td>Enabling advisors to manage client itineraries and send port guide communications on behalf of clients. DockBound processes this data on the advisor's (controller's) instruction.</td></tr>
+        <tr><td>Lawful basis</td><td>Processor role — the advisor (controller) is responsible for their lawful basis. DockBound's contract with the advisor must include a DPA clause covering this processing. <span class="tbd">DPA clause not yet in advisor ToS — pending</span></td></tr>
+        <tr><td>Firestore location</td><td><code>agentRoster/{rosterId}</code></td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore). SendGrid (if advisor sends a port guide email to this traveler). Twilio (if SMS consent obtained and advisor sends SMS).</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — retained while advisor account is active + 90 days post-advisor-account-deletion. Archived entries (soft-deleted) retained for same period. Traveler erasure request triggers deletion of this entry in addition to R-03.</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs. SendGrid DPA. Twilio SCCs.</td></tr>
+        <tr><td>Notes</td><td>This is a processor-role record. The determination is accepted as a working position pending counsel confirmation. Advisor and agency terms of service must be updated to include a data processing clause before DockBound can formally act as processor for this data.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R5 — Advisor profile -->
+  <div class="record" id="r5">
+    <div class="record-header" onclick="toggleRecord('r5')">
+      <span class="record-id">R-05</span>
+      <span class="record-title">Advisor Profile &amp; Settings</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Contact name, agency name, email, advisor type, plan/subscription, Stripe customer ID, alert settings (email address + phone for notifications), Travefy connection metadata (userId, publicKey, connected timestamp — no access token client-side)</td></tr>
+        <tr><td>Data subjects</td><td>Travel advisors (Compass / Chartroom / Helm tiers)</td></tr>
+        <tr><td>Purpose</td><td>Service delivery, billing, alert notifications, Travefy integration management, agency hierarchy</td></tr>
+        <tr><td>Lawful basis</td><td>Contract</td></tr>
+        <tr><td>Firestore location</td><td><code>agents/{uid}</code> · <code>nodes/{nodeId}</code> (hierarchy) · <code>agencies/{agencyId}</code> (agency record)</td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore). Stripe (billing). SendGrid (alert emails). Twilio (SMS alerts if enabled). Travefy (integration — email used as lookup key only).</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — active account + 30 days post-deletion. Stripe billing records 7 years.</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs. Stripe SCCs. SendGrid DPA. Twilio SCCs. Travefy DPA.</td></tr>
+        <tr><td>Notes</td><td>Travefy access token is stored server-side only in Firebase Secret Manager and Cloud Functions environment — never in Firestore or exposed to the client.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R6 — Communications -->
+  <div class="record" id="r6">
+    <div class="record-header" onclick="toggleRecord('r6')">
+      <span class="record-id">R-06</span>
+      <span class="record-title">Advisor–Traveler Communications</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Message content, timestamps, sender/recipient identifiers (agentId + rosterId), read status, unread count</td></tr>
+        <tr><td>Data subjects</td><td>Advisors and their enrolled travelers</td></tr>
+        <tr><td>Purpose</td><td>Direct messaging between advisors and travelers regarding cruise/port planning</td></tr>
+        <tr><td>Lawful basis</td><td>Contract (both parties agree to communications as part of the service)</td></tr>
+        <tr><td>Firestore location</td><td><code>agentCommunications/{agentId}_{rosterId}</code> (thread metadata) · <code>agentCommunications/{id}/messages</code> (subcollection)</td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore). SendGrid (email delivery of port guide sends, logged in <code>guide_send_log</code>).</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — suggest 3 years from last message. <code>guide_send_log</code> suggest 2 years.</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs. SendGrid DPA.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R7 — SMS -->
+  <div class="record" id="r7">
+    <div class="record-header" onclick="toggleRecord('r7')">
+      <span class="record-id">R-07</span>
+      <span class="record-title">SMS Alerts &amp; Interactions (Twilio)</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Phone numbers, inbound/outbound message content, consent flags (<code>smsConsent</code>, <code>smsPendingConfirmation</code>), consent timestamp</td></tr>
+        <tr><td>Data subjects</td><td>Travelers who have opted in to SMS alerts; advisors who enable SMS notification preference</td></tr>
+        <tr><td>Purpose</td><td>Port change alerts and advisor–traveler SMS communications (pending Twilio A2P approval)</td></tr>
+        <tr><td>Lawful basis</td><td>Consent — explicit opt-in required. SMS consent must never be pre-selected. TCPA compliance required for US numbers.</td></tr>
+        <tr><td>Firestore location</td><td><code>agentRoster/{rosterId}.traveler.smsConsent</code> · <code>agents/{uid}.alertSettings.sms</code> · Message content held by Twilio</td></tr>
+        <tr><td>Recipients</td><td>Twilio (SMS delivery and message log retention)</td></tr>
+        <tr><td>Retention</td><td>Consent log: 3 years (regulatory). Twilio message logs: align with Twilio DPA retention terms. <span class="tbd">Confirm with Twilio DPA</span></td></tr>
+        <tr><td>Transfer mechanism</td><td>Twilio SCCs / DPA</td></tr>
+        <tr><td>Notes</td><td>Twilio A2P 10DLC campaign pending approval as of 2026-09-17. SMS features gated until approved. Inbound JOIN keyword (<code>ADVISOR_INVITE_KEYWORD</code>) generates an invite code — no personal data stored beyond phone number.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R8 — Travefy -->
+  <div class="record" id="r8">
+    <div class="record-header" onclick="toggleRecord('r8')">
+      <span class="record-id">R-08</span>
+      <span class="record-title">Travefy Integration</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Advisor's Travefy user ID, public API key, connected-at timestamp, optional email override. <strong>No traveler personal data transits the Travefy API.</strong></td></tr>
+        <tr><td>Data subjects</td><td>Advisors who connect their Travefy account</td></tr>
+        <tr><td>Purpose</td><td>Linking the advisor's DockBound account to their Travefy account to enable DockBound to push port guide TripEvents into Travefy itineraries. Content pushed is port guide / DOCK score data (non-personal).</td></tr>
+        <tr><td>Lawful basis</td><td>Contract — the advisor initiates the connection and it is core to the Travefy integration feature</td></tr>
+        <tr><td>Firestore location</td><td><code>agents/{uid}.travefyConnection</code> (userId, publicKey, connectedAt) · <code>travefyEnrichments/{agentUid}_{tripId}_{portCode}</code> (enrichment history — no personal data, only port codes and timestamps)</td></tr>
+        <tr><td>Recipients</td><td>Travefy (API calls to push TripEvents). Google Cloud (Firestore).</td></tr>
+        <tr><td>Retention</td><td>Connection metadata: active account duration + 30 days. Enrichment history: <span class="tbd">TBD</span> — suggest 2 years.</td></tr>
+        <tr><td>Transfer mechanism</td><td>Travefy DPA. Google Cloud SCCs.</td></tr>
+        <tr><td>Notes</td><td>Travefy access token (secret) is stored in Firebase Secret Manager and used only within Cloud Functions — never in Firestore or the client. The advisor's email is used as a Travefy API lookup key but is already held by DockBound as R-05. No additional personal data is collected via Travefy.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Operational &amp; System Data</h2>
+
+  <!-- R9 — Audit logs -->
+  <div class="record" id="r9">
+    <div class="record-header" onclick="toggleRecord('r9')">
+      <span class="record-id">R-09</span>
+      <span class="record-title">Audit &amp; Activity Logs</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Actor email/UID, target entity type + ID, action summary, timestamp, severity, category (auth/advisor/billing/content/etc.), source (admin_ui/cloud_function/api/system)</td></tr>
+        <tr><td>Data subjects</td><td>Admin users, advisors, and any user whose account is the subject of an admin action</td></tr>
+        <tr><td>Purpose</td><td>Security monitoring, compliance audit trail, fraud investigation, operational debugging</td></tr>
+        <tr><td>Lawful basis</td><td>Legitimate interest (security, fraud prevention, compliance obligations). 7-year retention is aligned with typical tax/legal audit requirements.</td></tr>
+        <tr><td>Firestore location</td><td><code>logs/{logId}</code></td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore)</td></tr>
+        <tr><td>Retention</td><td>7 years (set in policy; align Firestore TTL rule when retention enforcement CFs are built)</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs</td></tr>
+        <tr><td>Notes</td><td>Logs must never contain full private prompts, credentials, or raw personal data beyond identifiers. Use references/hashes for content. Full-text search available to admins at /admin/audit-log.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R10 — Agency / org structure -->
+  <div class="record" id="r10">
+    <div class="record-header" onclick="toggleRecord('r10')">
+      <span class="record-id">R-10</span>
+      <span class="record-title">Agency &amp; Organisation Structure</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Agency name, owner UID, node hierarchy (parent/child org relationships), agency ID, membership links. Agency contact info (name, email) stored as part of advisor profile (R-05).</td></tr>
+        <tr><td>Data subjects</td><td>Agency owners, host network staff, member agency contacts</td></tr>
+        <tr><td>Purpose</td><td>Modelling the B2B organisation hierarchy; scoping data queries to the correct agency; section entitlements via node permissions</td></tr>
+        <tr><td>Lawful basis</td><td>Contract — necessary to deliver the Chartroom/Helm tier service</td></tr>
+        <tr><td>Firestore location</td><td><code>agencies/{agencyId}</code> · <code>nodes/{nodeId}</code> · <code>nodePermissions/{nodeId}</code></td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore)</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — active contract duration + 30 days. Host billing events (<code>host_billing_events</code>) retained 7 years (financial records).</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R11 — Attention items -->
+  <div class="record" id="r11">
+    <div class="record-header" onclick="toggleRecord('r11')">
+      <span class="record-id">R-11</span>
+      <span class="record-title">Agency Attention Items</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>Agency ID, advisor UID (as subject of the attention item), trigger type, priority, status history (audit trail of transitions), timestamps</td></tr>
+        <tr><td>Data subjects</td><td>Advisors whose status triggers an attention item (inactive, missing Travefy auth, billing issue, etc.)</td></tr>
+        <tr><td>Purpose</td><td>Agency host exception management — surfacing advisor-level issues that require host action</td></tr>
+        <tr><td>Lawful basis</td><td>Contract / legitimate interest — necessary to deliver the Chartroom/Helm exception-management feature</td></tr>
+        <tr><td>Firestore location</td><td><code>attention_items/{itemId}</code></td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore)</td></tr>
+        <tr><td>Retention</td><td><span class="tbd">TBD</span> — suggest 1 year from resolution date</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- R12 — Partner API keys -->
+  <div class="record" id="r12">
+    <div class="record-header" onclick="toggleRecord('r12')">
+      <span class="record-id">R-12</span>
+      <span class="record-title">Partner API Keys</span>
+      <span class="role-badge role-controller">Controller</span>
+    </div>
+    <div class="record-body">
+      <table>
+        <tr><td>Data categories</td><td>API key hash (SHA-256 — original key never stored), label, owner name/email, plan type, active status, creation timestamp</td></tr>
+        <tr><td>Data subjects</td><td>Partner developers / organisations with API access</td></tr>
+        <tr><td>Purpose</td><td>API authentication and access control for the DockBound Partner API</td></tr>
+        <tr><td>Lawful basis</td><td>Contract</td></tr>
+        <tr><td>Firestore location</td><td><code>api_keys/{8hexId}</code></td></tr>
+        <tr><td>Recipients</td><td>Google Cloud (Firestore)</td></tr>
+        <tr><td>Retention</td><td>Active key lifetime + 90 days post-revocation</td></tr>
+        <tr><td>Transfer mechanism</td><td>Google Cloud SCCs</td></tr>
+        <tr><td>Notes</td><td>Only the SHA-256 hash of the key is stored. Full key shown once at creation only, never persisted.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Security Measures (Art. 32 — Applied to All Records Above)</h2>
+  <div class="callout callout-info">
+    <strong>Encryption at rest and in transit</strong>
+    All personal data in Firestore and Firebase Auth is encrypted at rest using AES-256 by Google Cloud by default. All data in transit is encrypted via TLS 1.2+. Google Cloud's default encryption satisfies Art. 32(1)(a) for the data categories described in these records.
+  </div>
+  <table>
+    <tr><th style="width:200px">Measure</th><th>Implementation</th><th style="width:130px">Satisfies</th></tr>
+    <tr><td>Encryption at rest</td><td>Google Cloud AES-256 default encryption on all Firestore collections and Firebase Auth</td><td>Art. 32(1)(a)</td></tr>
+    <tr><td>Encryption in transit</td><td>TLS enforced on all Firebase SDK connections and Cloud Function HTTP endpoints</td><td>Art. 32(1)(a)</td></tr>
+    <tr><td>Access control</td><td>Firestore Security Rules enforce role-based read/write; privileged fields (<code>role</code>, <code>agencyId</code>, <code>privacyFlags</code>) blocked from client self-write. Admin Cloud Functions verify ID token + role.</td><td>Art. 32(1)(b)</td></tr>
+    <tr><td>Secrets management</td><td>Stripe, SendGrid, Twilio, Travefy credentials in Firebase Secret Manager — not in source code or frontend-accessible config</td><td>Art. 32(1)(b)</td></tr>
+    <tr><td>Retention enforcement</td><td><code>gdprRetentionEnforcement</code> CF deletes records past retention period on the 1st of each month</td><td>Art. 5(1)(e)</td></tr>
+    <tr><td>Audit logging</td><td>All admin actions on personal data written to <code>logs/</code> with 7-year retention</td><td>Art. 32(1)(d)</td></tr>
+    <tr><td>Breach detection</td><td>API key hash-mismatch and Stripe signature failures logged; full procedure in <code>docs/incident-response-plan.html</code></td><td>Art. 32(1)(d) + Art. 33</td></tr>
+  </table>
+
+  <h2>Out of Scope (Confirmed)</h2>
+  <div class="callout callout-info">
+    <strong>The following are confirmed not personal data and are outside the scope of these records.</strong>
+    Port guides and section content (<code>locations/{portCode}/sections/*</code>), DOCK scores (<code>dock_scores_baseline</code>, <code>dock_scores_adjusted</code>), port schedules (<code>port_schedule</code>), weather data, State Department travel advisories, cruise itinerary data (ship names, ports, dates — not linked to individuals), and Apify-scraped cruise data. None of these describe identifiable natural persons.
+  </div>
+
+  <div class="doc-footer">
+    <span>DockBound Art. 30 Records · Created 2026-09-23 · Owner: Amy Abraham</span>
+    <span>Charter: docs/privacy-program-charter.html · Checklist: docs/gdpr-compliance-checklist.html §1</span>
+  </div>
+</div>
+
+<script>
+  function toggleRecord(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+  function expandAll() {
+    document.querySelectorAll('.record').forEach(r => r.classList.add('open'));
+  }
+  function collapseAll() {
+    document.querySelectorAll('.record').forEach(r => r.classList.remove('open'));
+  }
+</script>
+</body>
+</html>

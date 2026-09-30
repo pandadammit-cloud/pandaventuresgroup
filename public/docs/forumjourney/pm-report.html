@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForumJourney — PM Report · Run #9</title>
+<title>ForumJourney — PM Report · Run #12</title>
 <style>
 body {
   font-family: 'Segoe UI', Calibri, Arial, sans-serif;
@@ -93,7 +93,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <div class="cover">
   <div class="logo">ForumJourney</div>
   <h1>PM Report</h1>
-  <div class="subtitle">Run #9 &nbsp;·&nbsp; 2026-09-08</div>
+  <div class="subtitle">Run #12 &nbsp;·&nbsp; 2026-09-14</div>
   <div class="meta">EventBound / ForumJourney &nbsp;·&nbsp; PandA Ventures &nbsp;·&nbsp; Branch: eventbound-dev</div>
 </div>
 
@@ -117,19 +117,19 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <div class="stat-grid">
   <div class="stat-card">
-    <div class="stat-num">138</div>
+    <div class="stat-num">146</div>
     <div class="stat-label">Tests Passing</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">13</div>
+    <div class="stat-num">3</div>
     <div class="stat-label">Commits This Run</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">1</div>
+    <div class="stat-num">2</div>
     <div class="stat-label">Lessons Added</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">2</div>
+    <div class="stat-num">0</div>
     <div class="stat-label">Stubs Written</div>
   </div>
 </div>
@@ -137,80 +137,62 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <h2>Commits This Run</h2>
 <table>
   <tr><th>Hash</th><th>Message</th></tr>
-  <tr><td><code>c572953</code></td><td>feat(operator): role assignment UI, stale-plan drill-down, create event/occurrence forms</td></tr>
-  <tr><td><code>fdb04b1</code></td><td>Backlog: move fj-pilot-1 to hold — attendees join via /join link</td></tr>
-  <tr><td><code>ec9fc35</code></td><td>Backlog: mark fj-attendee-portal-1, fj-speaker-1/2, fj-organizer-1, fj-plan-3, fj-data-2, fj-pilot-2, fj-partner-1 as done</td></tr>
-  <tr><td><code>076cd48</code></td><td>fj-pilot-2, fj-partner-1: pilot runbook and partner integration guide</td></tr>
-  <tr><td><code>d98c027</code></td><td>fj-data-2: GET /v1/facts/:occurrenceId/:category endpoint</td></tr>
-  <tr><td><code>ccef082</code></td><td>fj-plan-3: mark plans stale on occurrence upsert update</td></tr>
-  <tr><td><code>a381c4b</code></td><td>fj-speaker-2: speaker promotion UI + backend</td></tr>
-  <tr><td><code>ea1fcf3</code></td><td>fj-organizer-1: speaker request approve/decline/flag</td></tr>
-  <tr><td><code>861258e</code></td><td>fj-attendee-portal-1, fj-speaker-1: wire live agenda to attendee and speaker portals</td></tr>
-  <tr><td><code>61a0d7c</code></td><td>Backlog: add missing done items for Data Collection Framework phases 2–6</td></tr>
-  <tr><td><code>19dca7c</code></td><td>Roadmap: add source scoring model (fj-data-7, Done)</td></tr>
-  <tr><td><code>7b3f80a</code></td><td>update-spec: add source scoring fields to architecture data model</td></tr>
-  <tr><td><code>820b045</code></td><td>Add accuracy field to SourceRegistry; stamp priority+accuracy onto NormalizedFacts</td></tr>
+  <tr><td><code>9cb6960</code></td><td>fj-marketing-2: upgrade React Router to v7.18.3, remove lead form</td></tr>
+  <tr><td><code>d19c37e</code></td><td>fix(city-guide): flatten weatherByMonth values to strings for WeatherSection renderer</td></tr>
+  <tr><td><code>3191158</code></td><td>feat(data): add Pittsburgh city guide and venue/event guide updates</td></tr>
 </table>
 
 <h1 id="auto-fixed">2. Auto-Fixed</h1>
 
 <ul class="check-list">
-  <li><span class="check">+</span> <strong>CLAUDE.md refreshed:</strong> New routes documented — <code>GET /v1/facts/:occurrenceId/:category</code>, <code>GET /user/occurrences/:occurrenceId/agenda</code>, full operator route detail block (16 routes). <code>normalizedFacts</code> and <code>logs</code> added to Firestore collections list. OperatorDashboard sections updated.</li>
-  <li><span class="check">+</span> <strong>Test stubs written:</strong> <code>src/api/routes/facts.test.ts</code> (4 tests) and <code>src/api/routes/userAgenda.test.ts</code> (2 tests). Default arg bug (<code>opts = {}</code>) found and fixed on first run. Total: 138 passing / 18 files.</li>
-  <li><span class="check">+</span> <strong>Firestore indexes added:</strong> 3 missing composite indexes — <code>normalizedFacts [occurrenceId, category, retrievedAt DESC]</code>, <code>speakerRequests [occurrenceId, createdAt DESC]</code>, <code>plans [stale, partnerId]</code>.</li>
-  <li><span class="check">+</span> <strong>Lessons learned:</strong> 1 new entry — test helper opts must default to <code>{}</code> when all properties are optional.</li>
-  <li><span class="check">+</span> <strong>pm-report.html:</strong> Refreshed to Run #9.</li>
-  <li><span class="check">+</span> <strong>Cron:</strong> Weekly PM re-registered (Monday 8:23 AM local).</li>
+  <li><span class="check">+</span> <strong>CLAUDE.md refreshed inline (3 updates):</strong> "React Router v6" → "v7"; test count 138/18 → 146/19; added <code>seed-pittsburgh-city-guide.js</code> and <code>set-venue-coordinates.js</code> to Scripts section.</li>
+  <li><span class="check">+</span> <strong>2 lessons added:</strong> Firestore seed shape must match API mapper; admission facts must be sourced from venue policy before pilot.</li>
+  <li><span class="check">+</span> <strong>pm-report.html:</strong> Refreshed to Run #12.</li>
+  <li><span class="check">+</span> <strong>Cron:</strong> Weekly PM re-registered (2026-09-14).</li>
+  <li><span class="skip-mark">—</span> <strong>Test stubs:</strong> None needed — no new pages or services added this run.</li>
   <li><span class="skip-mark">—</span> <strong>Security-review skill:</strong> Not present — skipped.</li>
   <li><span class="skip-mark">—</span> <strong>Simplify skill:</strong> Not present — skipped.</li>
-  <li><span class="skip-mark">—</span> <strong>Permission allowlist:</strong> Run #9 (9 % 4 ≠ 0) — skipped.</li>
+  <li><span class="skip-mark">—</span> <strong>Permission allowlist:</strong> Run #12 (12 % 4 = 0 → eligible, but <code>fewer-permission-prompts.md</code> not present) — skipped.</li>
   <li><span class="skip-mark">—</span> <strong>Project hooks:</strong> No <code>pm-hooks.md</code> found — skipped.</li>
-  <li><span class="skip-mark">—</span> <strong>Roadmap currency:</strong> <code>docs/roadmap.html</code> deleted — phase skipped. Canonical roadmap is pandaventuresgroup Firestore backlog.</li>
+  <li><span class="skip-mark">—</span> <strong>Roadmap currency:</strong> <code>docs/roadmap.html</code> not present — phase skipped. Canonical roadmap is pandaventuresgroup Firestore backlog.</li>
 </ul>
 
 <h1 id="resolved">3. Previously Pending — Resolved</h1>
 
 <div class="callout info">
-  <strong>1 item resolved this run.</strong> 4 carry forward.
+  <strong>3 items resolved this run.</strong> 6 items pending.
 </div>
 
 <ul class="check-list">
   <li>
     <span class="check">✓</span>
-    <div><strong>GET /facts endpoint (fj-surface-1 / fj-data-2)</strong> — <code>GET /v1/facts/:occurrenceId/:category</code> shipped in commit <code>d98c027</code>. Portals can now query live normalized facts. <strong>Resolved.</strong></div>
+    <div><strong>D005 — lead form backend destination</strong> — Decision made: no lead form in the app at all. Form, types, API call fully removed from <code>LandingPage.tsx</code> (commit <code>9cb6960</code>). "Request a demo" CTA replaced with <code>mailto:hello@forumjourney.app</code> throughout header, hero, and footer. <strong>Closed.</strong></div>
   </li>
   <li>
-    <span class="skip-mark">—</span>
-    <div><strong>Uncommitted backend changes</strong> — <code>operator.ts</code> and <code>logs.ts</code> have unstaged modifications (stale-plans endpoint, set-role endpoint, create event/occurrence endpoints, + 'user'/'event' log target types). Carried forward — commit when ready.</div>
+    <span class="check">✓</span>
+    <div><strong>CVE-2025-68470 — React Router open redirect</strong> — Upgraded <code>react-router-dom</code> from ^6.28.0 to 7.18.3 (commit <code>9cb6960</code>). Zero breaking changes — all v6 stable APIs carry forward. <strong>Resolved.</strong></div>
   </li>
   <li>
-    <span class="skip-mark">—</span>
-    <div><strong>D005 demo form</strong> — <code>LandingPage.tsx</code> still has <code>// TODO (D005)</code>. Form simulates submission. Backend lead destination not connected. Carried forward.</div>
-  </li>
-  <li>
-    <span class="skip-mark">—</span>
-    <div><strong>SEO + social metadata</strong> — blocked on D010 (marketing copy) and D001 (canonical URL). Not stale. Carried forward.</div>
-  </li>
-  <li>
-    <span class="skip-mark">—</span>
-    <div><strong>Amy to fill in userCategory fields</strong> on the 47 ForumJourney backlog items. Carried forward.</div>
+    <span class="check">✓</span>
+    <div><strong>D001 — canonical URL confirmation</strong> — Confirmed as <code>forumjourney.app</code>. Unblocks SEO technical setup once D010 (copy) is approved. <strong>Resolved.</strong></div>
   </li>
 </ul>
 
 <h1 id="tests">4. Test Results</h1>
 
 <p>
-  <span class="pill pass">138 pass</span>
+  <span class="pill pass">146 pass</span>
   <span class="pill fail">0 fail</span>
   <span class="pill skip">0 skip</span>
 </p>
 
-<p><strong>18 test files</strong> — all passing. Up from 132 / 16 files — 2 new stubs added this run covering the facts and userAgenda routes.</p>
+<p><strong>19 test files</strong> — all passing. Up from 138/18 last run due to new <code>ticketmaster.test.ts</code> stub added in Run #11. No new source files added this sprint, so no new stubs were needed this run.</p>
 
 <table>
   <tr><th>Test File</th><th>Status</th></tr>
-  <tr><td><code>src/api/routes/facts.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 4 tests)</td></tr>
-  <tr><td><code>src/api/routes/userAgenda.test.ts</code></td><td><span class="badge green">Pass</span> (new this run — 2 tests)</td></tr>
+  <tr><td><code>src/sourcing/adapters/ticketmaster.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/facts.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
+  <tr><td><code>src/api/routes/userAgenda.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/sourcing/normalizers/parking.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/sourcing/geography.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
   <tr><td><code>src/domain/plan/generator.test.ts</code></td><td><span class="badge green">Pass</span></td></tr>
@@ -234,141 +216,153 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <table>
   <tr><th>Check</th><th>Result</th></tr>
   <tr><td>Secret scan (last 5 commits)</td><td><span class="badge green">Clean</span> — no hardcoded credentials found</td></tr>
-  <tr><td>Hardcoded white/color values</td><td><span class="badge green">Pass</span> — All <code>color: '#fff'</code> occurrences in new legal pages are on <code>var(--lp-navy)</code> backgrounds (legitimate exception). Modal overlay <code>rgba(0,0,0,0.45)</code> is correct.</td></tr>
-  <tr><td>Round-number query limits</td><td><span class="badge yellow">Fixed</span> — <code>leads.ts limit(200)</code> now has explanatory comment</td></tr>
-  <tr><td>Undefined writes to Firestore</td><td><span class="badge green">Pass</span> — no violations found in recently modified files</td></tr>
-  <tr><td>npm audit (high/critical)</td><td><span class="badge green">0 high/critical</span> — 7 moderate transitive vulns in firebase-admin chain (accepted risk, unchanged)</td></tr>
+  <tr><td>Hardcoded colors in modified files</td><td><span class="badge green">Pass</span> — <code>LandingPage.tsx</code> reviewed; no inline color violations introduced</td></tr>
+  <tr><td>Undefined writes to Firestore</td><td><span class="badge green">Pass</span> — no violations in recently modified files</td></tr>
+  <tr><td>Round-number query limits</td><td><span class="badge green">Pass</span> — no new unannoted <code>limit()</code> calls added this run</td></tr>
+  <tr><td>frontend npm audit (high/critical)</td><td><span class="badge red">2 high</span> — <code>undici <=6.27.0</code> — accepted risk pre-pilot; see Dependencies</td></tr>
+  <tr><td>functions npm audit (high/critical)</td><td><span class="badge green">0 high/critical</span> — 7 moderate (new this run)</td></tr>
   <tr><td>Security-review skill</td><td><span class="badge gray">Skipped</span> — skill not present</td></tr>
 </table>
 
 <h1 id="deps">6. Dependencies</h1>
 
-<div class="callout info">
-  <strong>All major dependency gaps resolved this sprint.</strong> The 4 packages flagged in Run #7 have been upgraded.
+<div class="callout danger">
+  <strong>Frontend: 2 high-severity vulnerabilities (accepted risk — pre-pilot).</strong> <code>undici <=6.27.0</code> transitive via <code>@firebase/auth</code>, <code>@firebase/firestore</code>, <code>@firebase/storage</code>, <code>@firebase/functions</code>. Fixing requires upgrading <code>firebase</code> to v12 + Vite 8 simultaneously. Deferred to post-October-pilot.
+</div>
+
+<div class="callout warning">
+  <strong>Functions: 7 moderate vulnerabilities (new this run).</strong> <code>uuid → retry-request → teeny-request → @google-cloud/storage</code> chain. All fixable via <code>npm audit fix</code> from <code>functions/</code>. Schedule in a cleanup session before pilot launch.
 </div>
 
 <table>
-  <tr><th>Package</th><th>Current</th><th>Status</th></tr>
-  <tr><td><code>typescript</code></td><td>^7.0.2</td><td><span class="badge green">Up to date</span></td></tr>
-  <tr><td><code>uuid</code></td><td>^14.0.2</td><td><span class="badge green">Up to date</span></td></tr>
-  <tr><td><code>@types/node</code></td><td>^26.4.0</td><td><span class="badge green">Up to date</span></td></tr>
-  <tr><td><code>vitest</code></td><td>^4.1.11</td><td><span class="badge green">Up to date</span></td></tr>
-  <tr><td><code>@anthropic-ai/sdk</code></td><td>^0.122.0</td><td><span class="badge green">Current (monitor)</span></td></tr>
-  <tr><td><code>firebase-admin</code></td><td>^14.3.0</td><td><span class="badge green">Current</span></td></tr>
-  <tr><td><code>firebase-functions</code></td><td>^7.3.2</td><td><span class="badge green">Current</span></td></tr>
+  <tr><th>Workspace</th><th>High/Critical</th><th>Moderate</th><th>Action</th></tr>
+  <tr><td><code>functions/</code></td><td><span class="badge green">0</span></td><td>7 (new — uuid chain)</td><td>Run <code>npm audit fix</code> from <code>functions/</code> in cleanup session</td></tr>
+  <tr><td><code>frontend/</code></td><td><span class="badge red">2 (undici)</span></td><td>10</td><td>Accepted risk — deferred to post-pilot (firebase v12 upgrade required)</td></tr>
 </table>
-
-<div class="callout warning">
-  <strong>npm audit:</strong> 7 moderate vulnerabilities (transitive, via <code>firebase-admin</code> → <code>@google-cloud/storage</code> → <code>teeny-request</code>). No direct fix available. No high or critical findings. Accepted risk — unchanged from prior runs.
-</div>
 
 <h1 id="roadmap">7. Roadmap Currency</h1>
 
 <div class="callout info">
-  <strong>Phase skipped — <code>docs/roadmap.html</code> has been deleted.</strong> Canonical roadmap is the pandaventuresgroup Firestore backlog, seeded via <code>scripts/seed-backlog.js</code>. No HTML roadmap to check or maintain.
+  <strong>Phase skipped — <code>docs/roadmap.html</code> not present.</strong> Canonical roadmap is the pandaventuresgroup Firestore backlog, seeded via <code>scripts/seed-backlog.js</code>.
 </div>
 
-<h2>What's next (from Firestore backlog)</h2>
-
-<p>Items with no blockers and no "deferred" tag, as of 2026-09-08:</p>
+<h2>What shipped this sprint</h2>
 
 <table>
-  <tr><th>ID</th><th>Section</th><th>Title</th><th>Size</th></tr>
-  <tr><td><code>fj-speaker-3</code></td><td>Speaker Portal</td><td>Speaker marker in agenda and attendee views</td><td>XS</td></tr>
-  <tr><td><code>fj-marketing-2</code></td><td>Marketing Site</td><td>Accessibility QA — WCAG 2.2 Level AA</td><td>S</td></tr>
-  <tr><td><code>fj-marketing-3</code></td><td>Marketing Site</td><td>Performance audit — Core Web Vitals</td><td>S</td></tr>
-  <tr><td><code>fj-partner-2</code></td><td>Partner Integration</td><td>Hosted OpenAPI UI (Swagger/Redoc)</td><td>S</td></tr>
-  <tr><td><code>fj-operator-4</code></td><td>Operator Dashboard</td><td>City/venue data request with confirmation</td><td>M</td></tr>
-  <tr><td><code>fj-data-5</code></td><td>Data Collection</td><td>Phase 7 — AI source discovery</td><td>M</td></tr>
-  <tr><td><code>fj-data-1</code></td><td>Data Collection</td><td>Phase 1 — Master collection checklist (product decision)</td><td>M</td></tr>
-  <tr><td><code>fj-marketing-7</code></td><td>Marketing Site</td><td>Launch QA + stakeholder sign-off (14 criteria)</td><td>M</td></tr>
+  <tr><th>Commit</th><th>Description</th></tr>
+  <tr><td><code>9cb6960</code></td><td>Lead form removed; React Router upgraded to v7.18.3 (CVE-2025-68470 fixed); "Get in touch" mailto CTA throughout landing page</td></tr>
+  <tr><td><code>d19c37e</code></td><td>City guide weather fix — <code>weatherByMonth.october</code> flattened to string (was object; caused React error #31)</td></tr>
+  <tr><td><code>3191158</code></td><td>Pittsburgh city guide seeded; Rivers Casino venue guide updated (parking, transit); DisruptHR event: <code>idRequired=true</code>, check-in process, bag policy, admission notes</td></tr>
 </table>
 
-<p><em>Blocked on decisions: fj-marketing-1 (D010+D001), fj-auth-1/organizer-2/attendee-portal-2/venue-1 (OD-13 email delivery), fj-data-3/4/6 (need Phase 1 checklist first). October pilot: prioritize marketing audits + committing the in-flight operator backend work.</em></p>
+<h2>Still pending / blocked</h2>
+<p>fj-marketing-1 (D010 copy); Ticketmaster pipeline (post-pilot); happenings for Oct 21 (manual add ~Oct 7–14).</p>
 
 <h1 id="review">8. Needs Your Review</h1>
 
 <div class="callout warning">
-  <strong>Uncommitted backend changes.</strong> <code>functions/src/api/routes/operator.ts</code> and <code>functions/src/db/logs.ts</code> have unstaged modifications — stale-plans endpoint, set-role endpoint, create event/occurrence endpoints, and 'user'/'event' log target types. Commit these when the work is complete.
+  <strong>fj-marketing-1 SEO metadata — blocked on D010 (marketing copy).</strong> Canonical URL confirmed as <code>forumjourney.app</code>. Technical setup (meta tags, OG tags in <code>index.html</code>) can proceed once Amy provides approved copy for the page title and meta description. No action until copy is ready.
 </div>
 
 <div class="callout warning">
-  <strong>D005 — Demo form backend destination unresolved.</strong> <code>LandingPage.tsx</code> has <code>// TODO (D005): Connect to approved lead destination before launch.</code> The form currently simulates a successful submission. Real leads will be lost. Needs a CRM webhook, Firestore endpoint, or approved automation platform before <code>forumjourney.app</code> is promoted to live traffic.
+  <strong>Functions: 7 moderate vulns — run <code>npm audit fix</code>.</strong> These are new since Run #11 (prior report said "functions audit: clean"). All fixable in one command from <code>functions/</code>. Schedule a cleanup session before October pilot.
 </div>
 
 <div class="callout warning">
-  <strong>SEO + social metadata (fj-marketing-1 in-progress):</strong> Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). No action until decisions are made.
+  <strong>Happenings for Oct 21 — manual update needed around Oct 7–14.</strong> Add to <code>cities/pittsburgh-pa-us</code> as a <code>happenings</code> field. Check PPG Paints Arena, Acrisure Stadium, and Pittsburgh events calendars when schedules publish (~2 weeks before event).
 </div>
 
 <div class="callout warning">
-  <strong>ForumJourney backlog userCategory fields.</strong> 47 backlog items were seeded into pandaventuresgroup Firestore with blank <code>userCategory</code> fields. Amy needs to fill these in directly in Firestore or by re-running the seed script with values populated.
+  <strong>Ticketmaster API key invalid (deferred post-pilot).</strong> Re-enter correct Consumer Key via <code>firebase functions:secrets:set TICKETMASTER_API_KEY --project eventbound-prod</code>. Not blocking pilot — happenings will be added manually.
+</div>
+
+<div class="callout warning">
+  <strong>Amy to fill <code>userCategory</code> on 47 backlog items.</strong> All ForumJourney backlog items in pandaventuresgroup Firestore were seeded with blank <code>userCategory</code>. Amy is handling this manually.
+</div>
+
+<div class="callout warning">
+  <strong>Frontend undici high vulns (accepted risk — pre-pilot).</strong> Deferred to post-October pilot. No action until then.
 </div>
 
 <h1 id="lessons">9. Lessons Learned</h1>
 
 <div class="lesson">
+  <div class="lesson-date">2026-09-14 — new this run</div>
+  <p><strong>Seed scripts must write the exact Firestore field shape the API mapper reads.</strong> <code>seed-pittsburgh-city-guide.js</code> wrote <code>weatherByMonth.october</code> as a nested object, but <code>cityGuideFromFirestore()</code> passed values directly to the client and <code>WeatherSection</code> rendered them with <code>{desc}</code> — causing React error #31 (objects not valid as children). The fix was flattening to a plain string. Whenever writing a seed script, read the corresponding mapper and renderer to confirm field shapes match end-to-end. A mismatch is invisible at write time and only surfaces when the field is rendered.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-14 — new this run</div>
+  <p><strong>Admission facts (idRequired, idRequirements, checkInProcess) must be populated from venue's official policy before plan goes live.</strong> The DisruptHR event was seeded with <code>idRequired: false</code> and no admission policy, but the event is at Rivers Casino which requires government-issued photo ID (21+ only). A guest arriving without ID would be turned away. Any event at a casino, age-gated venue, or venue with non-standard entry requirements must have admission fields populated from the venue's published policy during data entry — do not leave these at default false.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-09</div>
+  <p><strong>JSX ternary branches with multiple siblings need a Fragment wrapper.</strong> A ternary branch in JSX that returns two or more adjacent elements must be wrapped in <code>&lt;&gt;...&lt;/&gt;</code>. Without it, TypeScript/JSX compilation fails immediately. This burned commit <code>107a664</code> in <code>OrganizerDashboard.tsx</code>. Watch for this pattern in dashboard components where a branch renders an icon + label or control + tooltip side by side.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-09</div>
+  <p><strong>Firebase Functions v2 secrets must be declared in the function's <code>secrets</code> array to get IAM access.</strong> Adding a secret via <code>firebase functions:secrets:set</code> does NOT automatically grant the function access. Declare with <code>defineSecret('KEY_NAME')</code> and list in <code>secrets: [...]</code> of <code>onRequest()</code>. Without this, <code>resolveCredential()</code> silently returns null.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-date">2026-09-09</div>
+  <p><strong>Geographic collection runners must fail hard when venue has no coordinates.</strong> The runner defaulted to <code>lat: 0, lon: 0</code> when <code>venue.coordinates</code> was missing, silently running all collection jobs against the Gulf of Guinea. Missing coordinates must be treated as a fatal precondition — fail immediately and run no jobs.</p>
+</div>
+
+<div class="lesson">
   <div class="lesson-date">2026-09-08</div>
-  <p><strong>Test helper opts parameter needs a default when all properties are optional.</strong> When a test helper function has all optional properties (<code>partner?: ..., params?: ...</code>), the <code>opts</code> parameter itself must also default to <code>{}</code>. Without a default, calling <code>makeReqRes()</code> with no arguments throws at runtime because property access on <code>undefined</code> fails. Always add <code>= {}</code> when all properties of an opts-style parameter are marked optional.</p>
+  <p><strong>Test helper opts parameter needs a default when all properties are optional.</strong> When a test helper has all optional properties, the <code>opts</code> parameter must default to <code>{}</code>. Without it, calling <code>makeReqRes()</code> with no arguments throws at runtime. Always add <code>= {}</code> when all properties are optional.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-09-05</div>
-  <p><strong>A data collection pipeline with no downstream reader is incomplete.</strong> The parking adapter wrote facts into <code>normalizedFacts</code> for the entire data collection phase with no consumer — it was only wired into plan content (<code>discoveries[]</code>) later. When adding a new data category, always trace the full path from collection → normalization → consumer in the same sprint. An unread collection is dead weight and its value can't be validated until something reads it.</p>
-</div>
-
-<div class="lesson">
-  <div class="lesson-date">2026-09-05</div>
-  <p><strong>Test stubs missing required fields silently test the wrong failure branch.</strong> In <code>join.test.ts</code>, the "invalid join code" test was missing <code>password</code> in the request body. The route's required-fields guard (<code>!email || !firstName || !password || !joinCode</code>) caught it first and returned <code>BAD_REQUEST</code> — so the test passed but was testing the missing-fields branch, not the invalid-code branch. When writing a test for a specific error path, ensure all required fields are present so the guard conditions don't intercept the test before it reaches the target code path.</p>
+  <p><strong>A data collection pipeline with no downstream reader is incomplete.</strong> When adding a new data category, always trace the full path from collection → normalization → consumer in the same sprint. An unread collection is dead weight — its value can't be validated.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-09-02</div>
-  <p><strong>New routes with <code>where()+orderBy()</code> must ship their Firestore composite indexes in the same commit.</strong> <code>venue.ts</code> and <code>speaker.ts</code> added compound queries but no entries to <code>firestore.indexes.json</code>. Without composite indexes, Firestore rejects these queries at runtime. Single-field <code>where()</code> without <code>orderBy()</code> does not require a composite index — only <code>where+orderBy</code> combinations do.</p>
+  <p><strong>New routes with <code>where()+orderBy()</code> must ship their Firestore composite indexes in the same commit.</strong> Without composite indexes, Firestore rejects these queries at runtime with "requires an index." Single-field <code>where()</code> without <code>orderBy()</code> does not require a composite index.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-08-31</div>
-  <p><strong>Use <code>vi.hoisted()</code> when Vitest mock factories must close over reassignable variables.</strong> Without hoisting, the variable declaration is hoisted by JS but not initialized before the factory runs — the mock closes over <code>undefined</code>. Pattern: <code>const { mockGet } = vi.hoisted(() => ({ mockGet: vi.fn() }))</code>. Required any time a mock factory needs a module-level variable that changes between tests.</p>
+  <p><strong>Use <code>vi.hoisted()</code> when Vitest mock factories must close over reassignable variables.</strong> Without hoisting, the variable is not initialized before the factory runs. Pattern: <code>const { mockGet } = vi.hoisted(() => ({ mockGet: vi.fn() }))</code>.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-08-31</div>
-  <p><strong>Test files in <code>frontend/src/</code> must be excluded from the app tsconfig.</strong> Vite resolves <code>tsconfig.app.json</code> at build time; if <code>*.test.tsx</code> files are included, Vite attempts to bundle them and fails. Fix: add <code>"exclude": ["src/**/*.test.tsx", "src/**/*.test.ts"]</code> to <code>frontend/tsconfig.app.json</code>.</p>
+  <p><strong>Test files in <code>frontend/src/</code> must be excluded from the app tsconfig.</strong> Vite resolves <code>tsconfig.app.json</code> at build time and will attempt to bundle test files if not excluded. Add <code>"exclude": ["src/**/*.test.tsx", "src/**/*.test.ts"]</code> to <code>frontend/tsconfig.app.json</code>.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-08-30</div>
-  <p><strong>Scripts in <code>scripts/</code> outside npm workspaces must self-configure NODE_PATH.</strong> Fix: set <code>process.env.NODE_PATH</code> and call <code>Module._initPaths()</code> before any requires. Any standalone script depending on <code>functions/node_modules</code> packages must do the same.</p>
+  <p><strong>Scripts in <code>scripts/</code> must self-configure NODE_PATH.</strong> Set <code>process.env.NODE_PATH = path.join(__dirname, '..', 'functions', 'node_modules')</code> and call <code>Module._initPaths()</code> at the top of any script that requires packages from <code>functions/node_modules</code>.</p>
 </div>
 
 <div class="lesson">
   <div class="lesson-date">2026-08-28</div>
-  <p><strong>New Firestore collections must get a rules stub immediately.</strong> Add a named <code>match /X/{docId}</code> stub in the same commit as any new <code>db.collection('X')</code> call. The catch-all <code>allow read, write: if false</code> protects it but intent is invisible without the stub.</p>
-</div>
-
-<div class="lesson">
-  <div class="lesson-date">2026-08-28</div>
-  <p><strong>Stage-aware cache TTLs are the right model for time-sensitive sourcing data.</strong> Weather sourcing uses 30-min TTL for <code>attend</code> and 4-hour TTL for <code>prepare</code>. Apply the same stage-aware TTL pattern to any future real-time sourcing adapter.</p>
+  <p><strong>New Firestore collections must get a rules stub immediately.</strong> Add a named <code>match /X/{docId}</code> stub in the same commit as any new <code>db.collection('X')</code> call. The catch-all protects it, but intent is invisible without the stub.</p>
 </div>
 
 <h1 id="summary-table">10. Summary Table</h1>
 
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Commits since last run</td><td>13</td></tr>
-  <tr><td>CLAUDE.md last updated</td><td>This run — full refresh (routes, collections, frontend sections)</td></tr>
-  <tr><td>Test stubs written</td><td>2 (facts.test.ts + userAgenda.test.ts)</td></tr>
-  <tr><td>Tests passing</td><td>138 / 138 (18 files)</td></tr>
-  <tr><td>Firestore indexes added</td><td>3 (normalizedFacts, speakerRequests, plans)</td></tr>
-  <tr><td>Files code-reviewed</td><td>2 (operator.ts, logs.ts — clean)</td></tr>
-  <tr><td>Pending items resolved from Run #8</td><td>1 (fj-data-2 GET /facts endpoint ✓)</td></tr>
-  <tr><td>New pending items</td><td>1 (uncommitted backend changes)</td></tr>
-  <tr><td>Items still pending</td><td>4 (uncommitted changes, D005 form, SEO metadata, userCategory backlog)</td></tr>
-  <tr><td>Lessons added</td><td>1 (test helper opts default)</td></tr>
-  <tr><td>High/critical vulnerabilities</td><td>0 (7 moderate transitive, accepted risk)</td></tr>
+  <tr><td>Commits since last run</td><td>3</td></tr>
+  <tr><td>CLAUDE.md</td><td>Updated inline — React Router v7, test count 146/19, 2 new scripts</td></tr>
+  <tr><td>Test stubs written</td><td>0</td></tr>
+  <tr><td>Tests passing</td><td>146 / 146 (19 files)</td></tr>
+  <tr><td>Files code-reviewed</td><td>1 (LandingPage.tsx — no violations)</td></tr>
+  <tr><td>Pending items resolved</td><td>3 (D005 lead form closed; CVE-2025-68470 fixed; D001 canonical URL confirmed)</td></tr>
+  <tr><td>New pending items</td><td>1 (functions 7 moderate vulns — fixable via npm audit fix)</td></tr>
+  <tr><td>Items still pending</td><td>6 (SEO copy, userCategory fields, Ticketmaster key, happenings Oct 21, Ticketmaster UTC boundary, frontend undici accepted)</td></tr>
+  <tr><td>Lessons added</td><td>2 (Firestore seed shape; admission facts from venue policy)</td></tr>
+  <tr><td>High/critical vulnerabilities</td><td>2 high in frontend/undici — accepted risk pre-pilot</td></tr>
 </table>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-08</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-14</p>
 
 </body>
 </html>

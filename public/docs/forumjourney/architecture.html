@@ -130,7 +130,9 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
       services/       # planService, operatorService
       contexts/       # AuthContext
       components/     # LegalLayout, AddAttendeeModal, etc.
-  scripts/            # Admin SDK utilities (set-claims.js, seed-backlog.js)
+  scripts/            # Admin SDK utilities (set-claims.js, seed-backlog.js,
+                      #   seed-pittsburgh-city-guide.js, set-venue-coordinates.js,
+                      #   seed-source-registry.js)
   firestore.rules     # All collections: client access denied; writes via Admin SDK only
   firebase.json       # Functions + Firestore + Hosting config
   firestore.indexes.json
@@ -474,13 +476,13 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <h1 id="frontend">7. Frontend</h1>
 
-<p>React 18 + React Router v6 + Vite. Firebase Auth is the only Firebase SDK used client-side — no Firestore client SDK. All data flows through the Cloud Functions API.</p>
+<p>React 18 + React Router v7 + Vite. Firebase Auth is the only Firebase SDK used client-side — no Firestore client SDK. All data flows through the Cloud Functions API.</p>
 
 <p><strong>Role ranks (ProtectedRoute):</strong> apiadmin=100, eventbound_operator=60, operator=40, organizer=20, speaker=15, venue=12, attendee=10.</p>
 
 <table>
   <tr><th>Page</th><th>Route</th><th>Auth</th><th>Description</th></tr>
-  <tr><td>LandingPage</td><td><code>/</code></td><td>None</td><td>Public marketing page with lead capture form. Uses <code>landing.css</code> with <code>.lp-</code> tokens.</td></tr>
+  <tr><td>LandingPage</td><td><code>/</code></td><td>None</td><td>Public marketing page. No lead form — "Get in touch" CTA links to <code>mailto:hello@forumjourney.app</code>. Uses <code>landing.css</code> with <code>.lp-</code> tokens.</td></tr>
   <tr><td>PlanView</td><td><code>/plan/:occurrenceId</code></td><td>None</td><td>Public attendee plan. Stage-aware content: arrival plan, entry readiness, accessibility, weather, venue guide, city guide, discoveries (incl. parking).</td></tr>
   <tr><td>Login</td><td><code>/login</code></td><td>None</td><td>Firebase email/password auth. Role-aware redirect for all 5 roles. Forgot password link; join code link.</td></tr>
   <tr><td>JoinPage</td><td><code>/join</code></td><td>None</td><td>5-state join flow: form → link-existing / already-registered / full / invalid-code → success. Calls <code>POST /public/join</code>.</td></tr>
@@ -507,7 +509,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <p><strong>Functions</strong> (run from <code>functions/</code>):</p>
 <div class="cmd">npm run build           # tsc compile to lib/
 npm run build:watch     # watch mode
-npm run test            # vitest run — 132 tests, 16 files
+npm run test            # vitest run — 146 tests, 19 files
 npm run test:watch      # vitest watch
 npm run serve           # build + start local emulators (functions + firestore)</div>
 
@@ -530,9 +532,9 @@ firebase deploy --only firestore   # rules + indexes only</div>
 
 <table>
   <tr><th>Secret</th><th>Used By</th><th>Purpose</th></tr>
-  <tr><td><code>PLATFORMCORE_API_KEY</code></td><td><code>api</code> function</td><td>Declared; PlatformCore retired 2026-08-31 — no active calls</td></tr>
   <tr><td><code>ANTHROPIC_API_KEY</code></td><td><code>api</code>, <code>onChangeCreated</code></td><td>Claude haiku-4-5 for conversational notifications</td></tr>
   <tr><td><code>OPENWEATHERMAP_API_KEY</code></td><td><code>api</code> function</td><td>Weather sourcing (current conditions + 5-day forecast)</td></tr>
+  <tr><td><code>TICKETMASTER_API_KEY</code></td><td><code>api</code> function</td><td>Ticketmaster Discovery adapter — happenings category. Currently invalid (needs re-entry via <code>firebase functions:secrets:set</code>).</td></tr>
 </table>
 
 <p><strong>Production env:</strong> <code>functions/.env.eventbound-prod</code> sets <code>EVENTBOUND_ENV=production</code> (gitignored — recreate manually on a new machine).</p>
@@ -552,7 +554,7 @@ firebase deploy --only firestore   # rules + indexes only</div>
   <tr><td>Adapter credentials</td><td>API keys resolved at runtime from GCP Secret Manager via <code>resolveCredential()</code>. In-memory cache per function invocation. Never logged.</td></tr>
 </table>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-07</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-14</p>
 
 </body>
 </html>

@@ -129,7 +129,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   <tr><td>Health</td><td>Webhook delivery counts (delivered / failed / dead_letter), stale plan count, top missing-data fields with frequency. Refreshes on load.</td></tr>
   <tr><td>Occurrences</td><td>All non-cancelled occurrences sorted by date ascending. Expand any occurrence to see attendees; add attendees; update notification preference.</td></tr>
   <tr><td>Dead-Letter Webhooks</td><td>List of changes with <code>webhookStatus: dead_letter</code>. Retry button triggers <code>POST /operator/changes/:changeId/retry</code>.</td></tr>
-  <tr><td>Leads</td><td>Landing page lead submissions — name, email, organization, use case, status (new → contacted → complete → archived). Capped at 200 records.</td></tr>
+  <tr><td>Leads</td><td>Historical lead submissions — name, email, organization, use case, status. Lead capture form removed from landing page (2026-09-14). Tab remains for archived data; no new leads will appear.</td></tr>
   <tr><td>Sources (Admin)</td><td>View, propose, approve/reject, configure data sources in the <code>sourceRegistry</code>. Manage collection pipeline sources.</td></tr>
 </table>
 
@@ -194,8 +194,10 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 <div class="journey">
   <h4>Journey F — Seed a New City</h4>
   <ol>
-    <li>Create a city document in Firestore (<code>cities</code> collection) with <code>name</code>, <code>timezone</code>, <code>guide</code> field</li>
-    <li>Or run from repo root: <code>node scripts/seed-new-cities.js</code> with the city data file</li>
+    <li>Create a city document in Firestore (<code>cities</code> collection) with <code>name</code>, <code>state</code>, <code>country</code>, <code>transitOverview</code>, <code>guide</code> field</li>
+    <li>Use <code>scripts/seed-pittsburgh-city-guide.js</code> as the canonical template — it writes transit options, weather by month (flat strings, not objects), neighborhoods, local tips, and emergency contacts</li>
+    <li>Run: <code>GOOGLE_APPLICATION_CREDENTIALS=... node scripts/seed-pittsburgh-city-guide.js [--project eventbound-prod]</code></li>
+    <li><strong>Shape contract:</strong> <code>weatherByMonth</code> values must be plain strings — not objects. The <code>WeatherSection</code> renderer in <code>PlanView.tsx</code> expects strings and will throw React error #31 if values are objects.</li>
   </ol>
 </div>
 
@@ -210,11 +212,11 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 </div>
 
 <div class="journey">
-  <h4>Journey H — Manage Leads</h4>
+  <h4>Journey H — Manage Leads (historical only)</h4>
+  <p>The lead capture form was removed from the landing page on 2026-09-14. No new leads will be collected via the app. The Leads tab remains accessible in the Operator Dashboard for archived submissions only.</p>
   <ol>
-    <li>In Operator Dashboard → Leads tab, review new submissions</li>
+    <li>In Operator Dashboard → Leads tab, review archived submissions</li>
     <li>Use the status dropdown to move leads through: new → contacted → complete / archived</li>
-    <li>Note: leads are capped at 200 in the API response (pilot scale)</li>
   </ol>
 </div>
 
@@ -283,16 +285,16 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <table>
   <tr><th>Secret Name</th><th>Purpose</th><th>Who Rotates</th></tr>
-  <tr><td><code>PLATFORMCORE_API_KEY</code></td><td>Declared; PlatformCore retired 2026-08-31 — no active calls</td><td>N/A (legacy)</td></tr>
   <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Claude haiku-4-5 for conversational notifications</td><td>PandA Ventures</td></tr>
   <tr><td><code>OPENWEATHERMAP_API_KEY</code></td><td>Weather sourcing (current + forecast)</td><td>PandA Ventures</td></tr>
+  <tr><td><code>TICKETMASTER_API_KEY</code></td><td>Ticketmaster Discovery adapter — happenings collection. Currently invalid — re-enter via <code>firebase functions:secrets:set TICKETMASTER_API_KEY --project eventbound-prod</code> (use Consumer Key, not Consumer Secret).</td><td>PandA Ventures</td></tr>
 </table>
 
 <p>Adapter API keys (e.g., Google Places) are stored in GCP Secret Manager and referenced by name in <code>sourceRegistry</code> documents. Resolved at runtime via <code>resolveCredential()</code>.</p>
 
 <h1 id="gaps">6. Gap Analysis</h1>
 
-<p>Known operational gaps as of 2026-09-05. Items marked <span class="badge green">Closed</span> were resolved this sprint.</p>
+<p>Known operational gaps as of 2026-09-14. Items marked <span class="badge green">Closed</span> were resolved this sprint.</p>
 
 <table>
   <tr><th>Gap</th><th>Priority</th><th>Status</th><th>Notes</th></tr>
@@ -333,10 +335,28 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
     <td>ForumJourney fires webhook to partner; partner handles last-mile notification. No direct attendee email or push capability. OD-13 (Twilio legal approval pending) blocks SMS path.</td>
   </tr>
   <tr>
+    <td>Lead form removed</td>
+    <td><span class="badge green">P1</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td>Decision made: no lead capture form in the app. Form, types, and API call fully removed from <code>LandingPage.tsx</code> (2026-09-14). "Request a demo" replaced with <code>mailto:hello@forumjourney.app</code> CTA throughout.</td>
+  </tr>
+  <tr>
+    <td>React Router CVE-2025-68470</td>
+    <td><span class="badge green">P1</span></td>
+    <td><span class="badge green">Closed</span></td>
+    <td>Open redirect via backslash in <code>&lt;Link&gt;</code>/<code>useNavigate</code>. Fixed by upgrading <code>react-router-dom</code> to 7.18.3 (2026-09-14).</td>
+  </tr>
+  <tr>
     <td>SEO + social metadata</td>
     <td><span class="badge yellow">P2</span></td>
     <td>Blocked</td>
-    <td>Blocked on D010 (marketing copy approval) and D001 (canonical URL confirmation). Not stale.</td>
+    <td>Blocked on D010 (marketing copy approval). D001 resolved: canonical URL is <code>forumjourney.app</code>.</td>
+  </tr>
+  <tr>
+    <td>Functions moderate vulns (uuid chain)</td>
+    <td><span class="badge yellow">P2</span></td>
+    <td>Pending</td>
+    <td>7 moderate vulns via <code>uuid → retry-request → teeny-request → @google-cloud/storage</code>. Run <code>npm audit fix</code> from <code>functions/</code>. Appeared in Run #12 audit (prior run was clean).</td>
   </tr>
   <tr>
     <td>GET /facts surface endpoint</td>
@@ -364,7 +384,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   </tr>
 </table>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-14</p>
 
 </body>
 </html>

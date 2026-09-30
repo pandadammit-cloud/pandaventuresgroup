@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DockBound — PM Report Run #11</title>
+<title>DockBound — PM Report Run #14</title>
 <style>
   body {
     font-family: 'Segoe UI', Calibri, Arial, sans-serif;
@@ -106,9 +106,9 @@
 <!-- Cover -->
 <div class="cover">
   <div class="logo">DockBound</div>
-  <h1>PM Report — Run #11</h1>
-  <div class="subtitle">Automated PM agent cycle — 2026-09-05</div>
-  <div class="meta">Generated 2026-09-05 &nbsp;·&nbsp; Internal use only</div>
+  <h1>PM Report — Run #14</h1>
+  <div class="subtitle">Automated PM agent cycle — 2026-09-14</div>
+  <div class="meta">Generated 2026-09-14 &nbsp;·&nbsp; Internal use only</div>
 </div>
 
 <!-- TOC -->
@@ -132,44 +132,44 @@
 
 <div class="stat-grid">
   <div class="stat-card">
-    <div class="stat-value">11</div>
+    <div class="stat-value">14</div>
     <div class="stat-label">Run number</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">47</div>
+    <div class="stat-value">6</div>
     <div class="stat-label">Commits since last run</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">214</div>
-    <div class="stat-label">Tests passing</div>
+    <div class="stat-value">4</div>
+    <div class="stat-label">E2E specs fixed</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">7</div>
+    <div class="stat-value">3</div>
     <div class="stat-label">New stubs written</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">1</div>
+    <div class="stat-value">3</div>
     <div class="stat-label">New lessons</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">0</div>
-    <div class="stat-label">Roadmap stale items</div>
+    <div class="stat-value">2</div>
+    <div class="stat-label">H7 decisions needed</div>
   </div>
 </div>
 
 <table>
   <thead><tr><th>Item</th><th>Value</th></tr></thead>
   <tbody>
-    <tr><td>Last run date</td><td>2026-09-02</td></tr>
-    <tr><td>Run count</td><td>11</td></tr>
-    <tr><td>Commits since last run (2026-09-02)</td><td>47 — NWS alerts, host billing, audit log, admin P1 gaps, Stripe webhook, SendGrid, admin reorg, backlog scripts</td></tr>
-    <tr><td>CLAUDE.md staleness</td><td>10 commits + 7 new uncatalogued files — refreshed this run</td></tr>
-    <tr><td>New pages added since last run</td><td>5 (AdminAdvisorDetailPage, AdminHostContractsPage, AdminOrderLookupPage, AuditLogPage, PipelineHealthPage)</td></tr>
-    <tr><td>New services added since last run</td><td>2 (hostContractService, nwsService)</td></tr>
-    <tr><td>Test stubs written this run</td><td>7 (all new pages + services)</td></tr>
-    <tr><td>Test stubs fixed</td><td>1 (PipelineHealthPage — missing collection/getDocs in firestore mock)</td></tr>
-    <tr><td>Permission allowlist update</td><td>Skipped — run #11 not a multiple of 4</td></tr>
-    <tr><td>Cron re-registered</td><td>Yes — weekly PM, Monday 9:03am</td></tr>
+    <tr><td>Run date</td><td>2026-09-14 (prior run: 2026-09-09 — Run #13)</td></tr>
+    <tr><td>Run count</td><td>14</td></tr>
+    <tr><td>Commits since last run</td><td>6 — H8 PM hook, seed script fixes (ADC fallback + idempotency + batch retry), System A Phase 1 backlog update, H7 PM hook</td></tr>
+    <tr><td>CLAUDE.md staleness</td><td>6 commits since last update — within threshold; skipped refresh</td></tr>
+    <tr><td>New services/pages added since last run</td><td>4 — <code>fieldData.ts</code> (types), <code>fieldDataService.ts</code>, <code>DataSourcesPage.tsx</code>, <code>FieldDataPage.tsx</code></td></tr>
+    <tr><td>Test stubs written this run</td><td>3 — <code>fieldDataService.test.ts</code>, <code>DataSourcesPage.test.tsx</code>, <code>FieldDataPage.test.tsx</code></td></tr>
+    <tr><td>E2E specs corrected (H8 audit)</td><td>4 — Flow10, Flow12, Flow13, Flow19 (stale tab references from 6→4 tab redesign)</td></tr>
+    <tr><td>Manual test plan corrected</td><td>Yes — CSV import step removed; Guide Settings labeled as section, not tab</td></tr>
+    <tr><td>Security item resolved</td><td>Yes — <code>nwsAlerts</code> CF unauthenticated-by-design comment added (pending from Run #13)</td></tr>
+    <tr><td>Cron re-registered</td><td>Yes — weekly PM, Monday 9:03am, job ed48fab3</td></tr>
   </tbody>
 </table>
 
@@ -177,45 +177,56 @@
 <h1 id="auto-fixed">Auto-Fixed This Run</h1>
 
 <ul class="done-list">
-  <li><strong>CLAUDE.md refreshed</strong> — added 5 missing admin pages (<code>AuditLogPage /admin/audit-log</code>, <code>AdminAdvisorDetailPage /admin/advisors/:uid</code>, <code>AdminHostContractsPage /admin/host-contracts</code>, <code>AdminOrderLookupPage /admin/orders</code>, <code>PipelineHealthPage /admin/pipeline-health</code>); fixed 2 incorrect route paths (<code>/admin/agent-tools</code> → <code>/admin/agents</code>, <code>/admin/agency/:id</code> → <code>/admin/agencies/:agencyId</code>); added 3 new sections (Host Billing / Contracts, Audit Log, NWS Weather Alerts)</li>
-  <li><strong>7 test stubs written</strong> — <code>nwsService.test.ts</code>, <code>hostContractService.test.ts</code>, <code>AuditLogPage.test.tsx</code>, <code>PipelineHealthPage.test.tsx</code>, <code>AdminHostContractsPage.test.tsx</code>, <code>AdminAdvisorDetailPage.test.tsx</code>, <code>AdminOrderLookupPage.test.tsx</code></li>
-  <li><strong>PipelineHealthPage test fixed</strong> — added missing <code>collection</code> and <code>getDocs</code> exports to the firebase/firestore mock; 1 unhandled error → 0</li>
-  <li><strong>New lesson added</strong> — CJS/ESM compatibility: <code>.cjs</code> scripts in an ESM project must use <code>require()</code>, not <code>import</code> (triggered by <code>47ffa58</code>)</li>
-  <li><strong>Weekly cron re-registered</strong> — Monday 9:03am, durable</li>
-  <li><strong>pm-report.html refreshed</strong> — updated to Run #11</li>
+  <li><strong>Flow10.spec.ts fixed</strong> — "Team Roster" tab references updated to "Clients" tab in JSDoc + beforeEach locator (3 changes)</li>
+  <li><strong>Flow12.spec.ts fixed</strong> — "Guide Settings" tab button click replaced with Port Tools tab navigation + section presence assertion; JSDoc updated to reflect Port Tools section (not a standalone tab)</li>
+  <li><strong>Flow13.spec.ts fixed</strong> — Top-level "Travefy" tab click replaced with Settings tab navigation; JSDoc updated to "Settings tab, Travefy panel"</li>
+  <li><strong>Flow19.spec.ts fixed</strong> — "Intelligence" tab button replaced with Sailings tab navigation; JSDoc and describe block updated to "Sailing intelligence (Sailings tab)"</li>
+  <li><strong>manual-test-plan.html fixed</strong> — CSV import step removed (feature replaced with mailto support link 2026-09-07); "Guide Settings tab" → "Guide Settings section (inside Port Tools tab)"</li>
+  <li><strong>functions/index.js comment added</strong> — <code>nwsAlerts</code> CF: clarifying comment on intentional unauthenticated design (public NWS data, pre-login traveler caller)</li>
+  <li><strong>3 test stubs written</strong> — <code>fieldDataService.test.ts</code>, <code>DataSourcesPage.test.tsx</code>, <code>FieldDataPage.test.tsx</code></li>
+  <li><strong>3 new lessons added</strong> to <code>lessons_learned.md</code> — Firestore batch timeouts, seed script idempotency, E2E tab staleness</li>
+  <li><strong>Weekly cron re-registered</strong> — Monday 9:03am, job ed48fab3</li>
+  <li><strong>pm-report.html refreshed</strong> — updated to Run #14</li>
 </ul>
 
 <!-- ── Test Results ───────────────────────────────────────────────────────── -->
 <h1 id="tests">Test Results</h1>
 
 <div class="pills">
-  <span class="pill green">214 passed</span>
-  <span class="pill gray">0 failed</span>
-  <span class="pill gray">0 unhandled errors (after fix)</span>
-  <span class="pill gray">36 test files · ~61s</span>
+  <span class="pill gray">Unit suite not run this cycle</span>
+  <span class="pill gray">E2E skipped (requires live environment)</span>
+  <span class="pill amber">4 E2E specs corrected manually</span>
 </div>
 
 <table>
   <thead><tr><th>Category</th><th>Detail</th></tr></thead>
   <tbody>
-    <tr><td>Full suite</td><td>214 passed, 0 failed (36 test files, ~61s)</td></tr>
-    <tr><td>New stubs written this run</td><td>7 — nwsService, hostContractService, AuditLogPage, PipelineHealthPage, AdminHostContractsPage, AdminAdvisorDetailPage, AdminOrderLookupPage</td></tr>
-    <tr><td>Stubs fixed this run</td><td>1 — PipelineHealthPage (missing firebase/firestore collection export)</td></tr>
-    <tr><td>Stubs needing implementation (carry forward)</td><td>17 total (10 prior + 7 new) — see Full Pending Items</td></tr>
+    <tr><td>Unit suite</td><td>Not run this cycle — <code>cross-env</code> unavailable in Bash tool context</td></tr>
+    <tr><td>E2E (Playwright)</td><td>Skipped per policy — requires live environment</td></tr>
+    <tr><td>E2E spec corrections (H8 audit)</td><td>4 specs manually corrected — Flow10/12/13/19 had stale tab locators from 6→4 dashboard redesign</td></tr>
+    <tr><td>New stubs written this run</td><td>3 — all PM-generated with TODOs</td></tr>
+    <tr><td>Stubs needing implementation (carry forward)</td><td>20 total — 17 from prior runs + 3 new this run</td></tr>
   </tbody>
 </table>
 
-<h2>New Stubs Detail</h2>
+<h2>New Stub Detail — Run #14</h2>
 <table>
   <thead><tr><th>File</th><th>Tests covered</th></tr></thead>
   <tbody>
-    <tr><td><code>src/services/nwsService.test.ts</code></td><td>isNWSSignificant (Extreme/Severe/Moderate/Minor), formatNWSExpires (null + valid ISO), fetchNWSAlerts (network error path)</td></tr>
-    <tr><td><code>src/services/hostContractService.test.ts</code></td><td>getHostContract (null), getHostInvoices (empty), HOST_COMMERCIAL_MODEL_LABELS keys</td></tr>
-    <tr><td><code>src/pages/admin/AuditLogPage.test.tsx</code></td><td>Renders without crashing, empty log list</td></tr>
-    <tr><td><code>src/pages/admin/PipelineHealthPage.test.tsx</code></td><td>Renders without crashing</td></tr>
-    <tr><td><code>src/pages/admin/AdminHostContractsPage.test.tsx</code></td><td>Renders without crashing, no agencies</td></tr>
-    <tr><td><code>src/pages/admin/AdminAdvisorDetailPage.test.tsx</code></td><td>Renders with unknown agent (route param :uid)</td></tr>
-    <tr><td><code>src/pages/admin/AdminOrderLookupPage.test.tsx</code></td><td>Renders search input</td></tr>
+    <tr><td><code>src/services/fieldDataService.test.ts</code></td><td>listDataSources mapped array, searchPorts short-term guard; TODOs: saveDataSource merge, saveObservationBatch chunking, overrideResolvedField dot-path, callResolvePortFields error handling</td></tr>
+    <tr><td><code>src/pages/admin/DataSourcesPage.test.tsx</code></td><td>Heading renders without crashing; TODOs: source table load, Add modal, saveDataSource args, delete confirmation</td></tr>
+    <tr><td><code>src/pages/admin/FieldDataPage.test.tsx</code></td><td>Port search input renders without crashing; TODOs: searchPorts trigger, field key load, observation expand, Run Resolution, Pick Winner</td></tr>
+  </tbody>
+</table>
+
+<h2>H8 E2E Audit — Tab Reference Fixes</h2>
+<table>
+  <thead><tr><th>Spec</th><th>Stale reference</th><th>Fix applied</th></tr></thead>
+  <tbody>
+    <tr><td><code>Flow10.spec.ts</code></td><td><code>hasText: /team roster/i</code> as tab (pre-redesign label)</td><td>→ <code>hasText: /clients/i</code> (3 places: JSDoc ×2 + beforeEach locator)</td></tr>
+    <tr><td><code>Flow12.spec.ts</code></td><td><code>hasText: /guide settings/i</code> as clickable tab button</td><td>→ click Port Tools tab; Guide Settings is a <code>&lt;p&gt;</code> section heading inside Port Tools</td></tr>
+    <tr><td><code>Flow13.spec.ts</code></td><td><code>hasText: /travefy/i</code> as top-level tab (no such tab exists)</td><td>→ click Settings tab first; Travefy panel is inside Settings</td></tr>
+    <tr><td><code>Flow19.spec.ts</code></td><td><code>hasText: /intelligence/i</code> as standalone tab (no such tab exists)</td><td>→ click Sailings tab; AgentIntelligencePanel renders inside Sailings</td></tr>
   </tbody>
 </table>
 
@@ -223,12 +234,12 @@
 <h1 id="security">Security</h1>
 
 <div class="pills">
-  <span class="pill green">Security script: PASSED</span>
-  <span class="pill green">Secret scan (last 10 commits): clean</span>
+  <span class="pill green">Secret scan (last 6 commits): clean</span>
+  <span class="pill green">nwsAlerts comment added</span>
   <span class="pill gray">security-review skill: not present, skipped</span>
 </div>
 
-<p>All secrets confirmed via <code>defineSecret()</code> — 16 secrets declared. No hardcoded values detected in recent commits. Security script passed with no FAIL lines.</p>
+<p>No hardcoded secrets detected in recent commits. <code>nwsAlerts</code> CF unauthenticated-by-design comment added — clears the Run #13 pending item.</p>
 
 <div class="callout warning">
   <strong>Carry-forward security items:</strong>
@@ -236,17 +247,20 @@
     <li><code>INVITE_EMAIL_TEST_OVERRIDE</code> — hardcoded personal email in production code behind dev-only guard; email is in git history</li>
     <li><code>sendTravelerSms</code> — no per-agent rate limiting; must add before Twilio goes live</li>
     <li><code>AdminUsagePage.loadEnrichments()</code> — fetches 5,000 full docs to count; consider aggregate Cloud Function as volume grows</li>
+    <li><code>sendPortGuideEmail</code> + <code>sendBulkPortGuideEmail</code> — no server-side Engage tier check; add before email delivery goes live</li>
   </ul>
 </div>
 
 <!-- ── Dependencies ───────────────────────────────────────────────────────── -->
 <h1 id="dependencies">Dependencies</h1>
 
+<p>No re-audit this run (last audited Run #13). Carry-forward items below.</p>
+
 <h2>Fixable via <code>npm audit fix</code> (recommend running)</h2>
 <table>
   <thead><tr><th>Package</th><th>Severity</th><th>Notes</th></tr></thead>
   <tbody>
-    <tr><td><code>validator</code> chain</td><td>High</td><td>URL validation bypass in express-validator; fix available without breaking changes</td></tr>
+    <tr><td><code>validator</code> chain</td><td>High</td><td>URL validation bypass in express-validator; fix available</td></tr>
     <tr><td><code>form-data</code> 4.0.0–4.0.5</td><td>High</td><td>CRLF injection; fix available</td></tr>
     <tr><td><code>ip-address</code> ≤10.3.0</td><td>High</td><td>XSS + SSRF in express-rate-limit chain; fix available</td></tr>
     <tr><td><code>js-yaml</code></td><td>High</td><td>Quadratic CPU DoS (dev chain); fix available</td></tr>
@@ -272,43 +286,65 @@
 <h1 id="roadmap">Roadmap Currency</h1>
 
 <div class="pills">
-  <span class="pill green">0 stale In-Progress items</span>
-  <span class="pill green">All shipped work catalogued</span>
+  <span class="pill green">No stale In-Progress items detected</span>
+  <span class="pill amber">2 spec label mismatches (H7)</span>
   <span class="pill green">Done-toggle present</span>
 </div>
 
-<p>Roadmap is clean. 47 commits since last run — all are catalogued: NWS Weather Alerts, Host Billing, Audit Log, Admin P1 gaps (Advisor Detail, Order Lookup, Pipeline Health), Stripe webhook, SendGrid resolved, admin reorg, backlog scripts. No items stuck at "In Progress".</p>
+<p>Roadmap not re-scanned this run (only 6 commits since Run #13). H7 spec audit found two label mismatches that need human decision: "Send All" Coming-Soon status, and "Port Utilization" vs "Congestion Calendar" label.</p>
 
 <!-- ── Needs Your Review ───────────────────────────────────────────────────── -->
 <h1 id="review">Needs Your Review</h1>
 
 <ul class="review-list">
-  <li><strong>Run <code>npm audit fix</code></strong> (root) and <strong><code>npm --prefix functions audit fix</code></strong> — both are safe patch-only upgrades, no breaking changes. 18 root vulns + 7 functions vulns, all resolvable.</li>
-  <li><strong>Stripe webhook registration</strong> — roadmap marks done (2026-09-05) but confirm <code>stripeWebhook</code> CF URL is actually registered in Stripe Dashboard for <code>charge.dispute.created</code> + <code>checkout.session.completed</code> events.</li>
-  <li><strong>Twilio deploy</strong> — register <code>twilioInboundWebhook</code> URL in Twilio Console once real secrets are set and functions deployed to dev + prod.</li>
-  <li><strong>UI color migration</strong> — <code>RemindersAdminPage.tsx</code> and <code>InviteCodesPage.tsx</code> use hardcoded colors in the main light-mode layout (not AdminLayout dark surface) — these are actual violations, not intentional dark-surface patterns.</li>
-  <li><strong>DOCK advisory delta calibration</strong> — Level 2 advisory adds C+0.5, producing only +0.125 avg delta (below the 0.5 AT-RISK threshold alone). Consider C+1.0 for Level 2 and C+1.5 for Level 3 — requires human judgment on calibration.</li>
-  <li><strong>7 new test stubs</strong> need TODO items completed before being relied on in CI.</li>
+  <li><strong>[H7] "Send All" button</strong> — <code>product-spec.html</code> describes a multi-traveler bulk email modal triggered by "Send All". Code has it as a "Coming Soon" non-interactive span. Decision needed: update spec to note Coming Soon, or implement the modal?</li>
+  <li><strong>[H7] "Port Utilization" label</strong> — spec says "Port Utilization"; <code>AgentDashboard.tsx</code> renders "Congestion Calendar". Update <code>product-spec.html</code> label to match code.</li>
+  <li><strong>Run <code>npm audit fix</code></strong> (root) and <strong><code>npm --prefix functions audit fix</code></strong> — safe patch-only upgrades; 18 root + 7 functions vulns resolvable.</li>
+  <li><strong>Stripe webhook registration</strong> — confirm <code>stripeWebhook</code> CF URL is registered in Stripe Dashboard for <code>charge.dispute.created</code> + <code>checkout.session.completed</code>.</li>
+  <li><strong>Twilio deploy</strong> — set real secrets, <code>firebase deploy --only functions</code>, register <code>twilioInboundWebhook</code> URL once Twilio account approved.</li>
+  <li><strong>UI color migration</strong> — <code>RemindersAdminPage.tsx</code> and <code>InviteCodesPage.tsx</code> use hardcoded colors in the light-mode layout (actual violations, not intentional dark-surface).</li>
+  <li><strong>Security: CF-side Engage tier check</strong> — <code>sendPortGuideEmail</code> and <code>sendBulkPortGuideEmail</code> enforce tier in UI only; add server-side check before going live.</li>
   <li><strong>Stripe subscription gap</strong> — no <code>customer.subscription.updated</code> webhook handler for trial→active or lapse transitions.</li>
+  <li><strong>20 test stubs</strong> need TODO items completed before being relied on in CI.</li>
+  <li><strong>DOCK advisory calibration</strong> — Level 2 C+0.5 produces +0.125 avg delta (below 0.5 AT-RISK threshold alone). Consider C+1.0 / C+1.5 — human judgment required.</li>
 </ul>
 
 <!-- ── Lessons Learned ────────────────────────────────────────────────────── -->
 <h1 id="lessons">Lessons Learned (new this run)</h1>
 
 <div class="lesson">
-  <div class="lesson-num">2026-09-05 — CJS/ESM compatibility for admin scripts</div>
-  <p><code>.cjs</code> scripts in an ESM project (<code>"type": "module"</code> in package.json) must use CommonJS <code>require()</code> / <code>module.exports</code>, never <code>import</code> / <code>export</code>. The <code>.cjs</code> extension forces CommonJS regardless of the project's default module type — but developers familiar with ESM will instinctively write import statements. <code>backlog-seed.cjs</code> and <code>backlog-update.cjs</code> both failed at runtime with "Cannot use import statement outside a module" and required an immediate fix commit (<code>47ffa58</code>). When generating new <code>.cjs</code> scripts, verify the extension first and use <code>require()</code> throughout. If ESM features (top-level await, etc.) are needed, use <code>.mjs</code> extension instead.</p>
+  <div class="lesson-num">2026-09-14 — Firestore batch DEADLINE_EXCEEDED with large text payloads</div>
+  <p>Seeding rawFieldData with ~55K observations at batch size 400 hit Firestore's 60-second commit deadline after ~1,400 ports. Each observation doc contained multi-paragraph text fields, making the deadline tight. Fix: cap chunk size at 50 for text-heavy collections and add retry with exponential backoff for gRPC codes 4 (DEADLINE_EXCEEDED) and 14 (UNAVAILABLE). The 500-operation limit is an upper bound — large payloads demand much smaller chunks in practice.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-num">2026-09-14 — Seed script idempotency should operate at document level, not field level</div>
+  <p>Per-field idempotency checks (N×M reads) stall on large collections. The correct pattern: call <code>listDocuments()</code> once on the parent collection to build a <code>Set&lt;string&gt;</code> of already-seeded document IDs, then skip at document level. This reduces overhead from O(N×M) sequential reads to one batch read + O(1) Set lookup. Apply to any seed script that re-runs over a large collection.</p>
+</div>
+
+<div class="lesson">
+  <div class="lesson-num">2026-09-14 — E2E specs go stale when dashboard tabs are renamed or consolidated</div>
+  <p>The H8 PM audit found 4 specs (Flow10, Flow12, Flow13, Flow19) referencing tab names that no longer exist after the 6→4 dashboard tab redesign. The specs timed out rather than erroring clearly — hard to debug. Pattern: after any tab restructure, grep <code>tests/acceptance/</code> for <code>hasText:</code> patterns matching old tab labels. The H8 PM hook now automates this check every run.</p>
 </div>
 
 <!-- ── Full Pending Items ──────────────────────────────────────────────────── -->
 <h1 id="pending">Full Pending Items</h1>
+
+<h2>H7 — Spec/Code Label Mismatches</h2>
+<table>
+  <thead><tr><th>Item</th><th>Spec says</th><th>Code says</th><th>Action needed</th></tr></thead>
+  <tbody>
+    <tr><td>"Send All" bulk email</td><td>Modal with traveler list + send confirmation</td><td>"Coming Soon" non-interactive span</td><td>Update spec to note Coming Soon, or implement modal</td></tr>
+    <tr><td>Congestion Calendar label</td><td>"Port Utilization"</td><td>"Congestion Calendar"</td><td>Update spec label to match code</td></tr>
+  </tbody>
+</table>
 
 <h2>Deploy Blockers</h2>
 <table>
   <thead><tr><th>Item</th><th>Status</th></tr></thead>
   <tbody>
     <tr><td>Register <code>stripeWebhook</code> CF URL in Stripe Dashboard</td><td>Verify — roadmap says done; confirm actual registration</td></tr>
-    <tr><td><code>firebase deploy --only functions</code> after real Twilio secrets set</td><td>Open — Twilio resubmitted 2026-09-03, awaiting approval</td></tr>
+    <tr><td><code>firebase deploy --only functions</code> after real Twilio secrets set</td><td>Open — Twilio account pending approval</td></tr>
     <tr><td>Register <code>twilioInboundWebhook</code> URL in Twilio Console</td><td>Open — blocked by Twilio account approval</td></tr>
   </tbody>
 </table>
@@ -317,7 +353,7 @@
 <table>
   <thead><tr><th>Package</th><th>Severity</th><th>Fix</th></tr></thead>
   <tbody>
-    <tr><td><code>validator</code> chain (express-validator)</td><td>High</td><td><code>npm audit fix</code></td></tr>
+    <tr><td><code>validator</code> chain</td><td>High</td><td><code>npm audit fix</code></td></tr>
     <tr><td><code>form-data</code></td><td>High</td><td><code>npm audit fix</code></td></tr>
     <tr><td><code>ip-address</code> chain</td><td>High</td><td><code>npm audit fix</code></td></tr>
     <tr><td><code>js-yaml</code></td><td>High</td><td><code>npm audit fix</code></td></tr>
@@ -333,9 +369,10 @@
 <table>
   <thead><tr><th>Item</th><th>Notes</th></tr></thead>
   <tbody>
-    <tr><td><code>INVITE_EMAIL_TEST_OVERRIDE</code> personal email in git history</td><td>Dev guard present but email is committed; not urgently actionable</td></tr>
+    <tr><td><code>INVITE_EMAIL_TEST_OVERRIDE</code> personal email in git history</td><td>Dev guard present; not urgently actionable</td></tr>
     <tr><td><code>sendTravelerSms</code> no rate limiting</td><td>Add before Twilio goes live</td></tr>
     <tr><td><code>AdminUsagePage</code> 5000-doc fetch</td><td>Scale risk; consider aggregate CF when usage grows</td></tr>
+    <tr><td><code>sendPortGuideEmail</code> / <code>sendBulkPortGuideEmail</code> no server-side tier check</td><td>Add before email delivery goes live</td></tr>
   </tbody>
 </table>
 
@@ -361,23 +398,18 @@
   </tbody>
 </table>
 
-<h2>DOCK Calibration</h2>
-<div class="callout info">
-  Level 2 advisory currently adds C+0.5, producing only +0.125 avg DOCK delta (below the 0.5 AT-RISK threshold on its own). Proposal: C+1.0 for Level 2, C+1.5 for Level 3. Requires human judgment — do not auto-adjust.
-</div>
-
 <h2>Code Review Items</h2>
 <table>
   <thead><tr><th>File</th><th>Issue</th></tr></thead>
   <tbody>
-    <tr><td><code>SearchResultsPage.tsx</code> L184</td><td><code>performSearch</code> missing from <code>useEffect</code> deps — stale closure risk on first render (pre-existing)</td></tr>
+    <tr><td><code>SearchResultsPage.tsx</code> L184</td><td><code>performSearch</code> missing from <code>useEffect</code> deps — stale closure risk (pre-existing)</td></tr>
   </tbody>
 </table>
 
 <h2>Stripe Subscription Gap</h2>
-<p>No <code>customer.subscription.updated</code> webhook handler exists for trial→active or lapse transitions. The <code>agents/{uid}.plan.status</code> field is not updated when Stripe fires this event.</p>
+<p>No <code>customer.subscription.updated</code> webhook handler exists for trial→active or lapse transitions.</p>
 
-<h2>Test Stubs Needing Implementation (17 total)</h2>
+<h2>Test Stubs Needing Implementation (20 total)</h2>
 <table>
   <thead><tr><th>File</th><th>Run added</th></tr></thead>
   <tbody>
@@ -391,18 +423,21 @@
     <tr><td><code>src/pages/ForAdvisorsPage.test.tsx</code></td><td>Prior</td></tr>
     <tr><td><code>src/pages/ForAgenciesPage.test.tsx</code></td><td>Prior</td></tr>
     <tr><td><code>src/pages/ForTravefyPage.test.tsx</code></td><td>Prior</td></tr>
-    <tr><td><code>src/services/nwsService.test.ts</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/services/hostContractService.test.ts</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/pages/admin/AuditLogPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/pages/admin/PipelineHealthPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/pages/admin/AdminHostContractsPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/pages/admin/AdminAdvisorDetailPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
-    <tr><td><code>src/pages/admin/AdminOrderLookupPage.test.tsx</code></td><td>Run 11 ✦ new</td></tr>
+    <tr><td><code>src/services/nwsService.test.ts</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/services/hostContractService.test.ts</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/pages/admin/AuditLogPage.test.tsx</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/pages/admin/PipelineHealthPage.test.tsx</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/pages/admin/AdminHostContractsPage.test.tsx</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/pages/admin/AdminAdvisorDetailPage.test.tsx</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/pages/admin/AdminOrderLookupPage.test.tsx</code></td><td>Run 11</td></tr>
+    <tr><td><code>src/services/fieldDataService.test.ts</code></td><td>Run 14 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/DataSourcesPage.test.tsx</code></td><td>Run 14 ✦ new</td></tr>
+    <tr><td><code>src/pages/admin/FieldDataPage.test.tsx</code></td><td>Run 14 ✦ new</td></tr>
   </tbody>
 </table>
 
 <div class="footer">
-  <p>DockBound PM Report — Run #11 &nbsp;·&nbsp; Last updated 2026-09-05 &nbsp;·&nbsp; Internal use only</p>
+  <p>DockBound PM Report — Run #14 &nbsp;·&nbsp; Generated 2026-09-14 &nbsp;·&nbsp; Internal use only</p>
 </div>
 
 </body>

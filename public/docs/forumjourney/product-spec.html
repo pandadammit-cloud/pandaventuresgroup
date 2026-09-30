@@ -280,7 +280,7 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   <tr><td>Occurrence list</td><td>All non-cancelled occurrences sorted by date; shows event name, venue, date/time, days until, attendee count</td></tr>
   <tr><td>Attendee management</td><td>List attendees, add attendee by email, update notification preference per attendee</td></tr>
   <tr><td>Dead-letter retry</td><td>View failed webhook deliveries; manually retry individual changes</td></tr>
-  <tr><td>Leads tab</td><td>View and manage landing page lead submissions (name, email, org, use case, status)</td></tr>
+  <tr><td>Leads tab</td><td>View historical lead submissions. Lead capture form removed from landing page (2026-09-14) — tab remains for archived data access.</td></tr>
   <tr><td>Admin sources tab</td><td>View, propose, approve/reject, configure data sources in the sourceRegistry</td></tr>
   <tr><td>Event + venue detail</td><td>Full event data including admission policy, sessions, status; venue information and guides</td></tr>
 </table>
@@ -306,9 +306,9 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
 
 <table>
   <tr><th>Item</th><th>Status</th><th>Notes</th></tr>
-  <tr><td>Backend API</td><td><span class="badge green">Complete</span></td><td>All routes implemented, 132 tests passing</td></tr>
+  <tr><td>Backend API</td><td><span class="badge green">Complete</span></td><td>All routes implemented, 146 tests passing</td></tr>
   <tr><td>Multi-role portals</td><td><span class="badge green">Live</span></td><td>Attendee, Organizer, Venue, Speaker portals shipped</td></tr>
-  <tr><td>Landing page + lead capture</td><td><span class="badge green">Live</span></td><td>Leads go to Firestore, visible in operator dashboard</td></tr>
+  <tr><td>Landing page</td><td><span class="badge green">Live</span></td><td>Public marketing page live. Lead capture form removed by design — "Get in touch" mailto CTA replaces it.</td></tr>
   <tr><td>Join flow</td><td><span class="badge green">Live</span></td><td>Attendee and venue join codes; self-registration with Firebase Auth</td></tr>
   <tr><td>Legal pages</td><td><span class="badge green">Live</span></td><td>Privacy policy, ToS, disclaimers — required for Twilio SMS approval</td></tr>
   <tr><td>Data collection (parking)</td><td><span class="badge green">Live</span></td><td>Google Places parking adapter → normalizedFacts → plan discoveries</td></tr>
@@ -317,14 +317,14 @@ code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f1f
   <tr><td>Organizer agenda CRUD</td><td><span class="badge green">Live</span></td><td>Live Firestore-backed sessions replacing static array</td></tr>
   <tr><td>E2E smoke suite</td><td><span class="badge green">Live</span></td><td>23 Playwright tests against production</td></tr>
   <tr><td>Custom domain</td><td><span class="badge green">Live</span></td><td><code>forumjourney.app</code> in ALLOWED_ORIGINS; DNS configuration verified</td></tr>
-  <tr><td>SEO + social metadata</td><td><span class="badge yellow">Blocked</span></td><td>Blocked on D010 (marketing copy) and D001 (canonical URL) decisions</td></tr>
+  <tr><td>SEO + social metadata</td><td><span class="badge yellow">Blocked</span></td><td>Blocked on D010 (marketing copy approval). D001 resolved: canonical URL is <code>forumjourney.app</code>.</td></tr>
   <tr><td>Partner creation UI</td><td><span class="badge red">Gap</span></td><td>Done via Firestore console / Admin SDK scripts only — admin-only by decision</td></tr>
   <tr><td>Speaker file upload</td><td><span class="badge gray">Hold</span></td><td>URL-only (OD-19 closed). File upload is a scoped future task.</td></tr>
 </table>
 
 <p><strong>Target pilot date:</strong> October 2026 (DisruptHR Pittsburgh)</p>
 
-<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-05</p>
+<p class="footer">ForumJourney &nbsp;·&nbsp; Internal Documentation &nbsp;·&nbsp; Last updated 2026-09-14</p>
 
 </body>
 </html>

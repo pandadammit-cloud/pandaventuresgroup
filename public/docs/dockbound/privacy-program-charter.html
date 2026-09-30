@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DockBound — Privacy Program Charter</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1e293b;
+    background: #f8fafc;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* Header */
+  .doc-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 20px;
+    margin-bottom: 36px;
+  }
+  .doc-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  .doc-header .subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 12px;
+  }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 9px;
+    border-radius: 9999px;
+    border: 1px solid;
+  }
+  .badge-draft  { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .badge-legal  { background: #ffe4e6; color: #9f1239; border-color: #fca5a5; }
+  .badge-internal { background: #f0f9ff; color: #075985; border-color: #7dd3fc; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    font-size: 12px; color: #64748b; margin-top: 10px;
+  }
+
+  /* Callouts */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+  .callout-warn {
+    background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12;
+  }
+  .callout-open {
+    background: #fef9c3; border: 1px solid #fde047; color: #713f12;
+  }
+  .callout-info {
+    background: #f0f9ff; border: 1px solid #7dd3fc; color: #075985;
+  }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* Sections */
+  h2 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 40px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e2e8f0;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    margin: 20px 0 6px;
+  }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 6px 10px;
+    border-bottom: 2px solid #e2e8f0;
+    background: #f8fafc;
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* Pending / TBD markers */
+  .tbd {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    color: #854d0e;
+    white-space: nowrap;
+  }
+  .done-marker {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    white-space: nowrap;
+  }
+
+  /* Obligation summary cards */
+  .obligation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 600px) { .obligation-grid { grid-template-columns: 1fr; } }
+  .obligation-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .obligation-card .oc-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+  .obligation-card .oc-body {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  .obligation-card .oc-status {
+    margin-top: 6px;
+  }
+
+  /* Footer */
+  .doc-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+    margin-top: 56px;
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .callout, h2, .obligation-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>DockBound — Privacy Program Charter</h1>
+    <p class="subtitle">The overarching description of DockBound's privacy and data protection program — scope, governance, legal obligations, and approach. All operational work (checklist items gdpr-1-* through gdpr-11-*) executes against this charter.</p>
+    <div class="badge-row">
+      <span class="badge badge-draft">Draft — Pending Legal Review</span>
+      <span class="badge badge-legal">Not Legal Advice</span>
+      <span class="badge badge-internal">Internal — Not for Public Distribution</span>
+    </div>
+    <div class="meta-row">
+      <span>📋 Checklist: docs/gdpr-compliance-checklist.html · Item gdpr-0-1</span>
+      <span>📅 Created: 2026-09-23</span>
+      <span>👤 Owner: <span class="tbd">TBD — assign before finalizing</span></span>
+    </div>
+  </div>
+
+  <!-- Legal warning -->
+  <div class="callout callout-warn">
+    <strong>⚠ Legal review required before this document is finalized.</strong>
+    Two open points remain for counsel: DPO requirement (assumed no — §8.1) and lead supervisory authority for EU/UK data subjects (§8.2). All other structural determinations are accepted working positions. Lawful basis selections (§4) should also be reviewed before the privacy policy is published.
+  </div>
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 1 — Purpose                      -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 1 — Purpose</h2>
+  <p>This document describes the structure and scope of DockBound's privacy and data protection compliance program. It is the entry point for any internal, investor, or regulatory review of how DockBound handles personal data.</p>
+  <p>It is not a legal policy document and it is not user-facing. It is a program-level reference that explains <em>what we are doing, why, and how the pieces fit together</em>. The Art. 30 records, DPIA, vendor agreements, policies, and tooling built under the checklist are the evidence that this charter has been executed.</p>
+  <p>This charter should be reviewed and updated whenever a new product surface is launched, a new data category is collected, or a material change in processing activity occurs.</p>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 2 — Scope                        -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 2 — Scope</h2>
+
+  <h3>Products in scope</h3>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Audience</th><th>Data subjects</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>DockBound</strong> (consumer app)</td>
+        <td>Cruise travelers</td>
+        <td>Registered travelers; any traveler whose data an advisor uploads on their behalf</td>
+      </tr>
+      <tr>
+        <td><strong>Compass</strong> (advisor tier)</td>
+        <td>Independent travel advisors</td>
+        <td>Advisors; advisor's clients (travelers) in the roster</td>
+      </tr>
+      <tr>
+        <td><strong>Chartroom</strong> (agency tier)</td>
+        <td>Travel agencies and their advisors</td>
+        <td>Agency staff; advisors; agency's client travelers</td>
+      </tr>
+      <tr>
+        <td><strong>Helm</strong> (host network tier)</td>
+        <td>Host agency networks</td>
+        <td>Host network staff; member agency contacts; advisors</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Geographies in scope</h3>
+  <p>DockBound is a US company (PandA Ventures, LLC) operating a nationally- and internationally-sold product. The following privacy regimes apply:</p>
+  <ul>
+    <li><strong>GDPR</strong> — applies to EU/UK data subjects who use the product (even if DockBound has no EU establishment; extra-territorial reach under Art. 3(2))</li>
+    <li><strong>US state privacy laws</strong> — CCPA/CPRA (California), TDPSA (Texas), CPA (Colorado), CTDPA (Connecticut), and a growing multi-state baseline of 24 states as of August 2026</li>
+    <li><strong>UK GDPR</strong> — post-Brexit equivalent; same obligations as EU GDPR for UK data subjects</li>
+  </ul>
+
+  <h3>Data out of scope</h3>
+  <p>Port and ship data (port guides, DOCK scores, congestion schedules, weather, travel advisories) is <strong>not personal data</strong> under any applicable law — it describes places and conditions, not individuals. The entire port guide pipeline, DOCK scoring system, and port schedule index are out of scope for privacy compliance obligations. This scoping decision should be documented in the Art. 30 records.</p>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 3 — Controller / Processor       -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 3 — Controller vs. Processor Determination <span class="tbd">Confirm with counsel</span></h2>
+
+  <div class="callout callout-info">
+    <strong>Working determination — accepted; counsel confirmation recommended before launch.</strong>
+    The dual-role determination for roster data is accepted as DockBound's operating position. Counsel should confirm before advisor/agency terms of service are finalized, as DPA language will need to be embedded in those contracts.
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Surface</th><th>Determination</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DockBound consumer app</td>
+        <td><strong>Controller</strong></td>
+        <td>DockBound determines the purposes and means of processing traveler data (account, search history, booking context). No third party instructs how this data is processed.</td>
+      </tr>
+      <tr>
+        <td>Compass / Chartroom — advisor and agency contact data</td>
+        <td><strong>Controller</strong></td>
+        <td>DockBound collects and processes advisor/agency contact info for its own purposes (billing, product delivery, communications).</td>
+      </tr>
+      <tr>
+        <td>Compass / Chartroom — client roster entries uploaded by advisors (pre-login)</td>
+        <td><strong>Processor</strong></td>
+        <td>When an advisor uploads or manually enters a client's name, email, and travel details before that client has a DockBound account, DockBound is storing that data on behalf of the advisor (the controller). DockBound is not collecting it for its own purposes at that point. Requires a DPA-equivalent clause in advisor/agency terms of service.</td>
+      </tr>
+      <tr>
+        <td>Traveler self-registration (same person, post-login)</td>
+        <td><strong>Controller</strong></td>
+        <td>Once a traveler creates their own DockBound account, they are providing their name, email, and phone directly to DockBound for DockBound's own service purposes. At that point DockBound becomes controller for that record — independent of the roster entry the advisor created. The same individual may exist in both capacities simultaneously.</td>
+      </tr>
+      <tr>
+        <td>Travefy integration</td>
+        <td><strong>Not a data processing relationship</strong></td>
+        <td>The Travefy integration exchanges no personal data. The connection is established via the advisor's API key (a service credential, not personal data). The only identifier used is the advisor's own email as a lookup key — data DockBound already holds as controller. All content pushed to Travefy via the API is port guide and DOCK score data (non-personal, location-level information). DockBound is acting as a feature/tool within the advisor's own account, not processing any Travefy data subject's personal data.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Implication of the dual-role determination:</strong>
+    Advisor and agency terms of service must include a data processing clause covering the pre-login roster entries (where DockBound acts as processor). This is the primary contractual gap to close. DSR tooling must also distinguish between the two record types — a traveler exercising their erasure right must trigger deletion of both the roster entry (held as processor, on the advisor's behalf) and the self-registered account (held as controller).
+  </div>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 4 — Personal Data We Collect     -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 4 — Personal Data We Collect</h2>
+  <p>This is a summary-level inventory. Full detail — including lawful basis, retention periods, and sub-processors for each category — lives in the Art. 30 records (gdpr-1-1 through gdpr-1-5).</p>
+
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Examples</th><th>Where stored</th><th>Provisional lawful basis</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Account identity</td>
+        <td>Name, email, Firebase Auth UID</td>
+        <td>Firestore <code>users/</code>, Firebase Auth</td>
+        <td>Contract</td>
+      </tr>
+      <tr>
+        <td>Billing data</td>
+        <td>Stripe customer ID, subscription status, payment method (tokenized)</td>
+        <td>Stripe (tokenized); Firestore <code>users/</code> (plan status only)</td>
+        <td>Contract</td>
+      </tr>
+      <tr>
+        <td>Advisor client roster</td>
+        <td>Traveler name, email, phone, cruise / sail date</td>
+        <td>Firestore <code>agentRoster/</code></td>
+        <td><span class="tbd">TBD — depends on controller/processor determination</span></td>
+      </tr>
+      <tr>
+        <td>Communications</td>
+        <td>Advisor–traveler message threads, email send logs</td>
+        <td>Firestore <code>agentCommunications/</code>, <code>guide_send_log</code></td>
+        <td>Contract / legitimate interest</td>
+      </tr>
+      <tr>
+        <td>SMS interactions</td>
+        <td>Phone numbers, inbound/outbound message content (Twilio)</td>
+        <td>Twilio (external); Firestore consent flags</td>
+        <td>Consent (SMS requires explicit opt-in)</td>
+      </tr>
+      <tr>
+        <td>Travefy integration data</td>
+        <td>Travefy access token, trip data, enrichment records</td>
+        <td>Firestore <code>agents/{uid}/trips</code>, <code>travefyEnrichments/</code></td>
+        <td>Contract</td>
+      </tr>
+      <tr>
+        <td>Audit and access logs</td>
+        <td>Admin actions, login events, content changes</td>
+        <td>Firestore <code>logs/</code> (7-year retention)</td>
+        <td>Legitimate interest (security, compliance)</td>
+      </tr>
+      <tr>
+        <td>Agency / org structure</td>
+        <td>Agency name, host network membership, node hierarchy</td>
+        <td>Firestore <code>nodes/</code>, <code>agencies/</code></td>
+        <td>Contract</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Not collected (as of charter date)</strong>
+    Precise geolocation, biometric data, health/medical data, financial data beyond tokenized payment. These categories would trigger additional obligations (CCPA right to limit, BIPA, heightened GDPR requirements) — any future collection must be reviewed before launch.
+  </div>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 5 — Compliance Obligations       -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 5 — Compliance Obligations &amp; Our Approach</h2>
+  <p>Each area below maps to one or more sections of the implementation checklist. Status reflects checklist completion.</p>
+
+  <div class="obligation-grid">
+
+    <div class="obligation-card">
+      <div class="oc-title">Data Mapping (Art. 30)</div>
+      <div class="oc-body">We will maintain a living record of all processing activities — what data, for what purpose, with whom, and how long. Owned by the program DRI; reviewed quarterly and on each new data collection change.</div>
+      <div class="oc-status"><span class="tbd">Not started — §1</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Lawful Basis &amp; Consent</div>
+      <div class="oc-body">Each data category has a documented lawful basis. Marketing and SMS require explicit opt-in consent. Cookie consent will be opt-in for EU visitors. Consent is granular, timestamped, and trivially withdrawable.</div>
+      <div class="oc-status"><span class="tbd">Not started — §2</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Data Subject Rights (DSR)</div>
+      <div class="oc-body">We will build tooling to handle access, erasure, portability, rectification, and restriction requests within GDPR's 30-day SLA. An internal admin tool will allow support staff to execute requests without manual Firestore access.</div>
+      <div class="oc-status"><span class="tbd">Not started — §3 (largest engineering lift)</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Vendor / Sub-processor DPAs</div>
+      <div class="oc-body">We will confirm signed DPAs with Google Cloud, Stripe, Travefy, Apify, and Twilio. A master sub-processor list will be maintained and available on request.</div>
+      <div class="oc-status"><span class="tbd">Not started — §4</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">International Data Transfers</div>
+      <div class="oc-body">Firestore data currently resides in the US. For EU data subjects, Google Cloud's SCCs provide the transfer mechanism. Same confirmation required for Stripe, Travefy, and Twilio. EU data residency will be re-evaluated if EU volume becomes significant.</div>
+      <div class="oc-status"><span class="tbd">Not started — §5</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Security (Art. 32)</div>
+      <div class="oc-body">Firestore provides encryption at rest and in transit by default. We will conduct an access-control audit, confirm least-privilege for all sensitive secrets, and implement structured logging for unauthorized access attempts. Access reviews run quarterly.</div>
+      <div class="oc-status"><span class="tbd">Not started — §6</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Breach Notification</div>
+      <div class="oc-body">A written incident response plan will cover detection, severity assessment, and 72-hour supervisory authority notification. A named DRI will be accountable. Direct user notification will be defined for high-risk breaches.</div>
+      <div class="oc-status"><span class="tbd">Not started — §7</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">DPIA</div>
+      <div class="oc-body">A DPIA is likely required given systematic profiling potential in advisor dashboards and B2B processing of client data on behalf of agencies. Will be completed before any EU go-live. The port/ship pipeline is confirmed out of scope.</div>
+      <div class="oc-status"><span class="tbd">Not started — §8</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Retention &amp; Deletion</div>
+      <div class="oc-body">Retention periods will be defined per data category and enforced via scheduled Cloud Functions. Manual cleanup is not acceptable — automated enforcement is required for defensible compliance.</div>
+      <div class="oc-status"><span class="tbd">Not started — §9</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">Documentation &amp; Governance</div>
+      <div class="oc-body">A public privacy policy (separate consumer vs. B2B notices) and an internal data protection policy for staff will be produced. This charter is the program-level governance document.</div>
+      <div class="oc-status"><span class="tbd">Not started — §10</span></div>
+    </div>
+
+    <div class="obligation-card">
+      <div class="oc-title">US State Privacy Laws</div>
+      <div class="oc-body">The DSR tooling built for GDPR covers ~90% of US state law requirements. The delta includes: opt-out of "sale"/sharing (CCPA), GPC signal recognition, "notice at collection" disclosures, and a consent architecture that supports both opt-out (ordinary data) and opt-in (sensitive data) models.</div>
+      <div class="oc-status"><span class="tbd">Not started — §11</span></div>
+    </div>
+
+  </div>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 6 — Governance                   -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 6 — Governance</h2>
+
+  <table>
+    <thead>
+      <tr><th>Role</th><th>Assigned to</th><th>Responsibilities</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Program DRI</td>
+        <td><strong>Amy Abraham</strong>, Co-founder, PandA Ventures, LLC</td>
+        <td>Owns this charter; drives checklist completion; escalates open questions to counsel; schedules quarterly Art. 30 reviews; accountable for breach response.</td>
+      </tr>
+      <tr>
+        <td>Legal counsel</td>
+        <td><span class="tbd">TBD</span></td>
+        <td>Confirms controller/processor determination; reviews lawful basis selections; approves privacy policy and DPA terms; confirms DPO requirement.</td>
+      </tr>
+      <tr>
+        <td>Engineering lead</td>
+        <td><span class="tbd">TBD</span></td>
+        <td>Executes DSR tooling (§3), consent architecture (§2), and automated retention enforcement (§9).</td>
+      </tr>
+      <tr>
+        <td>Data Protection Officer (DPO)</td>
+        <td><span class="tbd">TBD — likely not required at current scale; confirm with counsel</span></td>
+        <td>Mandatory only for large-scale systematic monitoring or public authority. To be confirmed.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Review cadence</h3>
+  <ul>
+    <li><strong>Quarterly</strong> — Art. 30 records review; access control review for internal staff; registered user count by state logged (for US state law threshold monitoring — see §8)</li>
+    <li><strong>On each new data collection</strong> — Art. 30 records updated; lawful basis documented before launch</li>
+    <li><strong>Annually</strong> — full charter review; state law threshold analysis against current user counts</li>
+    <li><strong>On material product change</strong> — re-evaluate controller/processor determination if new B2B data flows are introduced</li>
+  </ul>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 7 — Living Documents             -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 7 — Living Documents This Program Produces</h2>
+  <p>When the checklist is complete, the compliance program will be evidenced by the following maintained documents:</p>
+
+  <table>
+    <thead>
+      <tr><th>Document</th><th>Audience</th><th>Owner</th><th>Cadence</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>This charter</strong> (privacy-program-charter.html)</td>
+        <td>Internal / regulators / investors</td>
+        <td>Program DRI</td>
+        <td>Annual + on material change</td>
+      </tr>
+      <tr>
+        <td><strong>Art. 30 records</strong></td>
+        <td>Internal / regulators</td>
+        <td>Program DRI</td>
+        <td>Quarterly + on each new data collection</td>
+      </tr>
+      <tr>
+        <td><strong>DPIA</strong></td>
+        <td>Internal / regulators</td>
+        <td>Program DRI + counsel</td>
+        <td>Before EU go-live; re-triggered on scope expansion</td>
+      </tr>
+      <tr>
+        <td><strong>Privacy policy</strong> (consumer + B2B)</td>
+        <td>Public (users)</td>
+        <td>Program DRI + counsel</td>
+        <td>On each material data collection change</td>
+      </tr>
+      <tr>
+        <td><strong>Internal data protection policy</strong></td>
+        <td>Staff</td>
+        <td>Program DRI</td>
+        <td>Annually + on offboarding/role change</td>
+      </tr>
+      <tr>
+        <td><strong>Sub-processor list</strong></td>
+        <td>Public on request (or published)</td>
+        <td>Program DRI</td>
+        <td>On each vendor add/remove</td>
+      </tr>
+      <tr>
+        <td><strong>Incident response plan</strong></td>
+        <td>Internal</td>
+        <td>Program DRI</td>
+        <td>Annual review; triggered after any real incident</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- ─────────────────────────────────── -->
+  <!-- § 8 — Open Questions               -->
+  <!-- ─────────────────────────────────── -->
+  <h2>§ 8 — Open Questions <span style="font-size:12px;font-weight:400;color:#64748b;">(2 remaining — for counsel)</span></h2>
+
+  <ol>
+    <li>
+      <strong>DPO requirement</strong> — assumed <em>not required</em> at current scale (no large-scale systematic monitoring; not a public authority). This assumption must be documented with counsel before launch and revisited annually. <span class="tbd">Assumed no — confirm with counsel</span>
+    </li>
+    <li>
+      <strong>Primary supervisory authority</strong> — DockBound likely has both UK and EU data subjects. Building to EU GDPR standard satisfies both regimes substantively (UK GDPR is nearly identical). However, for breach notification, the supervisory authorities are separate: the ICO for UK data subjects, and a lead EU DPA for EU data subjects. The lead EU DPA is determined by where DockBound has its EU establishment (or EU representative, if no establishment). Counsel must confirm the correct authority and whether an EU representative needs to be formally designated. <span class="tbd">Pending counsel</span>
+    </li>
+  </ol>
+
+  <h3>Resolved / monitored items</h3>
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Resolution</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Controller vs. processor — roster data</td>
+        <td>Accepted: dual role (processor pre-login, controller post-login). Counsel to confirm before terms of service are finalized.</td>
+      </tr>
+      <tr>
+        <td>Travefy data processing role</td>
+        <td>Resolved: no personal data exchanged via Travefy API. Not a data processing relationship.</td>
+      </tr>
+      <tr>
+        <td>US state law thresholds</td>
+        <td>No clients to date — no thresholds currently crossed. Monitored quarterly: registered user count by state logged each quarter; full threshold analysis annually. What triggers when thresholds are crossed: state-specific DSR obligations activate, privacy policy disclosures must be updated, CCPA "Do Not Sell" link may be required, GPC signal handling required for California. GDPR DSR tooling covers ~90% of the delta — marginal build is small.</td>
+      </tr>
+      <tr>
+        <td>Program DRI</td>
+        <td>Assigned: Amy Abraham, Co-founder, PandA Ventures, LLC.</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>DockBound Privacy Program Charter · Created 2026-09-23 · Draft</span>
+    <span>Implementation checklist: docs/gdpr-compliance-checklist.html · Item gdpr-0-1</span>
+  </div>
+
+</div>
+</body>
+</html>

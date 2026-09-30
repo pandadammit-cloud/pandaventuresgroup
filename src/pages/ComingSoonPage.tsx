@@ -12,11 +12,11 @@ export default function ComingSoonPage() {
         </p>
         <div className="coming-soon__badge">Coming Soon</div>
         <div className="coming-soon__ventures">
-          <a href="https://dockbound.com" className="coming-soon__venture-link" target="_blank" rel="noreferrer">
+          <a href="https://dockbound.app" className="coming-soon__venture-link" target="_blank" rel="noreferrer">
             <img src="/logo-dockbound.png" alt="DockBound" className="coming-soon__venture-logo" />
             <span>DockBound</span>
           </a>
-          <a href="https://forumjourney.com" className="coming-soon__venture-link" target="_blank" rel="noreferrer">
+          <a href="https://forumjourney.app" className="coming-soon__venture-link" target="_blank" rel="noreferrer">
             <img src="/logo-forumjourney.png" alt="ForumJourney" className="coming-soon__venture-logo" />
             <span>ForumJourney</span>
           </a>
